@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ফলাফল · School</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher','student','guardian']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'results.html', 'ফলাফল');
+
+    const content = document.getElementById('content');
+    const isStaff = profile.role === 'admin' || profile.role === 'teacher';
+
+    content.innerHTML = `
+      <h2>📊 ফলাফল</h2>
+
+      ${isStaff ? `
+      <div class="panel">
+        <h3>➕ নতুন মার্ক যোগ করুন</h3>
+        <div class="form-grid">
+          <input id="rStudent" placeholder="Student ID (STU-001) *">
+          <select id="rExam"><option value="">-- পরীক্ষা --</option></select>
+          <input id="rSubject" placeholder="বিষয় (Bangla) *">
+          <input id="rMarks" type="number" placeholder="মার্ক *">
+        </div>
+        <br>
+        <button class="btn btn-primary" id="addBtn">✅ সংরক্ষণ করুন</button>
+      </div>` : ''}
+
+      <div class="panel">
+        <h3>📋 ফলাফল দেখুন</h3>
+        ${isStaff ? `
+        <div class="search-bar">
+          <input id="searchSid" placeholder="🔍 Student ID লিখুন (ফাঁকা = সব)">
+          <button class="btn btn-primary" id="searchBtn">খুঁজুন</button>
+        </div>` : ''}
+        <div id="resultBox"></div>
+      </div>
+    `;
+
+    const { data: exams } = await supabase.from('exams').select('*').order('id', { ascending: false });
+    if (isStaff) {
+      document.getElementById('rExam').innerHTML =
+        '<option value="">-- পরীক্ষা --</option>' +
+        (exams || []).map(e => `<option value="${e.id}">${esc(e.exam_name)}</option>`).join('');
+    }
+
+    async function loadResults(sid = '') {
+      let q = supabase.from('results').select('*, exams(exam_name)').order('id', { ascending: false });
+      if (sid) q = q.eq('student_id', sid);
+      if (!isStaff && profile.linked_id) q = q.eq('student_id', profile.linked_id);
+
+      const { data, error } = await q;
+      const box = document.getElementById('resultBox');
+
+      if (error) { box.innerHTML = `<div class="empty">❌ ${error.message}</div>`; return; }
+      if (!data || !data.length) { box.innerHTML = '<div class="empty">কোনো ফলাফল নেই</div>'; return; }
+
+      // student_id + exam_id অনুযায়ী গ্রুপ
+      const groups = {};
+      data.forEach(r => {
+        const key = r.student_id + '|' + r.exam_id + '|' + (r.exams?.exam_name || '-');
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
+      });
+
+      box.innerHTML = Object.keys(groups).map(key => {
+        const [sid, examId, examName] = key.split('|');
+        const rows = groups[key];
+        const total = rows.reduce((s, r) => s + (+r.marks || 0), 0);
+        const avg = total / rows.length;
+        let grade = 'F';
+        if (avg >= 80) grade = 'A+';
+        else if (avg >= 70) grade = 'A';
+        else if (avg >= 60) grade = 'A-';
+        else if (avg >= 50) grade = 'B';
+        else if (avg >= 40) grade = 'C';
+        else if (avg >= 33) grade = 'D';
+
+        const color = grade === 'F' ? '#ef4444' : '#7c3aed';
+
+        return `
+          <div class="panel" style="background:#faf5ff">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+              <h3 style="margin:0">🎓 ${esc(sid)} · ${esc(examName)}</h3>
+              <a href="report-card.html" class="btn btn-primary btn-sm" style="text-decoration:none">
+                🖨️ রিপোর্ট কার্ড
+              </a>
+            </div>
+            <table>
+              <thead><tr><th>বিষয়</th><th>মার্ক</th></tr></thead>
+              <tbody>
+                ${rows.map(r => `<tr><td>${esc(r.subject)}</td><td>${r.marks}</td></tr>`).join('')}
+                <tr style="background:#f3f4f6"><td><b>মোট</b></td><td><b>${total}</b></td></tr>
+                <tr style="background:#f3f4f6"><td><b>গড়</b></td><td><b>${avg.toFixed(2)}</b></td></tr>
+                <tr style="background:#ede9fe"><td><b>গ্রেড</b></td><td><b style="color:${color};font-size:18px">${grade}</b></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      }).join('');
+    }
+
+    if (isStaff) {
+      document.getElementById('addBtn').onclick = async () => {
+        const sid = document.getElementById('rStudent').value.trim();
+        const examId = document.getElementById('rExam').value;
+        const subject = document.getElementById('rSubject').value.trim();
+        const marks = +document.getElementById('rMarks').value;
+
+        if (!sid || !examId || !subject || isNaN(marks)) {
+          toast('সব ঘর পূরণ করুন', 'error'); return;
+        }
+
+        const { error } = await supabase.from('results').insert({
+          student_id: sid, exam_id: examId, subject, marks
+        });
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast('✅ মার্ক সংরক্ষিত', 'success');
+        document.getElementById('rSubject').value = '';
+        document.getElementById('rMarks').value = '';
+        loadResults(document.getElementById('searchSid').value.trim());
+      };
+
+      document.getElementById('searchBtn').onclick = () => {
+        loadResults(document.getElementById('searchSid').value.trim());
+      };
+    }
+
+    // ছাত্রদের জন্য ডিফল্ট: নিজের সব রেজাল্ট দেখাবে
+    // স্টাফদের জন্য: সব
+    await loadResults(isStaff ? '' : (profile.linked_id || ''));
+
+    // ছাত্র/অভিভাবকের জন্য সরাসরি রিপোর্ট কার্ড লিংক
+    if (!isStaff && profile.linked_id) {
+      const content2 = document.getElementById('content');
+      const btnDiv = document.createElement('div');
+      btnDiv.style.textAlign = 'center';
+      btnDiv.style.marginBottom = '20px';
+      btnDiv.innerHTML = `
+        <a href="report-card.html" class="btn btn-primary" style="text-decoration:none">
+          🖨️ আমার রিপোর্ট কার্ড দেখুন / প্রিন্ট করুন
+        </a>
+      `;
+      content2.insertBefore(btnDiv, content2.children[1]);
+    }
+  </script>
+</body>
+</html>

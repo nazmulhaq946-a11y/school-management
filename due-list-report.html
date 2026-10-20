@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report (Due List) · School</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ============================================================
+   UI STYLES (ছবির মতো ডিজাইন)
+   ============================================================ */
+:root {
+  --red-main: #c0392b;
+  --red-dark: #962d22;
+  --bg-gray: #f0f0f0;
+  --border-color: #ccc;
+}
+* { box-sizing: border-box; }
+
+.dl-header {
+  background: #fff;
+  padding: 15px 20px;
+  border-bottom: 4px solid var(--red-main);
+  display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.dl-header .title-area { display: flex; align-items: center; gap: 15px; }
+.dl-header .icon-box {
+  width: 50px; height: 50px; background: var(--bg-gray);
+  border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.dl-header h1 { color: #555; font-size: 22px; margin: 0; font-weight: 800; }
+.dl-header p { color: var(--red-main); margin: 2px 0 0; font-size: 14px; font-weight: 700; }
+.dl-back {
+  background: #333; color: #fff; border: none; padding: 8px 20px;
+  border-radius: 20px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; text-decoration: none;
+}
+.dl-back:hover { background: #111; }
+.dl-back .arrow { background: #22c55e; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;}
+
+/* FILTER SECTION */
+.dl-filter-wrap {
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M0 50 Q 25 25 50 50 T 100 50" fill="none" stroke="%23eee" stroke-width="2"/></svg>');
+  background-color: var(--bg-gray);
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+.dl-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  max-width: 1200px;
+}
+.dl-filters .fld { display: flex; align-items: center; gap: 10px; }
+.dl-filters .fld label { font-weight: 800; font-size: 14px; color: #374151; width: 80px; }
+.dl-filters select, .dl-filters input {
+  padding: 7px 10px; border: 1px solid #999; border-radius: 3px;
+  font-size: 14px; width: 100%; background: #fff;
+}
+.dl-search-btn {
+  background: var(--red-main); color: white; border: none;
+  padding: 8px 30px; font-weight: 800; font-size: 14px; cursor: pointer;
+  border-radius: 3px; height: 35px; align-self: flex-end;
+}
+.dl-search-btn:hover { background: var(--red-dark); }
+
+/* COLUMN SELECTOR */
+.col-selector-wrap {
+  background: #fff; padding: 10px 20px; border-bottom: 1px solid #ccc;
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.col-selector-wrap p { margin: 0; font-size: 13px; color: #555; font-weight: 600; width: 150px; }
+.col-selector {
+  background: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 4px;
+  padding: 10px; max-height: 120px; overflow-y: auto; flex: 1;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 5px;
+}
+.col-selector label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: #4c1d95; }
+.col-selector input { accent-color: var(--red-main); width: 15px; height: 15px; }
+
+/* ACTION BUTTONS */
+.dl-actions { padding: 10px 20px; display: flex; gap: 10px; background: #fff;}
+.dl-btn { padding: 6px 15px; font-weight: 700; font-size: 13px; border: none; border-radius: 3px; cursor: pointer; color: white; }
+.dl-btn-excel { background: #c0392b; }
+.dl-btn-print { background: #6b7280; }
+
+/* ============================================================
+   PRINT TABLE (ছবির মতো)
+   ============================================================ */
+.print-area { padding: 20px; overflow-x: auto; background: #fff; }
+.print-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #1e1b4b; padding-bottom: 10px;}
+.print-header h2 { margin: 0; font-size: 20px; font-weight: 900; color: #1e1b4b; text-transform: uppercase; }
+.print-header p { margin: 3px 0; font-size: 13px; font-weight: 600; }
+.print-subhead {
+  display: flex; justify-content: space-between; border: 1.5px solid #000;
+  font-size: 12px; font-weight: 800; padding: 5px 10px; background: #f8fafc;
+}
+
+.report-table {
+  width: 100%; border-collapse: collapse; font-size: 11px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-width: 1300px;
+}
+.report-table th, .report-table td {
+  border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;
+}
+.report-table th { background: #f3f4f6; font-weight: 800; }
+.report-table .name-col { text-align: left; padding-left: 6px; font-weight: 700; }
+.report-table .month-col { width: 32px; min-width: 32px; }
+.report-table .fee-col { min-width: 60px; }
+.report-table .total-col { width: 80px; background: #fef3c7; font-weight: 800; }
+
+/* Paid/Due logic styles */
+.val-due { color: #dc2626; } /* বাকি থাকলে লাল */
+.val-paid { color: #16a34a; } /* পেইড হলে সবুজ */
+.val-partial { color: #d97706; } /* আংশিক হলে হলুদ */
+
+/* PRINT CSS */
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  body { background: white !important; }
+  .no-print, .dl-header, .dl-filter-wrap, .col-selector-wrap, .dl-actions { display: none !important; }
+  .print-area { padding: 0 !important; overflow: visible !important; }
+  .report-table { min-width: 0 !important; font-size: 9px !important; }
+  .report-table th, .report-table td { padding: 2px !important; border: 1px solid #000 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, getSchoolProfile } from './js/helpers.js';
+
+const profile = await requireLogin(['admin', 'teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'due-list-report.html', 'Due List Report');
+
+const content = document.getElementById('content');
+const CURRENT_YEAR = new Date().getFullYear();
+const school = await getSchoolProfile();
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+let allClasses = [];
+let allFeeTypes = [];
+let lastData = null;
+
+/* ============================================================
+   UI তৈরি
+   ============================================================ */
+content.innerHTML = `
+  <div class="dl-header no-print">
+    <div class="title-area">
+      <div class="icon-box">📋</div>
+      <div>
+        <h1>Report (Due List)</h1>
+        <p>Select the criteria for generate the report</p>
+      </div>
+    </div>
+    <a href="dashboard.html" class="dl-back">Back <span class="arrow">←</span></a>
+  </div>
+
+  <div class="dl-filter-wrap no-print">
+    <div class="dl-filters">
+      <div class="fld">
+        <label>Year</label>
+        <select id="f_session">
+          ${[CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+            `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div class="fld">
+        <label>Class</label>
+        <select id="f_class"><option value="">All Classes</option></select>
+      </div>
+      <div class="fld">
+        <label>Group</label>
+        <select id="f_group">
+          <option value="">All Groups</option>
+          <option value="N/A">N/A</option>
+          <option value="Science">Science</option>
+          <option value="Business Studies">Business Studies</option>
+          <option value="Humanities">Humanities</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Section</label>
+        <select id="f_section"><option value="">All Sections</option></select>
+      </div>
+      <div class="fld">
+        <label>Up to Month</label>
+        <select id="f_month">
+          <option value="ALL">[ALL Months]</option>
+          ${MONTHS.map(m => `<option value="${m}">${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fld">
+        <label>Report Type</label>
+        <select id="f_type">
+          <option value="ALL">***ALL TYPE***</option>
+          <option value="due">Only Due</option>
+          <option value="paid">Only Paid</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Student Type</label>
+        <select id="f_stype">
+          <option value="active">Active Students</option>
+          <option value="inactive">Inactive Students</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Sort by</label>
+        <select id="f_sort">
+          <option value="roll">Roll No.</option>
+          <option value="name">Name</option>
+          <option value="index">Index</option>
+        </select>
+      </div>
+      <div class="fld" style="grid-column: 4 / 5;">
+        <button class="dl-search-btn" id="searchBtn">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-selector-wrap no-print">
+    <p>Select bill column name and search again to get only selected column records.</p>
+    <div class="col-selector" id="colSelector">
+      <label><input type="checkbox" class="col-chk" value="index" checked> Index</label>
+      <label><input type="checkbox" class="col-chk" value="roll" checked> Roll</label>
+      <label><input type="checkbox" class="col-chk" value="name" checked> Student Name</label>
+      <label><input type="checkbox" class="col-chk" value="months" checked> Monthly Fees</label>
+      <label><input type="checkbox" class="col-chk" value="others" checked> Other Fees</label>
+      <label><input type="checkbox" class="col-chk" value="total" checked> Total (Due/Paid)</label>
+    </div>
+  </div>
+
+  <div class="dl-actions no-print">
+    <button class="dl-btn dl-btn-excel" id="excelBtn">Export In Excel</button>
+    <button class="dl-btn dl-btn-print" id="printBtn">PRINT / Export In PDF</button>
+  </div>
+
+  <div class="print-area" id="reportArea">
+    <div style="text-align:center; padding: 50px; color:#666;">Please select filters and click Search.</div>
+  </div>
+`;
+
+/* ============================================================
+   Load Base Data
+   ============================================================ */
+async function loadBase() {
+  const [c, t] = await Promise.all([
+    supabase.from('classes').select('*').order('sort_order'),
+    supabase.from('fee_types').select('*').eq('account_type', 'income').eq('is_active', true).order('account_no')
+  ]);
+  allClasses = c.data || [];
+  allFeeTypes = t.data || [];
+
+  document.getElementById('f_class').innerHTML = '<option value="">All Classes</option>' +
+    allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+}
+await loadBase();
+
+document.getElementById('f_class').onchange = () => {
+  const cls = allClasses.find(c => String(c.id) === document.getElementById('f_class').value);
+  const sections = cls?.sections || [];
+  document.getElementById('f_section').innerHTML = '<option value="">All Sections</option>' +
+    sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+};
+
+/* ============================================================
+   Search & Generate Report
+   ============================================================ */
+document.getElementById('searchBtn').onclick = async () => {
+  const session = +document.getElementById('f_session').value;
+  const classId = document.getElementById('f_class').value;
+  const section = document.getElementById('f_section').value;
+  const group = document.getElementById('f_group').value;
+  const upToMonth = document.getElementById('f_month').value;
+  const repType = document.getElementById('f_type').value;
+  const stuType = document.getElementById('f_stype').value;
+  const sortBy = document.getElementById('f_sort').value;
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.textContent = 'Searching...';
+  document.getElementById('reportArea').innerHTML = '<div style="text-align:center; padding:50px;">লোড হচ্ছে...</div>';
+
+  try {
+    // ১. ছাত্র লোড
+    let q = supabase.from('students').select('*').eq('class_id', classId);
+    if (section) q = q.eq('section', section);
+    if (group) q = q.eq('group_name', group);
+    if (stuType !== 'all') q = q.eq('student_type', stuType);
+    
+    // Sort
+    if (sortBy === 'roll') q = q.order('roll');
+    else if (sortBy === 'name') q = q.order('name');
+    else q = q.order('student_index');
+
+    const { data: students, error: e1 } = await q;
+    if (e1) throw e1;
+    if (!students || !students.length) throw new Error('কোনো ছাত্র পাওয়া যায়নি');
+
+    // ২. Fee Structure লোড
+    const { data: structures } = await supabase.from('fee_structure').select('*')
+      .eq('session_year', session).eq('class_id', classId);
+
+    // ৩. Fee Payments লোড
+    const idxs = students.map(s => s.student_index).filter(Boolean);
+    let payments = [];
+    if (idxs.length) {
+      const { data: pData } = await supabase.from('fee_payments').select('*')
+        .eq('session_year', session).eq('class_id', classId).in('student_index', idxs);
+      payments = pData || [];
+    }
+
+    // ৪. ডেটা প্রসেস
+    const monthLimitIndex = upToMonth === 'ALL' ? 11 : MONTHS.indexOf(upToMonth);
+    const reportData = [];
+
+    students.forEach(student => {
+      const myPays = payments.filter(p => p.student_index === student.student_index);
+      const myStructs = (structures || []).filter(s => s.class_id == student.class_id);
+
+      let totalExpected = 0, totalPaid = 0;
+      const monthlyData = {}; // { Jan: { expected, paid }, ... }
+      const othersData = []; // [{ name, expected, paid }]
+      
+      MONTHS.forEach(m => monthlyData[m] = { expected: 0, paid: 0 });
+
+      // মাসিক ফি হিসাব
+      myStructs.forEach(st => {
+        const ft = allFeeTypes.find(f => f.id === st.fee_type_id);
+        if (!ft) return;
+        const expected = +st.amount || 0;
+        
+        if (ft.is_monthly) {
+          MONTHS.forEach((m, i) => {
+            if (i <= monthLimitIndex) {
+              monthlyData[m].expected += expected;
+            }
+          });
+        } else {
+          // এককালীন ফি
+          othersData.push({ id: ft.id, name: ft.type_name, expected, paid: 0 });
+        }
+      });
+
+      // পেমেন্ট হিসাব
+      myPays.forEach(p => {
+        const ft = allFeeTypes.find(f => f.id === p.fee_type_id);
+        if (!ft) return;
+        const paidAmt = +p.paid_amount || 0;
+        
+        if (ft.is_monthly && p.fee_month) {
+          const m = p.fee_month.split(' ')[0];
+          if (monthlyData[m]) monthlyData[m].paid += paidAmt;
+        } else {
+          const other = othersData.find(o => o.id === ft.id);
+          if (other) other.paid += paidAmt;
+          else othersData.push({ id: ft.id, name: ft.type_name, expected: 0, paid: paidAmt });
+        }
+      });
+
+      // টোটাল হিসাব
+      MONTHS.forEach(m => {
+        totalExpected += monthlyData[m].expected;
+        totalPaid += monthlyData[m].paid;
+      });
+      othersData.forEach(o => {
+        totalExpected += o.expected;
+        totalPaid += o.paid;
+      });
+
+      const totalDue = Math.max(0, totalExpected - totalPaid);
+
+      // রিপোর্ট টাইপ ফিল্টার
+      if (repType === 'due' && totalDue === 0) return;
+      if (repType === 'paid' && totalPaid === 0) return;
+
+      reportData.push({
+        student, monthlyData, othersData, totalExpected, totalPaid, totalDue
+      });
+    });
+
+    if (!reportData.length) throw new Error('এই ফিল্টারে কোনো ডেটা নেই');
+
+    lastData = { session, classId, section, group, reportData };
+    renderTable(lastData);
+
+  } catch (err) {
+    document.getElementById('reportArea').innerHTML = `<div style="text-align:center; padding:50px; color:red;">❌ ${err.message}</div>`;
+    toast('❌ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Search';
+  }
+};
+
+/* ============================================================
+   Render Table
+   ============================================================ */
+function renderTable(data) {
+  const { session, classId, section, group, reportData } = data;
+  const cls = allClasses.find(c => c.id == classId);
+
+  // কলাম সিলেকশন
+  const showIndex = document.querySelector('input[value="index"]').checked;
+  const showRoll = document.querySelector('input[value="roll"]').checked;
+  const showName = document.querySelector('input[value="name"]').checked;
+  const showMonths = document.querySelector('input[value="months"]').checked;
+  const showOthers = document.querySelector('input[value="others"]').checked;
+  const showTotal = document.querySelector('input[value="total"]').checked;
+
+  // Other fees (যেমন: ভর্তি ফি, পরীক্ষার ফি) গুলো বের করা
+  const uniqueOthers = [];
+  reportData.forEach(d => {
+    d.othersData.forEach(o => {
+      if (!uniqueOthers.find(u => u.id === o.id)) uniqueOthers.push(o);
+    });
+  });
+
+  // টেবিল হেডার তৈরি
+  let thMonths = showMonths ? MONTHS_SHORT.map(m => `<th class="month-col">${m}</th>`).join('') : '';
+  let thOthers = showOthers ? uniqueOthers.map(o => `<th class="fee-col">${esc(o.name)}</th>`).join('') : '';
+
+  let html = `
+    <div class="print-header">
+      <h2>${esc(school.name)}</h2>
+      <p>${esc(school.address)}</p>
+    </div>
+    <div class="print-subhead">
+      <span>Academic Session: ${session}</span>
+      <span>Class Name: ${esc(cls?.class_name || '')}</span>
+      <span>Group Name: ${esc(group || 'ALL GROUP')}</span>
+      <span>Section Name: ${esc(section || 'ALL Section')}</span>
+    </div>
+
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th style="width:40px">Serial</th>
+          ${showIndex ? '<th style="width:80px">Index</th>' : ''}
+          ${showRoll ? '<th style="width:50px">Roll</th>' : ''}
+          ${showName ? '<th class="name-col">Student Name</th>' : ''}
+          ${thMonths}
+          ${thOthers}
+          ${showTotal ? '<th class="total-col">Total</th>' : ''}
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  reportData.forEach((row, i) => {
+    const s = row.student;
+    html += `<tr>`;
+    html += `<td>${i + 1}</td>`;
+    if (showIndex) html += `<td>${esc(s.student_index || '-')}</td>`;
+    if (showRoll) html += `<td>${esc(s.roll || '-')}</td>`;
+    if (showName) html += `<td class="name-col">${esc(s.name)}</td>`;
+
+    // মাসিক সেল
+    if (showMonths) {
+      MONTHS_SHORT.forEach(m => {
+        const d = row.monthlyData[MONTHS[MONTHS_SHORT.indexOf(m)]];
+        if (d.expected === 0 && d.paid === 0) {
+          html += `<td></td>`;
+        } else {
+          const due = d.expected - d.paid;
+          if (due <= 0) {
+            // Paid
+            html += `<td class="val-paid">(${d.paid})</td>`;
+          } else if (d.paid > 0) {
+            // Partial
+            html += `<td class="val-partial">${due} (${d.paid})</td>`;
+          } else {
+            // Unpaid (Full Due)
+            html += `<td class="val-due">${due}</td>`;
+          }
+        }
+      });
+    }
+
+    // অন্যান্য ফি সেল
+    if (showOthers) {
+      uniqueOthers.forEach(uo => {
+        const o = row.othersData.find(x => x.id === uo.id);
+        if (!o || (o.expected === 0 && o.paid === 0)) {
+          html += `<td></td>`;
+        } else {
+          const due = o.expected - o.paid;
+          if (due <= 0) html += `<td class="val-paid">(${o.paid})</td>`;
+          else if (o.paid > 0) html += `<td class="val-partial">${due} (${o.paid})</td>`;
+          else html += `<td class="val-due">${due}</td>`;
+        }
+      });
+    }
+
+    // Total
+    if (showTotal) {
+      if (row.totalDue <= 0) {
+        html += `<td class="total-col val-paid">${row.totalPaid}</td>`;
+      } else {
+        html += `<td class="total-col val-due">${row.totalDue} (${row.totalPaid})</td>`;
+      }
+    }
+    
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById('reportArea').innerHTML = html;
+}
+
+/* ============================================================
+   Excel Export
+   ============================================================ */
+document.getElementById('excelBtn').onclick = () => {
+  if (!lastData) { toast('আগে Search করুন', 'error'); return; }
+  const { session, reportData } = lastData;
+  const wb = XLSX.utils.book_new();
+  
+  const rows = [
+    [school.name], [school.address], ['Due List Report'], ['Session:', session], [],
+    ['SL', 'Index', 'Roll', 'Name', ...MONTHS_SHORT, 'Total Due', 'Total Paid']
+  ];
+
+  reportData.forEach((row, i) => {
+    const s = row.student;
+    const mData = MONTHS.map(m => {
+      const d = row.monthlyData[m];
+      return d.expected > 0 ? (d.expected - d.paid) : '';
+    });
+    rows.push([i + 1, s.student_index, s.roll, s.name, ...mData, row.totalDue, row.totalPaid]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [ {wch:5}, {wch:12}, {wch:6}, {wch:25}, ...MONTHS.map(()=>({wch:8})), {wch:12}, {wch:12} ];
+  XLSX.utils.book_append_sheet(wb, ws, 'Due List');
+  XLSX.writeFile(wb, `Due_List_${session}.xlsx`);
+  toast('✅ Excel ডাউনলোড হয়েছে', 'success');
+};
+
+document.getElementById('printBtn').onclick = () => {
+  if (!lastData) { toast('আগে Search করুন', 'error'); return; }
+  window.print();
+};
+
+</script>
+</body>
+</html>

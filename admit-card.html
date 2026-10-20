@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admit Card · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============ HEADER ============ */
+    .ac-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #7c3aed;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ac-header .left { display: flex; align-items: center; gap: 14px; }
+    .ac-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ac-header h1 { color: #7c3aed; font-size: 22px; margin: 0; font-weight: 700; }
+    .ac-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .ac-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .ac-back:hover { background: #111827; }
+    .ac-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* ============ BODY ============ */
+    .ac-body {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .ac-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 1000px; margin: 0 auto;
+    }
+    .ac-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .ac-row label {
+      color: #374151; font-weight: 700; font-size: 13.5px; text-align: right;
+    }
+    .ac-row input, .ac-row select {
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white;
+    }
+    .ac-row input:focus, .ac-row select:focus { outline: none; border-color: #7c3aed; }
+
+    .ac-btn-row {
+      grid-column: 1 / -1;
+      display: flex; gap: 14px; justify-content: center;
+      margin-top: 14px; flex-wrap: wrap;
+    }
+    .ac-gen-btn {
+      background: #7c3aed; color: white; border: none;
+      padding: 12px 34px; border-radius: 6px;
+      font-weight: 700; font-size: 14.5px; cursor: pointer;
+      box-shadow: 0 2px 6px rgba(124,58,237,0.3);
+    }
+    .ac-gen-btn:hover { background: #6d28d9; }
+    .ac-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .ac-gen-btn.secondary { background: #6b7280; }
+    .ac-gen-btn.secondary:hover { background: #4b5563; }
+
+    /* ============ INFO BANNER ============ */
+    .info-banner {
+      background: #d1fae5; border-left: 4px solid #16a34a;
+      padding: 12px 16px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 13px; color: #065f46;
+    }
+    .info-banner.warn { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
+    .info-banner a { color: #1e3a8a; font-weight: 700; }
+
+    /* ============ CARDS VIEW ============ */
+    .cards-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .cards-actions button {
+      padding: 11px 26px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .btn-print { background: #16a34a; color: white; }
+    .btn-print:hover { background: #15803d; }
+    .btn-back2 { background: #6b7280; color: white; }
+    .btn-back2:hover { background: #4b5563; }
+
+    /* ============ A4 SHEET ============ */
+    .sheet-page {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 20px;
+      padding: 8mm 8mm;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 4mm;
+    }
+
+    /* ============ ADMIT CARD (one card) ============ */
+    .admit-card {
+      width: 100%;
+      height: 91mm;
+      border: 2px solid #b8860b;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      background: #fdfcf0;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      flex-shrink: 0;
+    }
+
+    /* ===== Header: red-yellow banner ===== */
+    .ac-head {
+      background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 50%, #b71c1c 100%);
+      color: #ffd700;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 2;
+      border-bottom: 2px solid #ffd700;
+    }
+    .ac-head .logo {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #ffd700;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .ac-head .logo img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .ac-head .school-name {
+      flex: 1;
+      text-align: center;
+      font-family: 'Arial Black', 'Segoe UI', sans-serif;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #ffd700;
+      text-shadow:
+        -1px -1px 0 #7f0000,
+        1px -1px 0 #7f0000,
+        -1px 1px 0 #7f0000,
+        1px 1px 0 #7f0000,
+        2px 2px 3px rgba(0,0,0,0.4);
+      line-height: 1.05;
+      text-transform: uppercase;
+      padding-right: 46px;
+    }
+
+    /* ===== Blue address bar ===== */
+    .ac-address {
+      background: linear-gradient(180deg, #1976d2 0%, #0d47a1 100%);
+      color: #ffffff;
+      text-align: center;
+      padding: 4px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      font-family: 'Arial', sans-serif;
+      position: relative;
+      z-index: 2;
+      border-bottom: 2px solid #ffd700;
+      text-transform: uppercase;
+    }
+
+    /* ===== Card inner body ===== */
+    .ac-inner {
+      position: relative;
+      z-index: 2;
+      padding: 6px 12px 6px;
+      height: calc(100% - 84px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== ADMIT CARD pill ===== */
+    .ac-title-pill {
+      text-align: center;
+      margin: 4px 0 3px;
+    }
+    .ac-title-pill span {
+      display: inline-block;
+      background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%);
+      color: #ffeb3b;
+      padding: 2px 30px;
+      border-radius: 20px;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+      border: 1px solid #7f0000;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    /* ===== Exam term ===== */
+    .ac-term {
+      text-align: center;
+      color: #1b5e20;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      padding: 2px 0 6px;
+      font-family: 'Arial', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== Info rows ===== */
+    .ac-info {
+      padding: 0 6px;
+      margin-top: 2px;
+    }
+    .ac-info-row {
+      display: flex;
+      align-items: flex-end;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a237e;
+      margin-bottom: 3px;
+      font-family: 'Arial', sans-serif;
+    }
+    .ac-info-row .lbl {
+      min-width: 62px;
+      color: #1a237e;
+    }
+    .ac-info-row .dots {
+      flex: 1;
+      border-bottom: 2px dotted #1a237e;
+      margin: 0 6px;
+      padding: 0 6px 1px;
+      text-align: center;
+      color: #000;
+      font-weight: 800;
+      min-height: 18px;
+      font-size: 14px;
+      text-transform: uppercase;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .ac-info-row.double .dots {
+      max-width: 80px;
+    }
+
+    /* ===== Exam date/time line ===== */
+    .ac-exam-line {
+      text-align: center;
+      color: #1b5e20;
+      font-size: 14px;
+      font-weight: 800;
+      margin: 6px 0 2px;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.3px;
+    }
+    .ac-exam-line b {
+      color: #1b5e20;
+    }
+
+    /* ===== Warning ===== */
+    .ac-warning {
+      text-align: center;
+      color: #d32f2f;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Arial', sans-serif;
+      padding: 3px 0;
+      letter-spacing: 0.2px;
+    }
+
+    /* ===== Signatures ===== */
+    .ac-signs {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: auto;
+      padding: 4px 12px 2px;
+      gap: 20px;
+    }
+    .ac-signs .sign-item {
+      text-align: center;
+      flex: 1;
+      max-width: 42%;
+    }
+    .ac-signs .sign-item .sign-img {
+      height: 32px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 2px;
+      gap: 6px;
+    }
+    .ac-signs .sign-item .sign-img img {
+      max-height: 28px;
+      max-width: 90px;
+    }
+    /* ✅ সিগনেচারের নাম — হাতের লেখার স্টাইল */
+    .ac-signs .sign-item .sign-img .sign-name {
+      font-family: 'Segoe Script', 'Brush Script MT', 'Lucida Handwriting', cursive;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a237e;
+      line-height: 1;
+      white-space: nowrap;
+      padding: 0 4px;
+    }
+    .ac-signs .sign-item .sign-line {
+      border-top: 2px dotted #1a237e;
+      padding-top: 1px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #1a237e;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    /* ============ PRINT ============ */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .ac-header, .ac-body, .info-banner, .cards-actions { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      #app { display: block !important; }
+      .sheet-page {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        padding: 8mm 8mm !important;
+        box-shadow: none !important;
+        page-break-after: always;
+      }
+      .sheet-page:last-child { page-break-after: auto; }
+      .admit-card {
+        border-color: #b8860b !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .ac-head {
+        background: #b71c1c !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .ac-address {
+        background: #0d47a1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .ac-title-pill span {
+        background: #e53935 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    /* ============ MOBILE (view only) ============ */
+    @media (max-width: 900px) {
+      .ac-form { grid-template-columns: 1fr; }
+      .ac-row { grid-template-columns: 1fr; }
+      .ac-row label { text-align: left; }
+      .sheet-page {
+        width: 100%;
+        min-height: auto;
+        padding: 10px;
+      }
+      .admit-card { height: auto; min-height: 200px; }
+      .ac-head .school-name { font-size: 22px; }
+      .ac-head .logo { width: 36px; height: 36px; font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'admit-card.html', 'প্রবেশপত্র');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+
+    /* ============ স্কুল প্রোফাইল লোড ============ */
+    let school = {
+      name: '', address: '', emis: '', logo: '',
+      watermark: '', principal: '', principal_signature: ''
+    };
+    async function loadSchoolProfile() {
+      const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+      if (data) {
+        school = {
+          name: data.institute_name || 'SCHOOL NAME',
+          address: data.address || '',
+          emis: data.ein_no || '',
+          logo: data.school_logo || '',
+          watermark: data.watermark_logo || '',
+          principal: data.principal_name || '',
+          principal_signature: data.principal_signature || '',
+        };
+      }
+    }
+    await loadSchoolProfile();
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div id="searchView">
+        <div class="ac-header">
+          <div class="left">
+            <div class="icon">🎫</div>
+            <div>
+              <h1>Admit Card</h1>
+              <p>Generate & Print Exam Admit Cards (৩টি / পেজ)</p>
+            </div>
+          </div>
+          <button class="ac-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="ac-body">
+          <div class="info-banner" id="schoolInfoBanner"></div>
+
+          <div class="ac-form">
+            <div class="ac-row">
+              <label>Session / Year</label>
+              <select id="sessionYear">
+                ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                  `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="ac-row">
+              <label>Class Name</label>
+              <select id="className"><option value="">-- Select Class --</option></select>
+            </div>
+
+            <div class="ac-row">
+              <label>Section</label>
+              <select id="sectionName"><option value="">All Sections</option></select>
+            </div>
+            <div class="ac-row">
+              <label>Exam Term</label>
+              <select id="examTerm"><option value="">লোড হচ্ছে...</option></select>
+            </div>
+
+            <div class="ac-row">
+              <label>From Roll</label>
+              <input id="fromRoll" type="number" placeholder="শুরু (ঐচ্ছিক)">
+            </div>
+            <div class="ac-row">
+              <label>To Roll</label>
+              <input id="toRoll" type="number" placeholder="শেষ (ঐচ্ছিক)">
+            </div>
+
+            <div class="ac-row">
+              <label>Exam Starting Date</label>
+              <input id="examStartDate" type="date">
+            </div>
+            <div class="ac-row">
+              <label>Exam Time</label>
+              <input id="examTime" placeholder="যেমন: 10:30 AM" value="10:30 AM">
+            </div>
+
+            <div class="ac-row">
+              <label>Exam-In-Charge Name</label>
+              <input id="examInCharge" placeholder="যেমন: G. Mandal">
+            </div>
+            <div class="ac-row">
+              <label>Principal Name</label>
+              <input id="principalName" placeholder="যেমন: G. Mandal">
+            </div>
+
+            <div class="ac-btn-row">
+              <button class="ac-gen-btn" id="genBtn">🎫 Generate Admit Cards</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cardView" style="display:none"></div>
+    `;
+
+    /* ============ Info Banner ============ */
+    (function showSchoolInfo() {
+      const b = document.getElementById('schoolInfoBanner');
+      if (school.name && school.name !== 'SCHOOL NAME') {
+        b.innerHTML = `✅ <b>${esc(school.name)}</b> থেকে হেডার অটো লোড হয়েছে ·
+          <a href="school-profile.html">স্কুল প্রোফাইল এডিট →</a>`;
+      } else {
+        b.className = 'info-banner warn';
+        b.innerHTML = `⚠️ স্কুল প্রোফাইল সেট করা হয়নি ·
+          <a href="school-profile.html">এখনই সেট করুন →</a>`;
+      }
+    })();
+
+    /* ============ Load Data ============ */
+    let allClasses = [];
+
+    async function loadData() {
+      const { data: cls } = await supabase.from('classes').select('*').order('id');
+      allClasses = cls || [];
+      document.getElementById('className').innerHTML =
+        '<option value="">-- Select Class --</option>' +
+        allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+
+      const { data: exams } = await supabase.from('exams')
+        .select('exam_name, exam_serial')
+        .order('exam_serial');
+      const termSel = document.getElementById('examTerm');
+      if (exams && exams.length) {
+        termSel.innerHTML = exams.map(e =>
+          `<option value="${esc(e.exam_name)}">${esc(e.exam_name)}</option>`
+        ).join('');
+      } else {
+        termSel.innerHTML = '<option value="">-- Exam যোগ করুন --</option>';
+      }
+    }
+    await loadData();
+
+    document.getElementById('className').onchange = () => {
+      const cls = allClasses.find(c => c.id == document.getElementById('className').value);
+      const sections = cls?.sections?.length ? cls.sections : [];
+      document.getElementById('sectionName').innerHTML =
+        '<option value="">All Sections</option>' +
+        sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    };
+
+    /* ============ Generate Admit Cards ============ */
+    document.getElementById('genBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const section = document.getElementById('sectionName').value;
+      const term = document.getElementById('examTerm').value;
+      const fromRoll = document.getElementById('fromRoll').value;
+      const toRoll = document.getElementById('toRoll').value;
+      const examStartDate = document.getElementById('examStartDate').value;
+      const examTime = document.getElementById('examTime').value.trim();
+      const examInCharge = document.getElementById('examInCharge').value.trim();
+      const principalName = document.getElementById('principalName').value.trim();
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+      if (!term) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+      const btn = document.getElementById('genBtn');
+      btn.disabled = true; btn.textContent = 'তৈরি হচ্ছে...';
+
+      const cls = allClasses.find(c => c.id == classId);
+
+      let q = supabase.from('students').select('*').eq('class_id', classId);
+      if (section) q = q.eq('section', section);
+      q = q.order('roll');
+      const { data: students, error } = await q;
+      if (error) { btn.disabled = false; btn.textContent = '🎫 Generate Admit Cards'; toast('❌ ' + error.message, 'error'); return; }
+
+      let list = students || [];
+      if (fromRoll) list = list.filter(s => (s.roll || 0) >= +fromRoll);
+      if (toRoll) list = list.filter(s => (s.roll || 0) <= +toRoll);
+
+      if (!list.length) { btn.disabled = false; btn.textContent = '🎫 Generate Admit Cards'; toast('কোনো ছাত্র পাওয়া যায়নি', 'error'); return; }
+
+      btn.disabled = false; btn.textContent = '🎫 Generate Admit Cards';
+
+      renderCards(list, {
+        session, term,
+        className: cls?.class_name || '-',
+        section,
+        examStartDate, examTime,
+        examInCharge, principalName,
+      });
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('cardView').style.display = 'block';
+      toast(`✅ ${list.length}টি Admit Card তৈরি হয়েছে (${Math.ceil(list.length/3)} পেজ)`, 'success');
+    };
+
+    /* ============ Render Cards (3 per A4 page) ============ */
+    function renderCards(students, ctx) {
+      const PAGES = [];
+      for (let i = 0; i < students.length; i += 3) {
+        PAGES.push(students.slice(i, i + 3));
+      }
+
+      const pagesHtml = PAGES.map(pageStudents => `
+        <div class="sheet-page">
+          ${pageStudents.map((s, idx) => renderCard(s, idx + 1, ctx)).join('')}
+        </div>
+      `).join('');
+
+      document.getElementById('cardView').innerHTML = `
+        <div class="ac-header no-print">
+          <div class="left">
+            <div class="icon">🎫</div>
+            <div>
+              <h1>Admit Cards Preview</h1>
+              <p>${esc(ctx.className)} · ${esc(ctx.term)} · ${students.length}টি কার্ড · ${PAGES.length}টি পেজ</p>
+            </div>
+          </div>
+          <button class="ac-back" id="cardBack">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="cards-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF (${students.length}টি)</button>
+          <button class="btn-back2" id="cardBack2">← আবার সার্চ</button>
+        </div>
+
+        <div id="pagesArea">
+          ${pagesHtml}
+        </div>
+      `;
+
+      const back = () => {
+        document.getElementById('cardView').style.display = 'none';
+        document.getElementById('searchView').style.display = 'block';
+      };
+      document.getElementById('cardBack').onclick = back;
+      document.getElementById('cardBack2').onclick = back;
+    }
+
+    /* ============ Render Single Card ============ */
+    function renderCard(s, serial, ctx) {
+      let startDateStr = '';
+      if (ctx.examStartDate) {
+        startDateStr = new Date(ctx.examStartDate).toLocaleDateString('en-GB', {
+          day: '2-digit', month: '2-digit', year: 'numeric'
+        });
+      }
+
+      const headerLogo = school.logo
+        ? `<img src="${school.logo}" alt="logo">`
+        : '🏫';
+
+      const schoolName = (school.name || 'SCHOOL NAME').toUpperCase();
+      const address = (school.address || '').toUpperCase();
+      const termText = (ctx.term || '').toUpperCase();
+
+      // ✅ সিগনেচার ইমেজ + নাম
+      const principalSignImg = school.principal_signature
+        ? `<img src="${school.principal_signature}" alt="sign">`
+        : '';
+      const inChargeName = ctx.examInCharge || '';
+      const principalNameText = ctx.principalName || school.principal || '';
+
+      return `
+        <div class="admit-card">
+          <div class="ac-head">
+            <div class="logo">${headerLogo}</div>
+            <div class="school-name">${esc(schoolName)}</div>
+          </div>
+
+          <div class="ac-address">${esc(address)}</div>
+
+          <div class="ac-inner">
+            <div class="ac-title-pill">
+              <span>ADMIT CARD</span>
+            </div>
+
+            <div class="ac-term">${esc(termText)}</div>
+
+            <div class="ac-info">
+              <div class="ac-info-row">
+                <span class="lbl">Name</span>
+                <span class="dots">${esc(s.name || '')}</span>
+              </div>
+              <div class="ac-info-row double">
+                <span class="lbl">Class</span>
+                <span class="dots">${esc(ctx.className || '')}</span>
+                <span class="lbl" style="min-width:auto;margin-left:14px">Sec</span>
+                <span class="dots">${esc(s.section || '')}</span>
+                <span class="lbl" style="min-width:auto;margin-left:14px">Roll</span>
+                <span class="dots">${esc(s.roll ?? '')}</span>
+              </div>
+            </div>
+
+            <div class="ac-exam-line">
+              Exam. Starting Date - <b>${esc(startDateStr || '__/__/____')}</b>
+              &nbsp;&nbsp; Time - <b>${esc(ctx.examTime || '10:30 AM')}</b>
+            </div>
+
+            <div class="ac-warning">
+              E.B : Bring this Admit Card to the Exam Hall.
+            </div>
+
+            <div class="ac-signs">
+              <div class="sign-item">
+                <div class="sign-img">
+                  ${inChargeName ? `<span class="sign-name">${esc(inChargeName)}</span>` : ''}
+                </div>
+                <div class="sign-line">Sign. of Exam-in-Charge</div>
+              </div>
+              <div class="sign-item">
+                <div class="sign-img">
+                  ${principalSignImg}
+                  ${principalNameText ? `<span class="sign-name">${esc(principalNameText)}</span>` : ''}
+                </div>
+                <div class="sign-line">Sign. of the Principal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

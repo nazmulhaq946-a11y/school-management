@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cash Collection · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --gray-light: #f1f5f9;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 25px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Bengali', -apple-system, sans-serif;
+      background: #f8fafc;
+    }
+
+    /* ============================================================
+       TOP HEADER — Gradient with glassmorphism
+       ============================================================ */
+    .cc-header {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #7c3aed 100%);
+      padding: 22px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .cc-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cc-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60%; left: -5%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cc-header > * { position: relative; z-index: 1; }
+
+    .cc-header .left { display: flex; align-items: center; gap: 16px; }
+    .cc-header .icon-box {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .cc-header h1 {
+      font-size: 22px; font-weight: 800;
+      margin: 0; letter-spacing: -0.3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .cc-header p {
+      font-size: 13px; margin: 4px 0 0 0;
+      opacity: 0.9; font-weight: 500;
+    }
+
+    .cc-header .live-clock {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .cc-header .live-clock .dot {
+      width: 7px; height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .cc-back {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 10px 18px; border-radius: 10px; cursor: pointer;
+      font-weight: 700; font-size: 13.5px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .cc-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .cc-back .arrow {
+      background: white; color: #4f46e5;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+
+    /* ============================================================
+       STUDENT SELECTOR
+       ============================================================ */
+    .selector-wrap {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 140px);
+      padding: 40px 20px;
+    }
+    .selector-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      padding: 40px 36px;
+      max-width: 520px;
+      width: 100%;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .selector-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #6366f1, #7c3aed, #ec4899);
+    }
+    .selector-card .head {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .selector-card .head .big-icon {
+      font-size: 56px;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .selector-card .head h2 {
+      font-size: 24px; font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .selector-card .head p {
+      font-size: 13.5px;
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    .selector-field {
+      margin-bottom: 16px;
+    }
+    .selector-field label {
+      display: block;
+      font-size: 12px;
+      color: var(--gray);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .selector-field select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      color: var(--dark);
+      transition: all 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    .selector-field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+
+    .load-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 8px;
+      box-shadow: 0 8px 20px rgba(99,102,241,0.3);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .load-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(99,102,241,0.4);
+    }
+    .load-btn:active { transform: translateY(0); }
+
+    /* ============================================================
+       MAIN COLLECTION VIEW — Split layout
+       ============================================================ */
+    .collection-view {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      padding: 20px;
+      min-height: calc(100vh - 100px);
+    }
+
+    /* LEFT — Bills */
+    .left-panel {
+      min-width: 0;
+    }
+
+    /* Student hero card */
+    .student-hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .student-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #6366f1, #7c3aed);
+    }
+    .student-hero .photo {
+      width: 88px; height: 104px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      color: #a78bfa;
+    }
+    .student-hero .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .student-hero .info { min-width: 0; }
+    .student-hero .info .name-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .student-hero .info h2 {
+      font-size: 22px; font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+    .student-hero .info .id-badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    .student-hero .info .meta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 6px;
+    }
+    .student-hero .info .meta-row .item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .student-hero .info .meta-row .item b {
+      color: var(--dark);
+      font-weight: 700;
+    }
+    .student-hero .due-tag {
+      background: var(--danger-light);
+      color: #991b1b;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .student-hero .actions-mini {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+    }
+    .mini-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--gray);
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .mini-btn:hover {
+      background: var(--gray-light);
+      color: var(--dark);
+      border-color: var(--primary);
+    }
+    .mini-btn.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .mini-btn.primary:hover { background: var(--primary-dark); }
+
+    /* Bill card container */
+    .bill-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .bill-container-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fafbff 0%, white 100%);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .bill-container-head h3 {
+      font-size: 15px; font-weight: 800;
+      color: var(--dark);
+      display: flex; align-items: center; gap: 8px;
+      letter-spacing: -0.2px;
+    }
+    .bill-container-head h3 .badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* Modern bill row */
+    .bill-row-modern {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 280px 120px 140px;
+      gap: 16px;
+      align-items: center;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .bill-row-modern:last-child { border-bottom: none; }
+    .bill-row-modern:hover { background: #fafbff; }
+    .bill-row-modern.active {
+      background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+      border-left: 4px solid var(--success);
+      padding-left: 18px;
+    }
+
+    .bill-row-modern .bill-info .name {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap;
+    }
+    .bill-row-modern .bill-info .name .type-tag {
+      background: #ede9fe;
+      color: #6d28d9;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .bill-row-modern .bill-info .name .due-tag {
+      background: var(--danger-light);
+      color: #991b1b;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .bill-row-modern .bill-info .sub {
+      font-size: 12px;
+      color: var(--gray);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .bill-row-modern .bill-info .sub .item b {
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    /* Month selector */
+    .month-picker {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .month-picker .row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+    .month-picker .row label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+    .month-picker .row select {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    .month-picker .row select:disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+
+    /* Amount input */
+    .amount-wrap {
+      position: relative;
+    }
+    .amount-wrap::before {
+      content: '৳';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gray);
+      pointer-events: none;
+    }
+    .amount-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 30px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      text-align: right;
+      color: var(--dark);
+      transition: all 0.15s;
+      background: #fafbfc;
+    }
+    .amount-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+    .amount-wrap input.filled {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: #065f46;
+    }
+
+    /* Taken toggle */
+    .taken-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .taken-toggle button {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px dashed #cbd5e1;
+      background: white;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gray);
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .taken-toggle button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .taken-toggle button.active {
+      background: var(--success);
+      color: white;
+      border: 2px solid var(--success);
+    }
+
+    /* Add more button — nice pill */
+    .add-more-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      margin: 20px 0 0;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #78350f;
+      border: 2px dashed #f59e0b;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .add-more-pill:hover {
+      background: linear-gradient(135deg, #fde68a, #fcd34d);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(245,158,11,0.3);
+    }
+    .add-more-pill.hidden { display: none; }
+    .add-more-pill .arrow-icon {
+      background: #78350f;
+      color: #fef3c7;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      transition: transform 0.3s;
+    }
+    .add-more-pill.open .arrow-icon { transform: rotate(180deg); }
+
+    /* Empty state */
+    .no-bill-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--gray);
+    }
+    .no-bill-state .icon-circle {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-bottom: 14px;
+    }
+    .no-bill-state h3 {
+      font-size: 17px; font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .no-bill-state p {
+      font-size: 13.5px;
+      max-width: 320px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       RIGHT SIDEBAR — Summary panel
+       ============================================================ */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 80px;
+      height: fit-content;
+      max-height: calc(100vh - 100px);
+    }
+
+    /* Summary card */
+    .summary-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .summary-head {
+      padding: 18px 22px;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: white;
+    }
+    .summary-head .title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+    .summary-head .big-amount {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      font-family: 'Inter', sans-serif;
+    }
+    .summary-head .big-amount .currency {
+      font-size: 20px;
+      opacity: 0.7;
+      margin-right: 2px;
+    }
+
+    .summary-body {
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .summary-line:last-of-type { border-bottom: none; }
+    .summary-line .lbl {
+      font-size: 13px;
+      color: var(--gray);
+      font-weight: 700;
+    }
+    .summary-line .val {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+    }
+    .summary-line .val.green { color: var(--success); }
+    .summary-line .val.red { color: var(--danger); }
+    .summary-line .val.blue { color: var(--primary); }
+
+    /* Payment method picker */
+    .pm-picker {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .pm-btn {
+      padding: 10px 6px;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--gray);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .pm-btn .pm-icon { font-size: 16px; }
+    .pm-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .pm-btn.selected {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Cash paid input */
+    .cash-row {
+      background: var(--gray-light);
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-top: 4px;
+    }
+    .cash-row .lbl {
+      font-size: 11.5px;
+      color: var(--gray);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .cash-row .cash-input-wrap {
+      position: relative;
+    }
+    .cash-row .cash-input-wrap::before {
+      content: '৳';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--gray);
+    }
+    .cash-row input {
+      width: 100%;
+      padding: 12px 14px 12px 34px;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: right;
+      color: var(--primary-dark);
+      background: white;
+      font-family: 'Inter', sans-serif;
+    }
+    .cash-row input:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    }
+
+    /* Save button */
+    .save-btn-big {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 24px rgba(16,185,129,0.35);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+    .save-btn-big:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(16,185,129,0.45);
+    }
+    .save-btn-big:disabled {
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* SMS toggle */
+    .sms-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-radius: 12px;
+      border: 1px solid #a7f3d0;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sms-toggle:hover { border-color: var(--success); }
+    .sms-toggle input {
+      width: 18px; height: 18px;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+    .sms-toggle .lbl {
+      font-size: 13px;
+      font-weight: 800;
+      color: #065f46;
+    }
+    .sms-toggle .sub {
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    /* Empty state for right panel */
+    .empty-summary {
+      padding: 24px;
+      text-align: center;
+      color: var(--gray);
+    }
+    .empty-summary .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+    .empty-summary p {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       RECEIPT MODAL
+       ============================================================ */
+    .receipt-modal {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(15,23,42,0.75);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .receipt-modal-inner {
+      background: #e5e7eb; border-radius: 16px;
+      width: 100%; max-width: 800px; padding: 20px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalIn 0.3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .receipt-actions-top {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px dashed #d1d5db;
+    }
+    .receipt-actions-top button {
+      padding: 12px 26px; border-radius: 10px;
+      font-weight: 800; font-size: 14px; cursor: pointer; border: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.15s;
+    }
+    .btn-print { background: var(--success); color: white; }
+    .btn-print:hover { background: #059669; transform: translateY(-1px); }
+    .btn-close-r { background: #64748b; color: white; }
+    .btn-close-r:hover { background: #475569; }
+
+    .receipt-copies { display: flex; flex-direction: column; gap: 0; }
+    .receipt-copy {
+      background: white; padding: 16px 20px 14px;
+      color: #000;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      border: 2px solid #1e1b4b; border-radius: 6px;
+      position: relative;
+    }
+    .receipt-copy + .receipt-copy { border-top: none; border-radius: 0 0 6px 6px; }
+    .receipt-copies .receipt-copy:first-child { border-radius: 6px 6px 0 0; }
+    .cut-line {
+      display: flex; align-items: center; gap: 8px;
+      padding: 3px 0; font-size: 11px; color: #9ca3af;
+      font-style: italic; font-family: 'Arial', sans-serif;
+    }
+    .cut-line::before, .cut-line::after {
+      content: ''; flex: 1; border-top: 1.5px dashed #9ca3af;
+    }
+    .cut-line span { padding: 0 6px; white-space: nowrap; }
+    .copy-badge {
+      position: absolute; top: 8px; right: 10px;
+      padding: 3px 12px; border-radius: 4px;
+      font-family: 'Arial', sans-serif;
+      font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .copy-badge.student { background: #d1fae5; color: #065f46; border: 1px solid #16a34a; }
+    .copy-badge.office { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; }
+
+    .rc-head {
+      text-align: center; border-bottom: 2px double #1e1b4b;
+      padding-bottom: 6px; margin-bottom: 8px;
+    }
+    .rc-head h1 { font-size: 18px; font-weight: 800; color: #1e1b4b; margin: 0; letter-spacing: 0.4px; text-transform: uppercase; }
+    .rc-head p { font-size: 10.5px; color: #374151; margin: 2px 0 0 0; }
+    .rc-title {
+      background: #d1fae5; text-align: center; padding: 4px;
+      font-weight: 800; letter-spacing: 2px; color: #065f46;
+      margin-bottom: 8px; border-radius: 3px; font-size: 12px;
+      font-family: 'Arial', sans-serif;
+    }
+    .rc-info {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3px 20px; font-size: 11px; margin-bottom: 8px;
+    }
+    .rc-info .row {
+      display: flex; justify-content: space-between;
+      padding: 2px 0; border-bottom: 1px dotted #9ca3af;
+    }
+    .rc-info .row .lbl { font-weight: 700; color: #374151; }
+    .rc-info .row .val { font-weight: 700; color: #000; }
+    .rc-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 11px; margin-top: 6px;
+    }
+    .rc-table th, .rc-table td {
+      border: 1px solid #000; padding: 4px 8px; text-align: left;
+    }
+    .rc-table th { background: #f3f4f6; font-weight: 700; font-size: 10.5px; }
+    .rc-table td.money { text-align: right; font-weight: 700; }
+    .rc-table tr.total-row td { background: #d1fae5; font-weight: 800; font-size: 12px; }
+    .rc-words {
+      margin-top: 8px; font-size: 11px; font-style: italic;
+      color: #374151; padding: 5px 8px; background: #f9fafb;
+      border-left: 3px solid #16a34a; border-radius: 3px;
+    }
+    .rc-words b { font-style: normal; color: #000; }
+    .rc-signs {
+      display: flex; justify-content: space-between;
+      margin-top: 28px; font-size: 10.5px;
+      font-weight: 700; font-family: 'Arial', sans-serif;
+    }
+    .rc-signs > div {
+      border-top: 1px solid #000; padding-top: 3px;
+      min-width: 130px; text-align: center;
+    }
+    .rc-footer-note {
+      text-align: center; font-size: 9.5px; color: #6b7280;
+      margin-top: 10px; font-style: italic;
+    }
+
+    /* Success animation */
+    .success-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(15,23,42,0.9);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .success-content {
+      text-align: center;
+      color: white;
+    }
+    .success-circle {
+      width: 120px; height: 120px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 60px;
+      margin: 0 auto 20px;
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    .success-content h2 {
+      font-size: 24px; font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .success-content p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Print styles */
+    @media print {
+      @page { size: A4 portrait; margin: 8mm; }
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .cc-header, .collection-view, .receipt-actions-top { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      .receipt-modal { position: static; background: white; padding: 0; display: block; }
+      .receipt-modal-inner { max-width: 100%; padding: 0; box-shadow: none; border-radius: 0; background: white; }
+      .receipt-copy { page-break-inside: avoid; border: 1.5px solid #1e1b4b !important; border-radius: 6px !important; margin: 0 !important; }
+      .receipt-copy + .receipt-copy { margin-top: 10px !important; border-top: 1.5px solid #1e1b4b !important; border-radius: 6px !important; }
+      .rc-title { background: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .rc-table th { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .rc-table tr.total-row td { background: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .copy-badge.student { background: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .copy-badge.office { background: #fef3c7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .rc-words { background: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cut-line { display: none !important; }
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .collection-view { grid-template-columns: 1fr; }
+      .right-panel { position: static; max-height: none; }
+    }
+
+    @media (max-width: 768px) {
+      .cc-header { padding: 16px 18px; }
+      .cc-header h1 { font-size: 17px; }
+      .cc-header .icon-box { width: 44px; height: 44px; font-size: 22px; }
+      .cc-header .live-clock { display: none; }
+      .collection-view { padding: 12px; gap: 12px; }
+      .student-hero {
+        grid-template-columns: 70px 1fr;
+        padding: 16px;
+      }
+      .student-hero .photo { width: 70px; height: 84px; }
+      .student-hero .info h2 { font-size: 17px; }
+      .student-hero .actions-mini { grid-column: 1 / -1; flex-direction: row; }
+      .student-hero .actions-mini .mini-btn { flex: 1; justify-content: center; }
+
+      .bill-row-modern {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 16px;
+      }
+      .bill-row-modern.active { padding-left: 12px; }
+      .month-picker .row { grid-template-columns: 60px 1fr; }
+
+      .selector-card { padding: 28px 22px; }
+      .selector-card .head .big-icon { font-size: 44px; }
+      .selector-card .head h2 { font-size: 20px; }
+      .selector-card select { padding: 12px 14px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, logAction, getSchoolProfile } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'fee-management.html', 'Cash Collection');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+    const school = await getSchoolProfile();
+
+    let allClasses = [];
+    let allFeeTypes = [];
+    let allStudents = [];
+    let currentStudent = null;
+    let currentMethod = 'cash';
+
+    /* ============ Initial UI ============ */
+    content.innerHTML = `
+      <div class="cc-header">
+        <div class="left">
+          <div class="icon-box">💰</div>
+          <div>
+            <h1>Cash Collection</h1>
+            <p>Money Receipt & Fee Management
+              <span class="live-clock">
+                <span class="dot"></span>
+                <span id="liveTime">--:--</span>
+              </span>
+            </p>
+          </div>
+        </div>
+        <a class="cc-back" href="dashboard.html">
+          Back <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <div id="viewArea"></div>
+    `;
+
+    /* ============ Live Clock ============ */
+    function updateClock() {
+      const el = document.getElementById('liveTime');
+      if (el) {
+        el.textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    /* ============ Load Base ============ */
+    async function loadBase() {
+      const [c, t] = await Promise.all([
+        supabase.from('classes').select('*').order('sort_order').order('id'),
+        supabase.from('fee_types').select('*')
+          .eq('account_type', 'income').eq('is_active', true)
+          .order('account_no'),
+      ]);
+      allClasses = c.data || [];
+      allFeeTypes = t.data || [];
+    }
+    await loadBase();
+
+    /* ============ Render Selector ============ */
+    function renderSelector() {
+      const viewArea = document.getElementById('viewArea');
+      viewArea.innerHTML = `
+        <div class="selector-wrap">
+          <div class="selector-card">
+            <div class="head">
+              <span class="big-icon">🎓</span>
+              <h2>ছাত্র সিলেক্ট করুন</h2>
+              <p>ক্লাস ও ছাত্র নির্বাচন করে ফি সংগ্রহ শুরু করুন</p>
+            </div>
+
+            <div class="selector-field">
+              <label>Class</label>
+              <select id="sel_class">
+                <option value="">-- Class সিলেক্ট করুন --</option>
+                ${allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('')}
+              </select>
+            </div>
+
+            <div class="selector-field">
+              <label>Section</label>
+              <select id="sel_section">
+                <option value="">All Sections</option>
+              </select>
+            </div>
+
+            <div class="selector-field">
+              <label>ছাত্র</label>
+              <select id="sel_student">
+                <option value="">-- আগে Class সিলেক্ট করুন --</option>
+              </select>
+            </div>
+
+            <button class="load-btn" id="loadBtn">
+              <span>📄</span>
+              <span>Bills লোড করুন</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      const selClass = document.getElementById('sel_class');
+      const selSection = document.getElementById('sel_section');
+      const selStudent = document.getElementById('sel_student');
+
+      selClass.onchange = async () => {
+        const classId = selClass.value;
+        const cls = allClasses.find(c => String(c.id) === classId);
+
+        selSection.innerHTML = '<option value="">All Sections</option>' +
+          ((cls?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+
+        if (!classId) {
+          selStudent.innerHTML = '<option value="">-- আগে Class সিলেক্ট করুন --</option>';
+          return;
+        }
+
+        selStudent.innerHTML = '<option value="">লোড হচ্ছে...</option>';
+        const { data } = await supabase.from('students').select('*')
+          .or('is_deleted.is.null,is_deleted.eq.false')
+          .eq('class_id', classId).order('roll');
+        allStudents = data || [];
+
+        selStudent.innerHTML = '<option value="">-- ছাত্র সিলেক্ট করুন --</option>' +
+          allStudents.map(s =>
+            `<option value="${s.id}">${esc(s.name)} · Roll ${esc(s.roll ?? '-')} · ${esc(s.student_index || '')}</option>`
+          ).join('');
+      };
+
+      document.getElementById('loadBtn').onclick = async () => {
+        const sid = selStudent.value;
+        if (!sid) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+        const student = allStudents.find(s => String(s.id) === sid);
+        if (!student) return;
+
+        const session = CURRENT_YEAR;
+
+        const { data: existing } = await supabase.from('fee_payments')
+          .select('*').eq('student_index', student.student_index);
+
+        const { data: structure } = await supabase.from('fee_structure')
+          .select('*').eq('session_year', session).eq('class_id', student.class_id);
+
+        const structureMap = {};
+        (structure || []).forEach(s => structureMap[s.fee_type_id] = +s.amount || 0);
+
+        const alreadyPaid = {};
+        (existing || []).forEach(p => {
+          const key = p.fee_type_id + '|' + (p.fee_month || '');
+          if (!alreadyPaid[key]) alreadyPaid[key] = { amount: 0, paid: 0, due: 0 };
+          alreadyPaid[key].amount += +p.amount || 0;
+          alreadyPaid[key].paid += +p.paid_amount || 0;
+          alreadyPaid[key].due = Math.max(0, alreadyPaid[key].amount - alreadyPaid[key].paid);
+        });
+
+        currentStudent = student;
+        renderCollectionView(student, existing || [], structureMap, alreadyPaid);
+      };
+    }
+
+    /* ============================================================
+       RENDER COLLECTION VIEW — Modern split layout
+       ============================================================ */
+    function renderCollectionView(student, payments, structureMap, alreadyPaid) {
+      const cls = allClasses.find(c => c.id == student.class_id);
+      const today = new Date().toISOString().slice(0, 10);
+
+      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const monthOptions = monthNames.map(m => `<option value="${m}">${m}</option>`).join('');
+
+      /* Build rows */
+      const allRows = allFeeTypes.map(ft => {
+        const charged = structureMap[ft.id] || 0;
+        const isMonthly = ft.is_monthly;
+        let totalDue = 0, totalPaid = 0;
+        Object.entries(alreadyPaid).forEach(([k, v]) => {
+          const [ftId] = k.split('|');
+          if (String(ftId) === String(ft.id)) {
+            totalDue += v.due;
+            totalPaid += v.paid;
+          }
+        });
+        const isTracked = charged > 0 || totalDue > 0 || totalPaid > 0;
+        return { ft, charged, isMonthly, due: totalDue, paid: totalPaid, isTracked };
+      });
+
+      const primaryRows = allRows.filter(r => r.isTracked);
+      const extraRows = allRows.filter(r => !r.isTracked);
+
+      const primaryHtml = primaryRows.map((r, i) => renderModernRow(r, i, monthOptions)).join('');
+      const extraHtml = extraRows.map((r, i) => renderModernRow(r, i, monthOptions)).join('');
+
+      const noPrimary = primaryRows.length === 0 ? `
+        <div class="no-bill-state">
+          <div class="icon-circle">📭</div>
+          <h3>এই ছাত্রের কোনো Tracked Bill নেই</h3>
+          <p>নিচের "Add More Bill" থেকে যেকোনো ফি যোগ করে আদায় করুন</p>
+        </div>
+      ` : '';
+
+      document.getElementById('viewArea').innerHTML = `
+        <div class="collection-view">
+          <!-- LEFT PANEL -->
+          <div class="left-panel">
+
+            <!-- Student Hero -->
+            <div class="student-hero">
+              <div class="photo">
+                ${student.student_photo ? `<img src="${student.student_photo}" alt="">` : '👤'}
+              </div>
+              <div class="info">
+                <div class="name-row">
+                  <h2>${esc(student.name)}</h2>
+                  <span class="id-badge">${esc(student.student_index || student.student_id || '-')}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="item">🏫 <b>${esc(cls?.class_name || '-')}</b></span>
+                  <span class="item">📚 Sec <b>${esc(student.section || '-')}</b></span>
+                  <span class="item">🔢 Roll <b>${esc(student.roll ?? '-')}</b></span>
+                  ${student.group_name ? `<span class="item">📖 <b>${esc(student.group_name)}</b></span>` : ''}
+                  ${student.father_name ? `<span class="item">👨 <b>${esc(student.father_name)}</b></span>` : ''}
+                  ${student.guardian_phone ? `<span class="item">📞 <b>${esc(student.guardian_phone)}</b></span>` : ''}
+                </div>
+              </div>
+              <div class="actions-mini">
+                <button class="mini-btn" id="changeStuBtn">🔄 ছাত্র পরিবর্তন</button>
+                <button class="mini-btn primary" id="recordBtn">📊 Payment Record</button>
+              </div>
+            </div>
+
+            <!-- Bills Container -->
+            <div class="bill-container">
+              <div class="bill-container-head">
+                <h3>💵 Tracked Bills <span class="badge">${primaryRows.length}</span></h3>
+                <span style="font-size:12px;color:var(--gray);font-weight:600">Collection Date:
+                  <input type="date" id="collected_date" value="${today}" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;margin-left:6px">
+                </span>
+              </div>
+
+              ${noPrimary}
+
+              <div id="primaryBills">
+                ${primaryHtml}
+              </div>
+
+              ${extraRows.length > 0 ? `
+                <div style="padding:20px 22px">
+                  <button class="add-more-pill" id="addMoreBtn">
+                    <span class="arrow-icon">▾</span>
+                    <span>Add More Bill (${extraRows.length}টি আরো আছে)</span>
+                  </button>
+
+                  <div id="addMoreBox" style="display:none;margin-top:16px">
+                    <div style="padding:12px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;margin-bottom:12px;font-size:12.5px;font-weight:700;color:#78350f">
+                      📋 সব Additional Bills — যেটা দরকার সেটার Amount লিখুন
+                    </div>
+                    <div id="extraBills">
+                      ${extraHtml}
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- RIGHT PANEL -->
+          <div class="right-panel">
+
+            <!-- Summary Card -->
+            <div class="summary-card">
+              <div class="summary-head">
+                <div class="title">Total Amount</div>
+                <div class="big-amount">
+                  <span class="currency">৳</span><span id="totalBig">0</span>
+                </div>
+              </div>
+              <div class="summary-body">
+                <div class="summary-line">
+                  <span class="lbl">Items</span>
+                  <span class="val" id="totalItems">0</span>
+                </div>
+                <div class="summary-line">
+                  <span class="lbl">Discount</span>
+                  <span class="val red" id="totalDisc">৳ 0</span>
+                </div>
+                <div class="summary-line">
+                  <span class="lbl">Net Payable</span>
+                  <span class="val blue" id="totalNet">৳ 0</span>
+                </div>
+
+                <div class="cash-row">
+                  <span class="lbl">Cash Paid</span>
+                  <div class="cash-input-wrap">
+                    <input type="number" id="cashPaidInput" value="0" min="0">
+                  </div>
+                </div>
+
+                <div class="pm-picker">
+                  <button class="pm-btn selected" data-method="cash">
+                    <span class="pm-icon">💵</span>
+                    <span>Cash</span>
+                  </button>
+                  <button class="pm-btn" data-method="bkash">
+                    <span class="pm-icon">📱</span>
+                    <span>bKash</span>
+                  </button>
+                  <button class="pm-btn" data-method="nagad">
+                    <span class="pm-icon">💳</span>
+                    <span>Nagad</span>
+                  </button>
+                </div>
+
+                <label class="sms-toggle">
+                  <input type="checkbox" id="smsChk">
+                  <div>
+                    <div class="lbl">📱 Send SMS</div>
+                    <div class="sub">Guardian কে জানান</div>
+                  </div>
+                </label>
+
+                <button class="save-btn-big" id="saveBtn" disabled>
+                  💾 Save & Print Receipt
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      attachModernHandlers();
+      recalc();
+    }
+
+    /* ============ Render Modern Bill Row ============ */
+    function renderModernRow(r, idx, monthOptions) {
+      const ft = r.ft;
+      const rowId = 'row-' + ft.id;
+
+      return `
+        <div class="bill-row-modern" data-rowid="${rowId}" data-ft-id="${ft.id}" data-is-monthly="${r.isMonthly}">
+          <div class="bill-info">
+            <div class="name">
+              ${esc(ft.type_name)}
+              ${ft.is_monthly ? '<span class="type-tag">Monthly</span>' : ''}
+              ${r.due > 0 ? `<span class="due-tag">Due ৳${r.due}</span>` : ''}
+            </div>
+            <div class="sub">
+              <span class="item">Charged: <b>৳ ${r.charged || 0}</b></span>
+              ${r.paid > 0 ? `<span class="item">Paid: <b>৳ ${r.paid}</b></span>` : ''}
+              ${r.due > 0 ? `<span class="item" style="color:#dc2626">Due: <b>৳ ${r.due}</b></span>` : ''}
+            </div>
+          </div>
+
+          <div class="month-picker">
+            <div class="row">
+              <label>From</label>
+              <select class="from-month" ${r.isMonthly ? '' : 'disabled'}>
+                ${r.isMonthly ? monthOptions : '<option>--</option>'}
+              </select>
+            </div>
+            <div class="row">
+              <label>To</label>
+              <select class="to-month" ${r.isMonthly ? '' : 'disabled'}>
+                ${r.isMonthly ? monthOptions : '<option>--</option>'}
+              </select>
+            </div>
+          </div>
+
+          <div class="amount-wrap">
+            <input type="number" class="amount-input" min="0" value="" placeholder="0" data-charged="${r.charged}" data-due="${r.due}">
+          </div>
+
+          <div class="taken-toggle">
+            <button class="taken-btn" data-rowid="${rowId}">
+              <span class="t-icon">＋</span>
+              <span class="t-text">Taken</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Attach handlers ============ */
+    function attachModernHandlers() {
+      document.getElementById('changeStuBtn').onclick = () => renderSelector();
+      document.getElementById('recordBtn').onclick = () => {
+        window.location.href = 'fee-due-report.html';
+      };
+
+      // Add more toggle
+      const addMoreBtn = document.getElementById('addMoreBtn');
+      const addMoreBox = document.getElementById('addMoreBox');
+      if (addMoreBtn && addMoreBox) {
+        addMoreBtn.onclick = () => {
+          const isOpen = addMoreBox.style.display === 'block';
+          if (isOpen) {
+            addMoreBox.style.display = 'none';
+            addMoreBtn.classList.remove('open');
+          } else {
+            addMoreBox.style.display = 'block';
+            addMoreBtn.classList.add('open');
+          }
+        };
+      }
+
+      // Amount inputs
+      document.querySelectorAll('.amount-input').forEach(inp => {
+        inp.oninput = recalc;
+        inp.onfocus = () => {
+          if (!inp.value) {
+            const due = +inp.dataset.due || 0;
+            const charged = +inp.dataset.charged || 0;
+            const auto = due > 0 ? due : charged;
+            if (auto > 0) { inp.value = auto; recalc(); }
+          }
+        };
+      });
+
+      // Taken buttons
+      document.querySelectorAll('.taken-btn').forEach(btn => {
+        btn.onclick = () => {
+          const row = btn.closest('.bill-row-modern');
+          const amtInp = row.querySelector('.amount-input');
+          const due = +amtInp.dataset.due || 0;
+          const charged = +amtInp.dataset.charged || 0;
+
+          const isActive = btn.classList.contains('active');
+
+          if (isActive) {
+            btn.classList.remove('active');
+            btn.querySelector('.t-icon').textContent = '＋';
+            btn.querySelector('.t-text').textContent = 'Taken';
+            row.classList.remove('active');
+            amtInp.value = '';
+          } else {
+            btn.classList.add('active');
+            btn.querySelector('.t-icon').textContent = '✓';
+            btn.querySelector('.t-text').textContent = 'Taken ✓';
+            row.classList.add('active');
+            const auto = due > 0 ? due : charged;
+            if (auto > 0) amtInp.value = auto;
+          }
+          recalc();
+        };
+      });
+
+      // Payment method picker
+      document.querySelectorAll('.pm-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.pm-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          currentMethod = btn.dataset.method;
+        };
+      });
+
+      // Save
+      document.getElementById('saveBtn').onclick = saveBills;
+    }
+
+    /* ============ Recalculate ============ */
+    function recalc() {
+      let total = 0;
+      let discount = 0;
+      let items = 0;
+
+      document.querySelectorAll('.bill-row-modern').forEach(row => {
+        const amountInp = row.querySelector('.amount-input');
+        const amt = +amountInp.value || 0;
+
+        // Get discount from row (not in new UI — always 0)
+        const disc = 0;
+
+        if (amt > 0) {
+          total += amt;
+          discount += disc;
+          items++;
+          amountInp.classList.add('filled');
+        } else {
+          amountInp.classList.remove('filled');
+        }
+      });
+
+      document.getElementById('totalBig').textContent = total.toLocaleString();
+      document.getElementById('totalItems').textContent = items;
+      document.getElementById('totalDisc').textContent = '৳ ' + discount.toLocaleString();
+      document.getElementById('totalNet').textContent = '৳ ' + Math.max(0, total - discount).toLocaleString();
+      document.getElementById('cashPaidInput').value = Math.max(0, total - discount);
+
+      document.getElementById('saveBtn').disabled = total <= 0;
+    }
+
+    /* ============ Save Bills ============ */
+    async function saveBills() {
+      const student = currentStudent;
+      if (!student) return;
+
+      const collectedDate = document.getElementById('collected_date').value;
+      const smsChk = document.getElementById('smsChk').checked;
+
+      const toSave = [];
+
+      document.querySelectorAll('.bill-row-modern').forEach(row => {
+        const amt = +row.querySelector('.amount-input').value || 0;
+        if (amt <= 0) return;
+
+        const ftId = +row.dataset.ftId;
+        const isMonthly = row.dataset.isMonthly === 'true';
+        const fromMonth = row.querySelector('.from-month')?.value;
+        const toMonth = row.querySelector('.to-month')?.value;
+        const ft = allFeeTypes.find(x => x.id === ftId);
+        const charged = +row.querySelector('.amount-input').dataset.charged || 0;
+
+        if (isMonthly && fromMonth && toMonth && fromMonth !== toMonth) {
+          const months = [];
+          const start = new Date(`${fromMonth} 1, ${CURRENT_YEAR}`);
+          const end = new Date(`${toMonth} 1, ${CURRENT_YEAR}`);
+          let cur = new Date(start);
+          while (cur <= end) {
+            months.push(cur.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+            cur.setMonth(cur.getMonth() + 1);
+          }
+          months.forEach((m, i) => {
+            toSave.push({
+              ftId, ftName: ft?.type_name || '-',
+              amount: charged || amt,
+              paid: i === 0 ? amt : 0,
+              month: m, isMonthly: true,
+            });
+          });
+        } else {
+          toSave.push({
+            ftId, ftName: ft?.type_name || '-',
+            amount: charged || amt,
+            paid: amt,
+            month: isMonthly ? (fromMonth || null) : null,
+            isMonthly,
+          });
+        }
+      });
+
+      if (!toSave.length) { toast('কোনো Amount লেখা হয়নি', 'error'); return; }
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ সেভ হচ্ছে...';
+
+      const { data: rcptBase } = await supabase.rpc('generate_receipt_no');
+      const baseReceipt = rcptBase || ('RCP-' + Date.now());
+
+      let saved = 0;
+      const savedItems = [];
+
+      for (let i = 0; i < toSave.length; i++) {
+        const t = toSave[i];
+        const receiptNo = toSave.length === 1 ? baseReceipt : baseReceipt + '-' + (i + 1);
+
+        const payload = {
+          receipt_no: receiptNo,
+          session_year: CURRENT_YEAR,
+          student_id: student.student_id || student.student_index,
+          student_index: student.student_index,
+          student_name: student.name,
+          class_id: student.class_id,
+          class_name: allClasses.find(c => c.id == student.class_id)?.class_name || '',
+          section: student.section,
+          fee_type_id: t.ftId,
+          fee_type_name: t.ftName,
+          fee_month: t.month,
+          amount: t.amount,
+          discount: 0,
+          paid_amount: t.paid,
+          payment_date: collectedDate,
+          payment_method: currentMethod,
+          remarks: null,
+          collected_by: profile.full_name,
+          fee_status: t.paid >= t.amount ? 'paid' : (t.paid > 0 ? 'partial' : 'due'),
+        };
+
+        const { error } = await supabase.from('fee_payments').insert(payload);
+        if (!error) {
+          saved++;
+          savedItems.push({
+            ...payload,
+            student_father: student.father_name,
+            student_roll: student.roll,
+          });
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '💾 Save & Print Receipt';
+
+      if (!saved) { toast('❌ কোনো পেমেন্ট সেভ হয়নি', 'error'); return; }
+
+      await logAction('create', 'fee_payments', baseReceipt, `${saved}টি ফি সংগ্রহ — ${student.name}`);
+
+      // Success animation
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-overlay';
+      successDiv.innerHTML = `
+        <div class="success-content">
+          <div class="success-circle">✓</div>
+          <h2>সফলভাবে সেভ হয়েছে!</h2>
+          <p>${saved}টি বিল · রিসিট: ${baseReceipt}</p>
+        </div>
+      `;
+      document.body.appendChild(successDiv);
+
+      setTimeout(() => {
+        successDiv.remove();
+        showReceipt(savedItems);
+      }, 1200);
+
+      if (smsChk) toast('📱 SMS পাঠানো হবে (ডেমো)', 'success');
+    }
+
+    /* ============ Receipt ============ */
+    function showReceipt(payments) {
+      const first = payments[0];
+      const todayStr = new Date(first.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      const totalAmount = payments.reduce((s, p) => s + (+p.amount || 0), 0);
+      const totalPaid = payments.reduce((s, p) => s + (+p.paid_amount || 0), 0);
+
+      const merged = {
+        ...first,
+        amount: totalAmount,
+        discount: 0,
+        paid_amount: totalPaid,
+        items: payments.map(p => ({
+          name: p.fee_type_name,
+          month: p.fee_month,
+          amount: p.amount,
+          discount: 0,
+          paid: p.paid_amount,
+        })),
+      };
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'receipt-modal';
+      modalDiv.innerHTML = `
+        <div class="receipt-modal-inner">
+          <div class="receipt-actions-top no-print">
+            <button class="btn-close-r" onclick="this.closest('.receipt-modal').remove()">✕ বন্ধ করুন</button>
+            <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF (২ কপি)</button>
+          </div>
+          <div class="receipt-copies">
+            ${renderCopy('student', 'Student Copy', merged, todayStr)}
+            <div class="cut-line no-print"><span>✂ কাটার লাইন / Cut Here</span></div>
+            ${renderCopy('office', 'Office Copy', merged, todayStr)}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+    }
+
+    function renderCopy(type, label, payment, todayStr) {
+      const words = numberToWords(payment.paid_amount || 0);
+      const items = payment.items || [];
+
+      return `
+        <div class="receipt-copy">
+          <div class="copy-badge ${type}">${label}</div>
+          <div class="rc-head">
+            <h1>${esc(school.name).toUpperCase()}</h1>
+            <p>${esc(school.address)}${school.emis ? ' · EMIS: ' + esc(school.emis) : ''}</p>
+          </div>
+          <div class="rc-title">MONEY RECEIPT</div>
+          <div class="rc-info">
+            <div class="row"><span class="lbl">Receipt No:</span><span class="val">${esc(payment.receipt_no || '-')}</span></div>
+            <div class="row"><span class="lbl">Date:</span><span class="val">${esc(todayStr)}</span></div>
+            <div class="row"><span class="lbl">Student ID:</span><span class="val">${esc(payment.student_index || '-')}</span></div>
+            <div class="row"><span class="lbl">Student Name:</span><span class="val">${esc(payment.student_name || '-')}</span></div>
+            <div class="row"><span class="lbl">Class:</span><span class="val">${esc(payment.class_name || '-')}</span></div>
+            <div class="row"><span class="lbl">Section:</span><span class="val">${esc(payment.section || '-')}</span></div>
+            ${payment.student_roll ? `<div class="row"><span class="lbl">Roll No:</span><span class="val">${esc(payment.student_roll)}</span></div>` : ''}
+            ${payment.student_father ? `<div class="row"><span class="lbl">Father:</span><span class="val">${esc(payment.student_father)}</span></div>` : ''}
+          </div>
+          <table class="rc-table">
+            <thead>
+              <tr>
+                <th style="width:28px">#</th>
+                <th>Particulars</th>
+                <th style="width:90px;text-align:right">Amount</th>
+                <th style="width:90px;text-align:right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map((it, i) => `
+                <tr>
+                  <td style="text-align:center">${i + 1}</td>
+                  <td>${esc(it.name || '-')}${it.month ? ' — <b>' + esc(it.month) + '</b>' : ''}</td>
+                  <td class="money">${it.amount || 0}</td>
+                  <td class="money">${it.paid || 0}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td colspan="2">Total Paid (${(payment.payment_method || 'cash').toUpperCase()})</td>
+                <td class="money">${payment.amount || 0}</td>
+                <td class="money">৳ ${payment.paid_amount || 0}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rc-words"><b>In Words:</b> ${esc(words)}</div>
+          <div class="rc-signs">
+            <div>Collected By<br>${esc(payment.collected_by || '')}</div>
+            <div>Guardian's Signature</div>
+            <div>Authorized Signature</div>
+          </div>
+          <div class="rc-footer-note">This is a computer-generated receipt.</div>
+        </div>
+      `;
+    }
+
+    function numberToWords(num) {
+      num = Math.floor(+num || 0);
+      if (num === 0) return 'Zero Taka Only';
+      const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+      const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+      function toWords(n) {
+        if (n < 20) return ones[n];
+        if (n < 100) return tens[Math.floor(n/10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+        if (n < 1000) return ones[Math.floor(n/100)] + ' Hundred' + (n % 100 ? ' ' + toWords(n % 100) : '');
+        if (n < 100000) return toWords(Math.floor(n/1000)) + ' Thousand' + (n % 1000 ? ' ' + toWords(n % 1000) : '');
+        if (n < 10000000) return toWords(Math.floor(n/100000)) + ' Lakh' + (n % 100000 ? ' ' + toWords(n % 100000) : '');
+        return toWords(Math.floor(n/10000000)) + ' Crore' + (n % 10000000 ? ' ' + toWords(n % 10000000) : '');
+      }
+      return toWords(num) + ' Taka Only';
+    }
+
+    /* ============ INIT ============ */
+    renderSelector();
+
+  </script>
+</body>
+</html>

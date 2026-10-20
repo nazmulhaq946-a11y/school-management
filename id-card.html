@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ID Card · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============ PAGE HEADER ============ */
+    .id-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #7c3aed;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .id-header .left { display: flex; align-items: center; gap: 14px; }
+    .id-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .id-header h1 { color: #7c3aed; font-size: 22px; margin: 0; font-weight: 700; }
+    .id-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .id-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .id-back:hover { background: #111827; }
+    .id-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* ============ BODY ============ */
+    .id-body {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .id-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 1000px; margin: 0 auto;
+    }
+    .id-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .id-row label {
+      color: #374151; font-weight: 700; font-size: 13.5px; text-align: right;
+    }
+    .id-row input, .id-row select {
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white;
+    }
+    .id-row input:focus, .id-row select:focus { outline: none; border-color: #7c3aed; }
+
+    /* Tabs */
+    .id-tabs {
+      display: flex; gap: 4px; background: #f3f4f6;
+      padding: 5px; border-radius: 8px; margin-bottom: 20px;
+      max-width: 400px; margin-left: auto; margin-right: auto;
+    }
+    .id-tabs button {
+      flex: 1;
+      padding: 9px 20px; background: transparent; border: none;
+      border-radius: 6px; cursor: pointer; font-weight: 700;
+      font-size: 13.5px; color: #6b7280; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .id-tabs button.active {
+      background: white; color: #7c3aed;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .id-btn-row {
+      grid-column: 1 / -1;
+      display: flex; gap: 14px; justify-content: center;
+      margin-top: 14px; flex-wrap: wrap;
+    }
+    .id-gen-btn {
+      background: #7c3aed; color: white; border: none;
+      padding: 12px 34px; border-radius: 6px;
+      font-weight: 700; font-size: 14.5px; cursor: pointer;
+      box-shadow: 0 2px 6px rgba(124,58,237,0.3);
+    }
+    .id-gen-btn:hover { background: #6d28d9; }
+    .id-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .id-gen-btn.secondary { background: #6b7280; }
+    .id-gen-btn.secondary:hover { background: #4b5563; }
+
+    /* ============ INFO BANNER ============ */
+    .info-banner {
+      background: #d1fae5; border-left: 4px solid #16a34a;
+      padding: 12px 16px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 13px; color: #065f46;
+    }
+    .info-banner.warn { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
+    .info-banner a { color: #1e3a8a; font-weight: 700; }
+
+    /* ============ PREVIEW ACTIONS ============ */
+    .pv-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .pv-actions button {
+      padding: 11px 26px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .btn-print { background: #16a34a; color: white; }
+    .btn-print:hover { background: #15803d; }
+    .btn-back2 { background: #6b7280; color: white; }
+    .btn-back2:hover { background: #4b5563; }
+
+    /* ============ SHEET LAYOUT ============ */
+    .sheet-page {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 20px;
+      padding: 12mm 10mm;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6mm;
+      justify-content: center;
+      align-content: flex-start;
+    }
+
+    /* ============ ID CARD ============ */
+    .id-card-wrap {
+      width: 85mm;
+      height: 120mm;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .id-card {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      font-family: 'Segoe UI', 'Noto Sans Bengali', sans-serif;
+      color: #1f2937;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    /* Hanger hole */
+    .id-card .hang-hole {
+      position: absolute;
+      top: 4px; left: 50%;
+      transform: translateX(-50%);
+      width: 34px; height: 10px;
+      background: #e5e7eb;
+      border: 1px solid #9ca3af;
+      border-radius: 5px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .id-card .hang-hole::before {
+      content: '';
+      width: 18px; height: 3px;
+      background: #6b7280;
+      border-radius: 2px;
+    }
+
+    /* ===== FRONT SIDE ===== */
+    .id-front {
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Header — school name + logo */
+    .id-card .school-bar {
+      padding: 6px 8px 4px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1.5px solid #e5e7eb;
+    }
+    .id-card .school-info {
+      text-align: right;
+    }
+    .id-card .school-name {
+      color: #dc2626;
+      font-size: 11.5px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+    .id-card .school-sub {
+      color: #1e3a8a;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 1px 6px;
+      display: inline-block;
+      margin-top: 2px;
+      border-top: 1px solid #1e3a8a;
+      text-transform: uppercase;
+    }
+    .id-card .school-logo {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: white;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .id-card .school-logo img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Blue wave background (bottom half) */
+    .id-card .wave-bg {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 46%;
+      background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+      z-index: 0;
+    }
+    .id-card .wave-bg::before {
+      content: '';
+      position: absolute;
+      top: -20px; left: 0; right: 0;
+      height: 40px;
+      background: #ffffff;
+      border-radius: 50%;
+      transform: scaleX(1.4);
+    }
+
+    /* ===== BORO ছবি (95px) ===== */
+    .id-card .photo-wrap {
+      position: relative;
+      z-index: 2;
+      margin: 6px auto 4px;
+      padding: 4px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      width: 95px; height: 95px;
+    }
+    .id-card .photo {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      color: #9ca3af;
+      overflow: hidden;
+    }
+    .id-card .photo img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Name + role badge */
+    .id-card .info-block {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 10px;
+    }
+    .id-card .person-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e3a8a;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: 2px;
+      letter-spacing: 0.2px;
+    }
+    .id-card .person-role {
+      display: inline-block;
+      background: #dc2626;
+      color: white;
+      font-size: 7px;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    /* Detail list */
+    .id-card .details {
+      position: relative;
+      z-index: 2;
+      color: white;
+      padding: 0 12px;
+      font-size: 7.5px;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+    .id-card .details .row {
+      display: grid;
+      grid-template-columns: 58px 6px 1fr;
+      gap: 2px;
+      padding: 1px 0;
+      border-bottom: 1px dotted rgba(255,255,255,0.35);
+    }
+    .id-card .details .lbl {
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .id-card .details .val {
+      font-weight: 800;
+      word-break: break-word;
+      color: white;
+    }
+
+    /* Vertical Class text */
+    .id-card .class-vertical {
+      position: absolute;
+      right: 8px;
+      top: 45%;
+      transform: translateY(-50%) rotate(180deg);
+      writing-mode: vertical-rl;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 3;
+    }
+
+    /* Bottom bar */
+    .id-card .bottom-bar {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      background: #dc2626;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      text-align: center;
+      padding: 4px 6px;
+      letter-spacing: 0.3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+    .id-card .bottom-bar .ico {
+      font-size: 9px;
+    }
+
+    /* ===== BACK SIDE ===== */
+    .id-back-side {
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      background: #ffffff;
+    }
+
+    .id-back-side .back-header {
+      text-align: center;
+      padding: 6px 10px;
+      border-bottom: 1.5px solid #e5e7eb;
+      position: relative;
+      z-index: 2;
+    }
+    .id-back-side .back-school {
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+    .id-back-side .back-school-sub {
+      color: #1e3a8a;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+
+    .id-back-side .back-center {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 12px 10px;
+      margin-top: 10px;
+    }
+    .id-back-side .back-center .big-logo {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 8px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+    .id-back-side .back-center .big-logo img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .id-back-side .back-school-name {
+      font-size: 10px;
+      font-weight: 800;
+      color: #1e3a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.3;
+    }
+
+    .id-back-side .back-contact {
+      position: relative;
+      z-index: 2;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin: 0 12px;
+      font-size: 8.5px;
+      color: #1f2937;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .id-back-side .back-contact .lbl {
+      color: #6b7280;
+      font-weight: 600;
+    }
+    .id-back-side .back-contact .val {
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .id-back-side .class-vertical-back {
+      position: absolute;
+      right: 8px;
+      top: 45%;
+      transform: translateY(-50%) rotate(180deg);
+      writing-mode: vertical-rl;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 3;
+    }
+
+    .id-back-side .bottom-bar {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      background: #dc2626;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      text-align: center;
+      padding: 4px 6px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== Lanyard hook ===== */
+    .lanyard {
+      position: absolute;
+      top: -20px; left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 26px;
+      z-index: 6;
+    }
+    .lanyard .strap {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 22px;
+      background: repeating-linear-gradient(
+        45deg,
+        #1e40af 0 3px,
+        #2563eb 3px 6px
+      );
+      border-radius: 0 0 4px 4px;
+      box-shadow: inset -2px 0 4px rgba(0,0,0,0.15);
+    }
+    .lanyard .hook {
+      position: absolute;
+      top: 18px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 10px;
+      background: #cbd5e1;
+      border: 1px solid #64748b;
+      border-radius: 3px;
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15);
+    }
+    .lanyard .hook::after {
+      content: '';
+      position: absolute;
+      top: -3px; left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 4px;
+      background: #94a3b8;
+      border-radius: 2px;
+    }
+
+    /* ============ PRINT ============ */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .id-header, .id-body, .info-banner, .pv-actions { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      #app { display: block !important; }
+      .sheet-page {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        padding: 12mm 10mm !important;
+        box-shadow: none !important;
+        page-break-after: always;
+      }
+      .sheet-page:last-child { page-break-after: auto; }
+      .id-card {
+        border-color: #94a3b8 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .id-card .wave-bg { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .id-card .bottom-bar,
+      .id-back-side .bottom-bar,
+      .id-card .person-role,
+      .id-card .details,
+      .id-card .school-name,
+      .id-back-side .back-school { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .lanyard { display: none !important; }
+    }
+
+    /* ============ MOBILE ============ */
+    @media (max-width: 900px) {
+      .id-form { grid-template-columns: 1fr; }
+      .id-row { grid-template-columns: 1fr; }
+      .id-row label { text-align: left; }
+      .sheet-page {
+        width: 100%;
+        padding: 10px;
+        gap: 12px;
+      }
+      .id-card-wrap {
+        width: 85mm; height: 120mm;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'id-card.html', 'ID Card');
+
+    const content = document.getElementById('content');
+
+    /* ============ স্কুল প্রোফাইল লোড ============ */
+    let school = {
+      name: '', address: '', emis: '', logo: '',
+      principal: '', website: '', phone: ''
+    };
+    async function loadSchoolProfile() {
+      const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+      if (data) {
+        school = {
+          name: data.institute_name || 'SCHOOL NAME',
+          address: data.address || '',
+          emis: data.ein_no || '',
+          logo: data.school_logo || '',
+          principal: data.principal_name || '',
+          website: data.website || '',
+          phone: data.contact || '',
+        };
+      }
+    }
+    await loadSchoolProfile();
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div id="searchView">
+        <div class="id-header">
+          <div class="left">
+            <div class="icon">🪪</div>
+            <div>
+              <h1>ID Card Generator</h1>
+              <p>Student & Teacher Identity Cards</p>
+            </div>
+          </div>
+          <button class="id-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="id-body">
+          <div class="info-banner" id="schoolInfoBanner"></div>
+
+          <div class="id-tabs">
+            <button class="active" data-tab="student">🎓 ছাত্র</button>
+            <button data-tab="teacher">👩‍🏫 শিক্ষক</button>
+          </div>
+
+          <div id="formArea"></div>
+        </div>
+      </div>
+
+      <div id="cardView" style="display:none"></div>
+    `;
+
+    /* ============ Info Banner ============ */
+    (function showSchoolInfo() {
+      const b = document.getElementById('schoolInfoBanner');
+      if (school.name && school.name !== 'SCHOOL NAME') {
+        b.innerHTML = `✅ <b>${esc(school.name)}</b> থেকে তথ্য অটো লোড হয়েছে ·
+          <a href="school-profile.html">স্কুল প্রোফাইল →</a>`;
+      } else {
+        b.className = 'info-banner warn';
+        b.innerHTML = `⚠️ স্কুল প্রোফাইল সেট করুন ·
+          <a href="school-profile.html">এখনই সেট করুন →</a>`;
+      }
+    })();
+
+    /* ============ Tabs ============ */
+    let currentTab = 'student';
+
+    document.querySelectorAll('.id-tabs button').forEach(b => {
+      b.onclick = () => {
+        document.querySelectorAll('.id-tabs button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        currentTab = b.dataset.tab;
+        renderForm();
+      };
+    });
+
+    /* ============ Data Load ============ */
+    let allClasses = [];
+    let allStudents = [];
+    let allTeachers = [];
+
+    async function loadData() {
+      const [c, s, t] = await Promise.all([
+        supabase.from('classes').select('*').order('id'),
+        supabase.from('students').select('*').order('class_id').order('roll'),
+        supabase.from('teachers').select('*').eq('teacher_type', 'active').order('name'),
+      ]);
+      allClasses = c.data || [];
+      allStudents = s.data || [];
+      allTeachers = t.data || [];
+    }
+    await loadData();
+
+    /* ============ Form Render ============ */
+    function renderForm() {
+      const area = document.getElementById('formArea');
+
+      if (currentTab === 'student') {
+        const classOptions = allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+        const studentOptions = allStudents.map(s =>
+          `<option value="${s.id}">${esc(s.name)} (${esc(s.student_index || s.student_id)}) · ${esc(allClasses.find(c=>c.id==s.class_id)?.class_name || '')}</option>`
+        ).join('');
+
+        area.innerHTML = `
+          <div class="id-form">
+            <div class="id-row">
+              <label>Class</label>
+              <select id="f_class">
+                <option value="">-- Class --</option>
+                ${classOptions}
+              </select>
+            </div>
+            <div class="id-row">
+              <label>Section</label>
+              <select id="f_section"><option value="">All Sections</option></select>
+            </div>
+            <div class="id-row">
+              <label>Roll From</label>
+              <input id="f_fromroll" type="number" placeholder="ঐচ্ছিক">
+            </div>
+            <div class="id-row">
+              <label>Roll To</label>
+              <input id="f_toroll" type="number" placeholder="ঐচ্ছিক">
+            </div>
+            <div class="id-row" style="grid-column:1/-1">
+              <label>অথবা সরাসরি ছাত্র</label>
+              <select id="f_student">
+                <option value="">-- সিলেক্ট ছাত্র --</option>
+                ${studentOptions}
+              </select>
+            </div>
+            <div class="id-btn-row">
+              <button class="id-gen-btn" id="genBtn">🪪 ID Card তৈরি করুন</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('f_class').onchange = () => {
+          const cls = allClasses.find(c => c.id == document.getElementById('f_class').value);
+          document.getElementById('f_section').innerHTML =
+            '<option value="">All Sections</option>' +
+            ((cls?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+        };
+
+        document.getElementById('genBtn').onclick = () => generateStudentCards();
+      } else {
+        const teacherOptions = allTeachers.map(t =>
+          `<option value="${t.id}">${esc(t.name)} (${esc(t.teacher_index || t.teacher_id || '')})</option>`
+        ).join('');
+
+        area.innerHTML = `
+          <div class="id-form">
+            <div class="id-row" style="grid-column:1/-1">
+              <label>শিক্ষক সিলেক্ট</label>
+              <select id="f_teacher">
+                <option value="">-- শিক্ষক --</option>
+                ${teacherOptions}
+              </select>
+            </div>
+            <div class="id-row" style="grid-column:1/-1">
+              <label style="color:#6b7280;font-size:12px;font-weight:600">
+                একটি ID card তৈরি করতে চাইলে উপরে সিলেক্ট করুন, নাহলে নিচের বাটনে সব শিক্ষকের কার্ড তৈরি হবে
+              </label>
+              <div></div>
+            </div>
+            <div class="id-btn-row">
+              <button class="id-gen-btn" id="genBtnOne">🪪 সিলেক্টেড শিক্ষকের ID</button>
+              <button class="id-gen-btn secondary" id="genBtnAll">📋 সব শিক্ষকের ID</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('genBtnOne').onclick = () => {
+          const tid = document.getElementById('f_teacher').value;
+          if (!tid) { toast('শিক্ষক সিলেক্ট করুন', 'error'); return; }
+          const t = allTeachers.find(x => String(x.id) === tid);
+          if (t) showCards([t], 'teacher');
+        };
+
+        document.getElementById('genBtnAll').onclick = () => {
+          if (!allTeachers.length) { toast('কোনো শিক্ষক নেই', 'error'); return; }
+          showCards(allTeachers, 'teacher');
+        };
+      }
+    }
+
+    /* ============ Generate Student Cards ============ */
+    function generateStudentCards() {
+      const sid = document.getElementById('f_student').value;
+      const classId = document.getElementById('f_class').value;
+      const section = document.getElementById('f_section').value;
+      const fromRoll = document.getElementById('f_fromroll').value;
+      const toRoll = document.getElementById('f_toroll').value;
+
+      let list = [];
+
+      if (sid) {
+        const s = allStudents.find(x => String(x.id) === sid);
+        if (s) list = [s];
+      } else if (classId) {
+        list = allStudents.filter(s => String(s.class_id) === String(classId));
+        if (section) list = list.filter(s => s.section === section);
+        if (fromRoll) list = list.filter(s => (s.roll || 0) >= +fromRoll);
+        if (toRoll) list = list.filter(s => (s.roll || 0) <= +toRoll);
+      } else {
+        toast('Class সিলেক্ট করুন বা সরাসরি ছাত্র বেছে নিন', 'error');
+        return;
+      }
+
+      if (!list.length) { toast('কোনো ছাত্র পাওয়া যায়নি', 'error'); return; }
+      showCards(list, 'student');
+    }
+
+    /* ============ Show Cards ============ */
+    function showCards(people, type) {
+      const PAGES = [];
+      for (let i = 0; i < people.length; i += 4) {
+        PAGES.push(people.slice(i, i + 4));
+      }
+
+      const pagesHtml = PAGES.map(pagePeople => `
+        <div class="sheet-page">
+          ${pagePeople.map(p => `
+            <div class="id-card-wrap">
+              <div class="lanyard">
+                <div class="strap"></div>
+                <div class="hook"></div>
+              </div>
+              ${renderFront(p, type)}
+            </div>
+            <div class="id-card-wrap">
+              <div class="lanyard">
+                <div class="strap"></div>
+                <div class="hook"></div>
+              </div>
+              ${renderBack(p, type)}
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+
+      document.getElementById('cardView').innerHTML = `
+        <div class="id-header no-print">
+          <div class="left">
+            <div class="icon">🪪</div>
+            <div>
+              <h1>ID Cards Preview</h1>
+              <p>${people.length}টি কার্ড · ${PAGES.length}টি পেজ</p>
+            </div>
+          </div>
+          <button class="id-back" id="cardBack">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="pv-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-back2" id="cardBack2">← আবার সার্চ</button>
+        </div>
+
+        <div>
+          ${pagesHtml}
+        </div>
+      `;
+
+      const back = () => {
+        document.getElementById('cardView').style.display = 'none';
+        document.getElementById('searchView').style.display = 'block';
+      };
+      document.getElementById('cardBack').onclick = back;
+      document.getElementById('cardBack2').onclick = back;
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('cardView').style.display = 'block';
+      toast(`✅ ${people.length}টি ID card তৈরি হয়েছে (${PAGES.length} পেজ)`, 'success');
+    }
+
+    /* ============ Render FRONT side ============ */
+    function renderFront(p, type) {
+      let name, photo, roleLabel, details, classText;
+      const classObj = type === 'student' ? allClasses.find(c => c.id == p.class_id) : null;
+
+      if (type === 'student') {
+        name = p.name || '';
+        photo = p.student_photo || '';
+        roleLabel = 'STUDENT';
+        classText = `Class - ${classObj?.class_name || ''}`;
+        details = [
+          { lbl: 'Father Name', val: p.father_name || '-' },
+          { lbl: 'Contact No.', val: p.guardian_phone || p.father_mobile || '-' },
+          { lbl: 'Address', val: p.present_address || '-' },
+          { lbl: 'Roll No.', val: p.roll || '-' },
+          { lbl: 'Section', val: p.section || '-' },
+          { lbl: 'Blood Gr.', val: p.blood_group || '-' },
+        ];
+      } else {
+        name = p.name || '';
+        photo = p.photo || '';
+        roleLabel = p.designation || 'TEACHER';
+        classText = p.subject ? `Subject - ${p.subject}` : 'Teacher';
+        details = [
+          { lbl: 'Designation', val: p.designation || '-' },
+          { lbl: 'Contact No.', val: p.phone || '-' },
+          { lbl: 'Email', val: p.email || '-' },
+          { lbl: 'Subject', val: p.subject || '-' },
+          { lbl: 'Address', val: p.address || '-' },
+          { lbl: 'Blood Gr.', val: p.blood_group || '-' },
+        ];
+      }
+
+      const photoHtml = photo
+        ? `<img src="${photo}" alt="photo">`
+        : '👤';
+
+      const schoolLogo = school.logo
+        ? `<img src="${school.logo}" alt="logo">`
+        : '🎓';
+
+      const detailsHtml = details.map(d => `
+        <div class="row">
+          <span class="lbl">${esc(d.lbl)}</span>
+          <span>:</span>
+          <span class="val">${esc(String(d.val)).slice(0, 28)}</span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="id-card id-front">
+          <div class="hang-hole"></div>
+
+          <div class="school-bar">
+            <div class="school-info">
+              <div class="school-name">${esc(school.name).toUpperCase()}</div>
+              <div class="school-sub">${esc(school.address || '').split(',')[0] || 'SCHOOL ADDRESS'}</div>
+            </div>
+            <div class="school-logo">${schoolLogo}</div>
+          </div>
+
+          <div class="photo-wrap">
+            <div class="photo">${photoHtml}</div>
+          </div>
+
+          <div class="info-block">
+            <div class="person-name">${esc(name).toUpperCase()}</div>
+            <div class="person-role">${esc(roleLabel)}</div>
+          </div>
+
+          <div class="wave-bg"></div>
+
+          <div class="details">
+            ${detailsHtml}
+          </div>
+
+          <div class="class-vertical">${esc(classText)}</div>
+
+          <div class="bottom-bar">
+            <span class="ico">📞</span>
+            <span>${esc(school.phone || '+880 1XXX-XXXXXX')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Render BACK side ============ */
+    function renderBack(p, type) {
+      let classText;
+      if (type === 'student') {
+        const classObj = allClasses.find(c => c.id == p.class_id);
+        classText = `Class - ${classObj?.class_name || ''}`;
+      } else {
+        classText = p.subject ? `Subject - ${p.subject}` : 'Teacher';
+      }
+
+      const schoolLogo = school.logo
+        ? `<img src="${school.logo}" alt="logo">`
+        : '🎓';
+
+      return `
+        <div class="id-card id-back-side">
+          <div class="hang-hole"></div>
+
+          <div class="back-header">
+            <div class="back-school">${esc(school.name).toUpperCase()}</div>
+            <div class="back-school-sub">${esc(school.address || '').split(',')[0] || 'SCHOOL ADDRESS'}</div>
+          </div>
+
+          <div class="back-center">
+            <div class="big-logo">${schoolLogo}</div>
+            <div class="back-school-name">${esc(school.name).toUpperCase()}</div>
+          </div>
+
+          <div class="back-contact">
+            <div><span class="lbl">Contact No :</span> <span class="val">${esc(school.phone || '+880 1XXX-XXXXXX')}</span></div>
+          </div>
+
+          <div class="class-vertical-back">${esc(classText)}</div>
+
+          <div class="bottom-bar">
+            ${esc(school.website || 'www.your-school.com')}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Init ============ */
+    renderForm();
+  </script>
+</body>
+</html>

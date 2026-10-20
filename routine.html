@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>রুটিন · School</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin();
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'routine.html', 'ক্লাস রুটিন');
+
+    const content = document.getElementById('content');
+    const isAdmin = profile.role === 'admin';
+    const days = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+
+    content.innerHTML = `
+      <h2>📅 ক্লাস রুটিন</h2>
+
+      ${isAdmin ? `
+      <div class="panel">
+        <h3>➕ নতুন রুটিন যোগ করুন</h3>
+        <div class="form-grid">
+          <select id="rClass"><option value="">-- ক্লাস --</option></select>
+          <input id="rSection" placeholder="সেকশন (A)">
+          <select id="rDay">${days.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+          <input id="rPeriod" type="number" placeholder="পিরিয়ড (1-8)" min="1" max="8">
+          <input id="rSubject" placeholder="বিষয় *">
+          <input id="rTeacher" placeholder="শিক্ষকের নাম">
+        </div>
+        <br>
+        <button class="btn btn-primary" id="addBtn">✅ যোগ করুন</button>
+      </div>` : ''}
+
+      <div class="panel">
+        <h3>📋 রুটিন দেখুন</h3>
+        <div class="search-bar">
+          <select id="viewClass"><option value="">-- ক্লাস --</option></select>
+          <input id="viewSection" placeholder="সেকশন (A)">
+          <button class="btn btn-primary" id="viewBtn">দেখুন</button>
+        </div>
+        <div id="view"></div>
+      </div>
+    `;
+
+    const { data: classes } = await supabase.from('classes').select('*').order('id');
+    const opts = (classes || []).map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+    document.getElementById('rClass').innerHTML = '<option value="">-- ক্লাস --</option>' + opts;
+    document.getElementById('viewClass').innerHTML = '<option value="">-- ক্লাস --</option>' + opts;
+
+    async function loadRoutine() {
+      const classId = document.getElementById('viewClass').value;
+      const section = document.getElementById('viewSection').value.trim();
+      const view = document.getElementById('view');
+
+      if (!classId) { view.innerHTML = '<div class="empty">ক্লাস সিলেক্ট করুন</div>'; return; }
+
+      let q = supabase.from('routines').select('*').eq('class_id', classId).order('period');
+      if (section) q = q.eq('section', section);
+      const { data, error } = await q;
+
+      if (error) { view.innerHTML = `<div class="empty">❌ ${error.message}</div>`; return; }
+      if (!data || !data.length) { view.innerHTML = '<div class="empty">এই ক্লাসের রুটিন নেই</div>'; return; }
+
+      view.innerHTML = days.map(day => {
+        const rows = data.filter(r => r.day === day);
+        if (!rows.length) return '';
+        return `
+          <div class="panel" style="background:#faf5ff">
+            <h3>📅 ${day}</h3>
+            <table>
+              <thead><tr><th>পিরিয়ড</th><th>বিষয়</th><th>শিক্ষক</th></tr></thead>
+              <tbody>
+                ${rows.map(r => `
+                  <tr>
+                    <td><b>${r.period}</b></td>
+                    <td>${esc(r.subject)}</td>
+                    <td>${esc(r.teacher_name || '-')}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      }).join('') || '<div class="empty">এই ক্লাসের রুটিন নেই</div>';
+    }
+
+    document.getElementById('viewBtn').onclick = loadRoutine;
+
+    if (isAdmin) {
+      document.getElementById('addBtn').onclick = async () => {
+        const classId = document.getElementById('rClass').value;
+        const period = +document.getElementById('rPeriod').value;
+        const subject = document.getElementById('rSubject').value.trim();
+
+        if (!classId || !period || !subject) { toast('সব ঘর পূরণ করুন', 'error'); return; }
+
+        const { error } = await supabase.from('routines').insert({
+          class_id: classId,
+          section: document.getElementById('rSection').value.trim() || null,
+          day: document.getElementById('rDay').value,
+          period,
+          subject,
+          teacher_name: document.getElementById('rTeacher').value.trim() || null
+        });
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast('✅ রুটিন যোগ হয়েছে', 'success');
+        document.getElementById('rSubject').value = '';
+        document.getElementById('rPeriod').value = '';
+        document.getElementById('rTeacher').value = '';
+      };
+    }
+  </script>
+</body>
+</html>

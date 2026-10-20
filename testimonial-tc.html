@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Testimonial / TC · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tt-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 16px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+    }
+    .tt-header .left { display: flex; align-items: center; gap: 14px; }
+    .tt-header .icon {
+      font-size: 30px; width: 48px; height: 48px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tt-header h1 { color: #c0392b; font-size: 20px; margin: 0; font-weight: 700; }
+    .tt-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 12.5px; font-weight: 600; }
+    .tt-back {
+      background: #1f2937; color: white; border: none;
+      padding: 9px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 13.5px;
+    }
+    .tt-back:hover { background: #111827; }
+    .tt-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .tt-body {
+      background: white; padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 14px;
+    }
+    .tt-filter {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 950px; margin: 0 auto;
+    }
+    .tt-row {
+      display: grid; grid-template-columns: 140px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .tt-row label {
+      color: #374151; font-weight: 700;
+      font-size: 13.5px; text-align: right;
+    }
+    .tt-row input, .tt-row select {
+      padding: 8px 12px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 13.5px;
+      width: 100%; background: white;
+    }
+    .tt-btn-row {
+      grid-column: 1 / -1;
+      display: flex; gap: 12px; justify-content: center;
+      margin-top: 6px; flex-wrap: wrap;
+    }
+    .tt-btn {
+      padding: 10px 26px; border: none; border-radius: 5px;
+      font-weight: 700; font-size: 13.5px; cursor: pointer; color: white;
+    }
+    .tt-btn.green { background: #16a34a; }
+    .tt-btn.green:hover { background: #15803d; }
+    .tt-btn.red { background: #c0392b; }
+    .tt-btn.red:hover { background: #a93226; }
+
+    .config-bar {
+      display: grid; grid-template-columns: 250px 1fr 200px;
+      background: white; border: 1px solid #e5e7eb;
+    }
+    .config-bar .left-panel {
+      background: #f59e0b; color: #000;
+      padding: 12px 16px; font-size: 13px; font-weight: 700;
+    }
+    .config-bar .mid-panel {
+      padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      border-right: 1px solid #e5e7eb;
+    }
+    .config-bar .right-panel {
+      background: #fef3c7;
+      padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .config-input {
+      padding: 6px 10px; border: none;
+      border-bottom: 2px solid #c7d2fe;
+      font-size: 13px; background: #dbeafe;
+      font-weight: 600; color: #1e40af; width: 100%;
+    }
+    .config-select {
+      padding: 4px 8px; border: 1px solid #d1d5db;
+      border-radius: 3px; font-size: 12.5px;
+      font-weight: 700; background: white; cursor: pointer;
+    }
+    .config-row {
+      display: grid; grid-template-columns: 90px 1fr;
+      gap: 8px; align-items: center;
+    }
+    .config-row .lbl { font-weight: 700; font-size: 12.5px; color: #374151; }
+
+    .tt-table-wrap {
+      background: white; border: 1px solid #e5e7eb;
+      overflow-x: auto; margin-bottom: 20px;
+    }
+    .tt-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 12.5px; min-width: 1300px;
+    }
+    .tt-table thead th {
+      background: #c0392b; color: white;
+      padding: 9px 8px; text-align: left;
+      font-weight: 700; font-size: 11.5px;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      border-right: 1px solid rgba(255,255,255,0.2);
+    }
+    .tt-table thead th:last-child { border-right: none; }
+    .tt-table tbody td {
+      padding: 8px; border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #f3f4f6; vertical-align: top;
+    }
+    .tt-table tbody td:last-child { border-right: none; }
+    .tt-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .tt-table tbody tr.selected td { background: #fee2e2; }
+
+    .tt-table td.index-cell {
+      font-weight: 800; color: #1e3a8a;
+      font-family: 'Courier New', monospace;
+      font-size: 13px; width: 85px;
+    }
+    .tt-table td.name-cell {
+      font-weight: 700; color: #1f2937; font-size: 13px;
+    }
+    .tt-table td.name-cell small {
+      display: block; color: #6b7280;
+      font-weight: 600; font-size: 11px; margin-top: 2px;
+    }
+    .info-mini-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4px 8px; font-size: 11.5px;
+    }
+    .info-mini-grid .cell {
+      display: grid; grid-template-columns: 70px 1fr;
+      gap: 4px; align-items: center;
+    }
+    .info-mini-grid .cell label {
+      color: #6b7280; font-weight: 700; font-size: 10.5px;
+    }
+    .info-mini-grid .cell input,
+    .info-mini-grid .cell select {
+      padding: 3px 6px; border: 1px solid #d1d5db;
+      border-radius: 3px; font-size: 11.5px;
+      width: 100%; background: #eff6ff;
+      color: #1e40af; font-weight: 600;
+    }
+    .info-mini-grid .cell.green input { background: #d1fae5; color: #065f46; }
+
+    .photo-cell { width: 130px; text-align: center; }
+    .photo-cell .photo-box {
+      width: 100px; height: 118px; margin: 0 auto 6px;
+      border: 2px solid #1e3a8a; border-radius: 4px;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; color: #9ca3af; overflow: hidden;
+    }
+    .photo-cell .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-cell input[type="file"] { font-size: 9.5px; width: 100%; }
+    .photo-cell .distribution-label {
+      font-size: 10px; font-weight: 700; color: #6b7280;
+      margin-top: 4px; text-align: left;
+    }
+    .photo-cell .distribution-input {
+      padding: 3px 6px; border: 1px solid #d1d5db;
+      border-radius: 3px; font-size: 11px;
+      width: 100%; background: #fef3c7;
+      text-align: center; font-weight: 700;
+    }
+
+    .actions-cell {
+      width: 110px; display: flex;
+      flex-direction: column; gap: 5px;
+    }
+    .actions-cell button {
+      padding: 7px 10px; border: none;
+      border-radius: 4px; font-weight: 800;
+      font-size: 11.5px; cursor: pointer;
+      color: white; text-align: center; letter-spacing: 0.3px;
+    }
+    .act-save { background: #16a34a; }
+    .act-protoyon { background: #2563eb; }
+    .act-clearance { background: #f59e0b; }
+    .act-tc { background: #dc2626; }
+    .act-cert { background: #7c3aed; }
+    .act-testi { background: #0891b2; }
+
+    .select-chk {
+      width: 20px; height: 20px;
+      accent-color: #c0392b; cursor: pointer;
+      display: block; margin: 0 auto;
+    }
+
+    /* Print Modal */
+    .print-modal {
+      position: fixed; inset: 0; z-index: 700;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .print-modal-inner {
+      background: #e5e7eb; border-radius: 10px;
+      width: 100%; max-width: 1200px; padding: 20px;
+    }
+    .print-actions-top {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .print-actions-top button {
+      padding: 11px 26px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .btn-print-now { background: #16a34a; color: white; }
+    .btn-print-now:hover { background: #15803d; }
+    .btn-close-print { background: #6b7280; color: white; }
+    .btn-close-print:hover { background: #4b5563; }
+
+    /* ============================================
+       A4 LANDSCAPE DOCUMENT
+       ============================================ */
+    .doc-page {
+      background: white;
+      width: 297mm;
+      min-height: 210mm;
+      margin: 0 auto 20px;
+      color: #000;
+      position: relative;
+      box-sizing: border-box;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+    }
+
+    /* ============================================================
+       🎨 DOCUMENT 1 — TRANSFER CERTIFICATE (BLACK FANCY BORDER)
+       ============================================================ */
+    .doc-tc {
+      padding: 4mm;
+      background: white;
+    }
+    .doc-tc .frame {
+      border: 3px solid #000;
+      padding: 3mm;
+      height: calc(210mm - 8mm);
+      background: white;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .doc-tc .frame-inner {
+      border: 1.5px solid #000;
+      padding: 3mm;
+      height: 100%;
+      box-sizing: border-box;
+      position: relative;
+      /* Fancy repeating pattern border */
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'><g fill='none' stroke='%23000' stroke-width='1'><circle cx='20' cy='20' r='8'/><circle cx='20' cy='20' r='5'/><circle cx='60' cy='20' r='8'/><circle cx='60' cy='20' r='5'/><path d='M28 20 Q40 5 52 20'/><path d='M28 20 Q40 35 52 20'/><path d='M0 20 L10 20'/><path d='M70 20 L80 20'/></g></svg>");
+      background-size: 80px 40px;
+      background-repeat: repeat;
+    }
+    .doc-tc .frame-content {
+      background: white;
+      padding: 10mm 14mm;
+      height: 100%;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ============================================================
+       🎨 DOCUMENT 2 — ACADEMIC CERTIFICATE (BLUE GREEK KEY)
+       ============================================================ */
+    .doc-ac {
+      padding: 4mm;
+      background: white;
+    }
+    .doc-ac .frame {
+      border: 3px solid #2563eb;
+      padding: 2mm;
+      height: calc(210mm - 8mm);
+      box-sizing: border-box;
+      position: relative;
+      background: white;
+    }
+    .doc-ac .greek-border {
+      position: absolute;
+      inset: 2mm;
+      border: 2px solid #2563eb;
+      box-sizing: border-box;
+    }
+    .doc-ac .greek-pattern {
+      position: absolute;
+      inset: 0;
+      /* Greek key meander pattern */
+      background-image: 
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path d='M2 2 h10 v5 h-5 v10 h5 v-5 h10 v-10 h5 v20 h-3' fill='none' stroke='%232563eb' stroke-width='2'/></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path d='M2 2 h10 v5 h-5 v10 h5 v-5 h10 v-10 h5 v20 h-3' fill='none' stroke='%232563eb' stroke-width='2'/></svg>");
+      background-position: 0 0, 0 0;
+      background-repeat: repeat-x, repeat-y;
+      background-size: 30px 15px, 15px 30px;
+      z-index: 0;
+    }
+    .doc-ac .frame-content {
+      background: white;
+      padding: 10mm 14mm;
+      margin: 8mm;
+      height: calc(210mm - 8mm - 16mm - 8mm);
+      box-sizing: border-box;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ============================================================
+       🎨 DOCUMENT 3 — TESTIMONIAL (BLUE SCALLOPED ORNATE)
+       ============================================================ */
+    .doc-tm {
+      padding: 4mm;
+      background: white;
+    }
+    .doc-tm .frame {
+      border: 3px solid #1e40af;
+      border-radius: 8px;
+      padding: 3mm;
+      height: calc(210mm - 8mm);
+      box-sizing: border-box;
+      position: relative;
+      background: white;
+      /* Ornate scrollwork pattern */
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='30' viewBox='0 0 60 30'><g fill='none' stroke='%231e40af' stroke-width='1.2'><path d='M0 15 Q10 0 20 15 Q30 30 40 15 Q50 0 60 15'/><circle cx='10' cy='15' r='3'/><circle cx='30' cy='15' r='3'/><circle cx='50' cy='15' r='3'/><path d='M20 15 Q25 10 30 15 Q35 20 40 15'/></g></svg>");
+      background-size: 60px 30px;
+      background-repeat: repeat;
+    }
+    .doc-tm .frame-inner {
+      border: 2px solid #1e40af;
+      border-radius: 5px;
+      padding: 3mm;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .doc-tm .frame-content {
+      background: white;
+      padding: 10mm 14mm;
+      height: 100%;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 2;
+      border-radius: 3px;
+    }
+
+    /* ============================================================
+       📋 COMMON CONTENT STYLES
+       ============================================================ */
+    .doc-school-head {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .doc-school-head h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #000;
+      margin: 0;
+      letter-spacing: 0.3px;
+      font-family: 'Times New Roman', serif;
+    }
+    .doc-school-head p {
+      font-size: 12.5px;
+      color: #374151;
+      margin: 2px 0 0 0;
+    }
+
+    .badge-title {
+      text-align: center;
+      margin: 14px 0 18px;
+    }
+    .badge-title span {
+      display: inline-block;
+      padding: 5px 32px;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+      letter-spacing: 0.4px;
+    }
+    .badge-title.blue span { background: #1e40af; color: white; }
+    .badge-title.green span {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1.5px solid #16a34a;
+    }
+    .badge-title.cyan span {
+      background: linear-gradient(90deg, #0891b2 0%, #16a34a 100%);
+      color: white;
+    }
+
+    /* Document body */
+    .doc-body {
+      font-size: 13.5px;
+      line-height: 1.85;
+      color: #000;
+      padding: 0 4px;
+    }
+    .doc-body p { margin: 0 0 6px 0; }
+    .doc-body .lbl { font-weight: 700; }
+
+    .fill {
+      display: inline-block;
+      border-bottom: 1px dotted #000;
+      padding: 0 8px 1px;
+      text-align: center;
+      font-weight: 700;
+      font-style: italic;
+      min-width: 100px;
+    }
+    .fill.wide { min-width: 160px; }
+    .fill.full { min-width: 240px; }
+    .fill.name {
+      font-size: 16px;
+      font-weight: 800;
+      font-style: italic;
+      letter-spacing: 0.3px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 5px 0;
+      font-size: 13.5px;
+    }
+    .field-row .lbl {
+      min-width: 130px;
+      font-weight: 700;
+    }
+    .field-row .dots {
+      flex: 1;
+      border-bottom: 1px dotted #000;
+      text-align: center;
+      padding: 0 8px 1px;
+      font-weight: 700;
+      font-style: italic;
+      min-height: 16px;
+    }
+
+    /* Bottom row (Date left, Sign right) */
+    .doc-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 34px;
+      font-size: 12.5px;
+    }
+    .doc-bottom .sign-area {
+      text-align: center;
+    }
+    .doc-bottom .sign-area .sign-line {
+      border-top: 1.5px solid #000;
+      padding-top: 4px;
+      min-width: 200px;
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .doc-footer-note {
+      text-align: center;
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 12px;
+      font-style: italic;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Print */
+    @page { size: A4 landscape; margin: 0; }
+
+    @media print {
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .tt-header, .tt-body, .config-bar,
+      .tt-table-wrap, .print-actions-top { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      .print-modal { position: static; background: white; padding: 0; display: block; }
+      .print-modal-inner { max-width: 100%; padding: 0; background: white; border-radius: 0; }
+      .doc-page {
+        width: 297mm !important;
+        min-height: 210mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always;
+      }
+      .doc-page:last-child { page-break-after: auto; }
+      .doc-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    @media (max-width: 900px) {
+      .tt-filter { grid-template-columns: 1fr; }
+      .tt-row { grid-template-columns: 1fr; }
+      .tt-row label { text-align: left; }
+      .config-bar { grid-template-columns: 1fr; }
+      .doc-page { width: 100%; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'testimonial-tc.html', 'Testimonial / TC');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+
+    let school = { name: 'SCHOOL NAME', address: '', emis: '', phone: '', logo: '' };
+    async function loadSchool() {
+      const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+      if (data) school = {
+        name: data.institute_name || 'SCHOOL NAME',
+        address: data.address || '',
+        emis: data.ein_no || '',
+        phone: data.contact || '',
+        logo: data.school_logo || '',
+      };
+    }
+    await loadSchool();
+
+    content.innerHTML = `
+      <div class="tt-header">
+        <div class="left">
+          <div class="icon">📜</div>
+          <div>
+            <h1>Testimonial / TC Info</h1>
+            <p>Manage Only Testimonial/TC Information</p>
+          </div>
+        </div>
+        <button class="tt-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="tt-body">
+        <div class="tt-filter">
+          <div class="tt-row">
+            <label>Session / Year</label>
+            <select id="sessionYear">
+              ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="tt-row">
+            <label>Class Name</label>
+            <select id="className"><option value="">-- Select Class --</option></select>
+          </div>
+          <div class="tt-row">
+            <label>Group Name</label>
+            <select id="groupName">
+              <option value="">All Groups</option>
+              <option>Science</option><option>Arts</option>
+              <option>Commerce</option><option>General</option>
+            </select>
+          </div>
+          <div class="tt-row">
+            <label>Section Name</label>
+            <select id="sectionName"><option value="">All Sections</option></select>
+          </div>
+          <div class="tt-row">
+            <label>Add Student (Qty)</label>
+            <input id="addQty" type="number" value="1" min="1" placeholder="Quantity">
+          </div>
+          <div class="tt-row">
+            <label>Student Index</label>
+            <input id="studentIndex" placeholder="যেমন: 230475">
+          </div>
+          <div class="tt-btn-row">
+            <button class="tt-btn red" id="addBtn">Add Students</button>
+            <button class="tt-btn red" id="searchBtn">Search Students</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="studentListArea"></div>
+    `;
+
+    let allClasses = [];
+    let allExamTerms = [];
+
+    async function loadBase() {
+      const [c, e] = await Promise.all([
+        supabase.from('classes').select('*').order('id'),
+        supabase.from('exams').select('exam_name, exam_serial').order('exam_serial'),
+      ]);
+      allClasses = c.data || [];
+      allExamTerms = e.data || [];
+      document.getElementById('className').innerHTML =
+        '<option value="">-- Select Class --</option>' +
+        allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+    }
+    await loadBase();
+
+    document.getElementById('className').onchange = () => {
+      const c = allClasses.find(x => x.id == document.getElementById('className').value);
+      document.getElementById('sectionName').innerHTML =
+        '<option value="">All Sections</option>' +
+        ((c?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+    };
+
+    let currentStudents = [];
+    let currentInfo = {};
+    let currentSession = CURRENT_YEAR;
+
+    document.getElementById('searchBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const section = document.getElementById('sectionName').value;
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+      currentSession = session;
+
+      const { data: students, error } = await supabase
+        .from('students').select('*').eq('class_id', classId).order('roll');
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      let list = students || [];
+      if (section) list = list.filter(s => s.section === section);
+
+      if (!list.length) { toast('কোনো ছাত্র নেই', 'error'); return; }
+
+      currentStudents = list;
+
+      const sids = list.map(s => s.student_id || s.student_index).filter(Boolean);
+      const { data: infos } = await supabase.from('testimonial_info')
+        .select('*').in('student_id', sids);
+
+      currentInfo = {};
+      (infos || []).forEach(i => { currentInfo[i.student_id] = i; });
+
+      renderStudentList();
+      toast(`✅ ${list.length}জন ছাত্র লোড হয়েছে`, 'success');
+    };
+
+    document.getElementById('addBtn').onclick = async () => {
+      const classId = document.getElementById('className').value;
+      const section = document.getElementById('sectionName').value;
+      const group = document.getElementById('groupName').value;
+      const session = +document.getElementById('sessionYear').value;
+      const qty = Math.max(1, +document.getElementById('addQty').value || 1);
+      let startIndex = document.getElementById('studentIndex').value.trim();
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+
+      if (!startIndex) {
+        const { data } = await supabase.from('students').select('student_index')
+          .not('student_index', 'is', null)
+          .order('id', { ascending: false }).limit(1);
+        startIndex = (data && data[0]?.student_index)
+          ? String(parseInt(data[0].student_index) + 1) : '100001';
+      }
+
+      const baseIndex = parseInt(startIndex);
+      const { data: lastRoll } = await supabase.from('students').select('roll')
+        .eq('class_id', classId).order('roll', { ascending: false }).limit(1);
+      const baseRoll = (lastRoll && lastRoll[0]?.roll) ? lastRoll[0].roll : 0;
+
+      const records = [];
+      for (let i = 0; i < qty; i++) {
+        const idx = String(baseIndex + i);
+        records.push({
+          student_id: 'STU-' + idx,
+          student_index: idx,
+          name: 'Student ' + idx,
+          class_id: classId,
+          section: section || null,
+          group_name: group || null,
+          roll: baseRoll + i + 1,
+          session_year: session,
+          student_type: 'active',
+        });
+      }
+
+      const { error } = await supabase.from('students').insert(records);
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+      toast(`✅ ${qty} জন ছাত্র যোগ হয়েছে`, 'success');
+      document.getElementById('searchBtn').click();
+    };
+
+    function renderStudentList() {
+      const examOpts = allExamTerms.map(e =>
+        `<option value="${esc(e.exam_name)}">${esc(e.exam_name)}</option>`
+      ).join('');
+
+      document.getElementById('studentListArea').innerHTML = `
+        <div class="config-bar">
+          <div class="left-panel">
+            <div style="margin-bottom:8px">Education Board :</div>
+            <input class="config-input" id="cfg_board" value="Board of Intermediate and Secondary Education, Dhaka" style="background:#fef3c7;color:#000;margin-bottom:12px">
+            <div>Exam & Center Name :</div>
+          </div>
+          <div class="mid-panel">
+            <input class="config-input" id="cfg_exam" placeholder="Examination Name">
+            <input class="config-input" id="cfg_center" placeholder="Center Name">
+          </div>
+          <div class="right-panel">
+            <select class="config-select" id="cfg_border" style="background:#f59e0b;color:white">
+              <option>Default</option><option>Border Design 1</option>
+              <option>Border Design 2</option><option>Border Design 3</option>
+            </select>
+            <select class="config-select" id="cfg_lang" style="background:#f59e0b;color:white">
+              <option>Bangla</option><option>English</option>
+            </select>
+            <div class="config-row">
+              <span class="lbl" style="color:#000">Save</span>
+              <button class="tt-btn green" id="saveAllBtn" style="padding:6px;font-size:12px">Save Selected Students</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tt-table-wrap">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th style="width:85px">Index<br>Roll</th>
+                <th style="width:230px">Student Name<br>Parent Name</th>
+                <th>TESTIMONIAL, T/C INFO</th>
+                <th style="width:60px;text-align:center">Select</th>
+                <th style="width:150px;text-align:center">Use Images</th>
+                <th style="width:120px">Action</th>
+              </tr>
+            </thead>
+            <tbody>${currentStudents.map(s => renderStudentRow(s, examOpts)).join('')}</tbody>
+          </table>
+        </div>
+      `;
+
+      document.querySelectorAll('.photo-input').forEach(inp => {
+        inp.onchange = () => {
+          const file = inp.files[0];
+          if (!file) return;
+          const sid = inp.dataset.sid;
+          const reader = new FileReader();
+          reader.onload = e => {
+            document.getElementById('photo-prev-' + sid).innerHTML = `<img src="${e.target.result}">`;
+            if (!window.__photos) window.__photos = {};
+            window.__photos[sid] = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        };
+      });
+
+      document.getElementById('saveAllBtn').onclick = saveSelectedStudents;
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.onclick = () => handleRowAction(btn.dataset.action, btn.dataset.sid);
+      });
+      document.querySelectorAll('.select-chk').forEach(chk => {
+        chk.onchange = () => chk.closest('tr').classList.toggle('selected', chk.checked);
+      });
+    }
+
+    function renderStudentRow(s, examOpts) {
+      const sid = s.student_id || s.student_index;
+      const info = currentInfo[sid] || {};
+      const photoHtml = info.student_photo ? `<img src="${info.student_photo}">` : '👤';
+
+      return `
+        <tr data-sid="${esc(sid)}">
+          <td class="index-cell">
+            <div>${esc(s.student_index || s.student_id)}</div>
+            <div style="font-family:Arial;color:#4b5563;margin-top:4px">${esc(s.roll ?? '-')}</div>
+          </td>
+          <td class="name-cell">
+            ${esc(s.name)}
+            <small>${esc(s.father_name || '-')}</small>
+            <small>${esc(s.mother_name || '-')}</small>
+          </td>
+          <td>
+            <div class="info-mini-grid">
+              <div class="cell"><label>Session</label><input class="info-session" type="number" value="${info.session_year || currentSession}"></div>
+              <div class="cell green"><label>Group</label><select class="info-group">
+                <option ${(!info.group_name||info.group_name==='N/A')?'selected':''}>N/A</option>
+                <option ${info.group_name==='Science'?'selected':''}>Science</option>
+                <option ${info.group_name==='Arts'?'selected':''}>Arts</option>
+                <option ${info.group_name==='Commerce'?'selected':''}>Commerce</option>
+              </select></div>
+              <div class="cell"><label>Exam Name</label><select class="info-exam"><option value="">--</option>${examOpts}</select></div>
+              <div class="cell green"><label>Section</label><input class="info-section" value="${esc(info.section_name || s.section || 'A')}"></div>
+              <div class="cell"><label>Type</label><select class="info-type">
+                <option ${info.student_type==='Regular'?'selected':''}>Regular</option>
+                <option ${info.student_type==='Irregular'?'selected':''}>Irregular</option>
+                <option ${info.student_type==='Private'?'selected':''}>Private</option>
+              </select></div>
+              <div class="cell"><label>DOB</label><input class="info-dob" value="${esc(info.date_of_birth || s.date_of_birth || '')}" placeholder="YYYY-MM-DD"></div>
+              <div class="cell"><label>Registration</label><input class="info-registration" value="${esc(info.registration_no || s.registration_no || '')}"></div>
+              <div class="cell green"><label>T/C Class</label><input class="info-tcclass" value="${esc(info.tc_class_name || s.tc_class_name || '')}"></div>
+              <div class="cell"><label>Center</label><input class="info-center" value="${esc(info.center_name || s.center_name || '')}"></div>
+              <div class="cell green"><label>Result/GPA</label><input class="info-result" value="${esc(info.result_gpa || '')}" placeholder="5.00"></div>
+              <div class="cell"><label>ETC/BTC No</label><input class="info-etc" value="${esc(info.etc_btc_no || s.etc_btc_no || '')}"></div>
+              <div class="cell"><label>Due Till</label><input class="info-duedate" value="${esc(info.due_till_date || s.due_till_date || '')}" placeholder="YYYY-MM-DD"></div>
+              <div class="cell"><label>Board Per.</label><input class="info-board" value="${esc(info.board_permission_no || s.board_permission_no || '')}"></div>
+              <div class="cell"><label>Cause</label><input class="info-cause" value="${esc(info.cause_of_leaving || s.cause_of_leaving || '')}"></div>
+            </div>
+          </td>
+          <td style="text-align:center;vertical-align:middle"><input type="checkbox" class="select-chk"></td>
+          <td class="photo-cell">
+            <div class="photo-box" id="photo-prev-${esc(sid)}">${photoHtml}</div>
+            <input type="file" class="photo-input" accept="image/*" data-sid="${esc(sid)}">
+            <div class="distribution-label">Distribution No.</div>
+            <input class="distribution-input info-dist" value="${esc(info.distribution_no || s.distribution_no || '')}">
+          </td>
+          <td>
+            <div class="actions-cell">
+              <button class="act-save" data-action="save" data-sid="${esc(sid)}">💾 Save</button>
+              <button class="act-protoyon" data-action="protoyon" data-sid="${esc(sid)}">Protoyon Potro</button>
+              <button class="act-clearance" data-action="clearance" data-sid="${esc(sid)}">Get Clearance</button>
+              <button class="act-tc" data-action="tc" data-sid="${esc(sid)}">Get TC</button>
+              <button class="act-cert" data-action="cert" data-sid="${esc(sid)}">Get Certificate</button>
+              <button class="act-testi" data-action="testi" data-sid="${esc(sid)}">Get Testimonial</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function collectRowData(sid) {
+      const tr = document.querySelector(`tr[data-sid="${sid}"]`);
+      if (!tr) return null;
+      const s = currentStudents.find(x => (x.student_id || x.student_index) === sid);
+      if (!s) return null;
+      const get = (cls) => tr.querySelector('.' + cls)?.value?.trim() || '';
+
+      return {
+        student: s,
+        session_year: +get('info-session') || currentSession,
+        group_name: get('info-group'),
+        section_name: get('info-section'),
+        exam_name: get('info-exam'),
+        student_type: get('info-type'),
+        date_of_birth: get('info-dob'),
+        registration_no: get('info-registration'),
+        tc_class_name: get('info-tcclass'),
+        center_name: get('info-center'),
+        result_gpa: get('info-result'),
+        etc_btc_no: get('info-etc'),
+        due_till_date: get('info-duedate'),
+        board_permission_no: get('info-board'),
+        cause_of_leaving: get('info-cause'),
+        distribution_no: get('info-dist'),
+        exam_center_name: document.getElementById('cfg_exam')?.value || '',
+        education_board: document.getElementById('cfg_board')?.value || '',
+        student_photo: (window.__photos && window.__photos[sid]) || currentInfo[sid]?.student_photo || s.student_photo || '',
+      };
+    }
+
+    async function saveSingle(sid) {
+      const d = collectRowData(sid);
+      if (!d) return false;
+      const payload = {
+        student_id: sid, student_index: d.student.student_index,
+        session_year: d.session_year, group_name: d.group_name,
+        section_name: d.section_name, exam_name: d.exam_name,
+        student_type: d.student_type,
+        date_of_birth: d.date_of_birth || null,
+        registration_no: d.registration_no, tc_class_name: d.tc_class_name,
+        center_name: d.center_name, result_gpa: d.result_gpa,
+        due_till_date: d.due_till_date || null,
+        etc_btc_no: d.etc_btc_no, board_permission_no: d.board_permission_no,
+        cause_of_leaving: d.cause_of_leaving, distribution_no: d.distribution_no,
+        education_board: d.education_board, exam_center_name: d.exam_center_name,
+        student_photo: d.student_photo,
+      };
+      const { error } = await supabase.from('testimonial_info')
+        .upsert(payload, { onConflict: 'student_id' });
+      if (error) { toast('❌ ' + error.message, 'error'); return false; }
+      return true;
+    }
+
+    async function saveSelectedStudents() {
+      const selected = [];
+      document.querySelectorAll('.select-chk:checked').forEach(chk => {
+        selected.push(chk.closest('tr').dataset.sid);
+      });
+      if (!selected.length) { toast('কোনো ছাত্র সিলেক্ট নেই', 'error'); return; }
+      let ok = 0;
+      for (const sid of selected) if (await saveSingle(sid)) ok++;
+      toast(`✅ ${ok}/${selected.length}টি সেভ হয়েছে`, 'success');
+    }
+
+    async function handleRowAction(action, sid) {
+      if (action === 'save') {
+        if (await saveSingle(sid)) toast('✅ সেভ হয়েছে', 'success');
+        return;
+      }
+      const d = collectRowData(sid);
+      if (!d) { toast('তথ্য পড়া যায়নি', 'error'); return; }
+      await saveSingle(sid);
+
+      if (action === 'protoyon') showDoc('protoyon', d);
+      else if (action === 'clearance') showDoc('clearance', d);
+      else if (action === 'tc') showDoc('tc', d);
+      else if (action === 'cert') showDoc('cert', d);
+      else if (action === 'testi') showDoc('testi', d);
+    }
+
+    function showDoc(type, d) {
+      let docHtml = '';
+      if (type === 'protoyon') docHtml = renderProtoyon(d);
+      else if (type === 'clearance') docHtml = renderChadpotro(d);
+      else if (type === 'tc') docHtml = renderTC(d);
+      else if (type === 'cert') docHtml = renderCert(d);
+      else if (type === 'testi') docHtml = renderTesti(d);
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'print-modal';
+      modalDiv.innerHTML = `
+        <div class="print-modal-inner">
+          <div class="print-actions-top no-print">
+            <button class="btn-close-print" id="docClose">✕ বন্ধ করুন</button>
+            <button class="btn-print-now" onclick="window.print()">🖨️ প্রিন্ট / PDF (Landscape A4)</button>
+          </div>
+          ${docHtml}
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+      document.getElementById('docClose').onclick = () => modalDiv.remove();
+    }
+
+    /* ====================================================
+       📄 প্রোটোটাইপ: প্রত্যয়নপত্র + ছাড়পত্র (Portrait)
+       ==================================================== */
+    function renderProtoyon(d) {
+      const s = d.student;
+      const cls = allClasses.find(c => c.id == s.class_id)?.class_name || '';
+      const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+      return `
+        <div class="doc-page doc-tc">
+          <div class="frame">
+            <div class="frame-inner">
+              <div class="frame-content">
+                <div class="doc-school-head">
+                  <h1>${esc(school.name)}</h1>
+                  <p>${esc(school.address)}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;margin:12px 0 6px">
+                  <span>প্রত্যয়নপত্র নং : <b>${esc(d.distribution_no || '........')}</b></span>
+                  <span>তারিখ : <b>${todayStr}</b></span>
+                </div>
+                <div style="text-align:center;margin:14px 0 16px">
+                  <div style="display:inline-block;background:#1e40af;color:white;padding:5px 32px;border-radius:6px;font-size:18px;font-weight:800;font-family:Arial">প্রত্যয়নপত্র</div>
+                </div>
+                <div class="doc-body" style="font-family:'Noto Sans Bengali',serif;font-size:13px">
+                  <p>এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, <span class="fill name">${esc(s.name)}</span></p>
+                  <p>পিতা : <span class="fill full">${esc(s.father_name || '')}</span></p>
+                  <p>মাতা : <span class="fill full">${esc(s.mother_name || '')}</span></p>
+                  <p>ঠিকানা : <span class="fill full">${esc(s.present_address || '')}</span></p>
+                  <p>সে অত্র বিদ্যালয়ে <b>${d.session_year}</b> শিক্ষাবর্ষে <span class="fill">${esc(cls)}</span> শ্রেণির একজন নিয়মিত ছাত্র/ছাত্রী। রোল : <span class="fill">${esc(s.roll ?? '')}</span></p>
+                  <p>জন্ম তারিখ : <span class="fill wide">${esc(d.date_of_birth || '..............')}</span></p>
+                  <p>তার স্বভাব চরিত্র ভালো। আমি তার সর্বাত্মক মঙ্গল কামনা করি।</p>
+                </div>
+                <div class="doc-bottom" style="margin-top:30px">
+                  <div>Date : ............................</div>
+                  <div class="sign-area"><div class="sign-line" style="min-width:220px">প্রধান শিক্ষক</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChadpotro(d) {
+      const s = d.student;
+      const cls = allClasses.find(c => c.id == s.class_id)?.class_name || '';
+      const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+      return `
+        <div class="doc-page doc-tc">
+          <div class="frame"><div class="frame-inner"><div class="frame-content">
+            <div class="doc-school-head">
+              <h1>${esc(school.name)}</h1>
+              <p>${esc(school.address)}</p>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin:12px 0 6px">
+              <span>ছাড়পত্র নং : <b>${esc(d.distribution_no || '........')}</b></span>
+              <span>তারিখ : <b>${todayStr}</b></span>
+            </div>
+            <div style="text-align:center;margin:14px 0 16px">
+              <div style="display:inline-block;background:#dc2626;color:white;padding:5px 32px;border-radius:6px;font-size:18px;font-weight:800;font-family:Arial">ছাড়পত্র</div>
+            </div>
+            <div class="doc-body" style="font-family:'Noto Sans Bengali',serif;font-size:13px">
+              <p>এই মর্মে ছাড়পত্র প্রদান করা যাচ্ছে যে, <span class="fill name">${esc(s.name)}</span></p>
+              <p>পিতা : <span class="fill full">${esc(s.father_name || '')}</span></p>
+              <p>মাতা : <span class="fill full">${esc(s.mother_name || '')}</span></p>
+              <p>সে অত্র বিদ্যালয়ে <b>${d.session_year}</b> শিক্ষাবর্ষে <span class="fill">${esc(cls)}</span> শ্রেণির একজন নিয়মিত শিক্ষার্থী। রোল : <span class="fill">${esc(s.roll ?? '')}</span></p>
+              <p>E-TC/B-TC নং : <span class="fill wide">${esc(d.etc_btc_no || '..............')}</span></p>
+              <p>সকল পাওনা পরিশোধ সাপেক্ষে ছাড়পত্র প্রদান করা হইল। আমি তার সর্বাত্মক মঙ্গল কামনা করি।</p>
+            </div>
+            <div class="doc-bottom" style="margin-top:30px">
+              <div>Date : ............................</div>
+              <div class="sign-area"><div class="sign-line" style="min-width:220px">প্রধান শিক্ষক</div></div>
+            </div>
+          </div></div></div>
+        </div>
+      `;
+    }
+
+    /* ====================================================
+       📄 1. TRANSFER CERTIFICATE (Black Fancy Border)
+       ==================================================== */
+    function renderTC(d) {
+      const s = d.student;
+      const cls = d.tc_class_name || allClasses.find(c => c.id == s.class_id)?.class_name || '';
+
+      return `
+        <div class="doc-page doc-tc">
+          <div class="frame">
+            <div class="frame-inner">
+              <div class="frame-content">
+
+                <div class="doc-school-head">
+                  <h1>${esc(school.name)}</h1>
+                  <p>${esc(school.address)}</p>
+                </div>
+
+                <div style="font-size:12.5px;font-family:Arial;margin:14px 0 6px">
+                  Distribution No. <b>${esc(d.distribution_no || '')}</b>
+                </div>
+
+                <div class="badge-title blue" style="margin:12px 0 16px">
+                  <span style="background:#2563eb;color:white">Transfer Certificate</span>
+                </div>
+
+                <div class="doc-body" style="font-family:'Times New Roman',serif;font-size:13.5px">
+                  <p>
+                    This is to certify that,
+                    <span class="fill name" style="min-width:280px">${esc(s.name).toUpperCase()}</span>
+                  </p>
+
+                  <div class="field-row">
+                    <span class="lbl">Father's Name :</span>
+                    <span class="dots">${esc(s.father_name || '')}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="lbl">Mother's Name :</span>
+                    <span class="dots">${esc(s.mother_name || '')}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="lbl">Address :</span>
+                    <span class="dots">${esc(s.present_address || '')}</span>
+                  </div>
+
+                  <p style="margin-top:8px">
+                    student of this institution at the class of
+                    <span class="fill">${esc(cls)}</span>
+                    Roll No. : <span class="fill" style="min-width:60px">${esc(s.roll ?? '')}</span>
+                    is/was a student of this school.
+                  </p>
+
+                  <p>
+                    Registration No. : <span class="fill wide">${esc(d.registration_no || '')}</span>
+                    Session : <span class="fill" style="min-width:70px">${d.session_year}</span>
+                    He/She appeared/passed the Examination
+                    <span class="fill wide">${esc(d.exam_name || '')}</span>
+                    obtained class/GPA <span class="fill" style="min-width:60px">${esc(d.result_gpa || '')}</span> position
+                  </p>
+
+                  <p>
+                    and date of birth : <span class="fill wide">${esc(d.date_of_birth || '')}</span>
+                    To the best of my knowledge he/she bears a good
+                    moral character and has not taken part in any activity subversive of the state or of discipline. All dues of the school
+                    has been received from him till date : <span class="fill wide">${esc(d.due_till_date || '')}</span>
+                  </p>
+
+                  <p style="margin-top:6px">I wish him/her every success in life.</p>
+                  <p>The cause of leaving institution.</p>
+                </div>
+
+                <div class="doc-bottom" style="margin-top:30px">
+                  <div>Date : ............................</div>
+                  <div class="sign-area"><div class="sign-line" style="min-width:220px">Head Teacher</div></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ====================================================
+       📄 2. ACADEMIC CERTIFICATE (Blue Greek Key Border)
+       ==================================================== */
+    function renderCert(d) {
+      const s = d.student;
+      const cls = allClasses.find(c => c.id == s.class_id)?.class_name || '';
+
+      return `
+        <div class="doc-page doc-ac">
+          <div class="frame">
+            <div class="greek-pattern"></div>
+            <div class="greek-border"></div>
+            <div class="frame-content">
+
+              <div class="doc-school-head">
+                <h1>${esc(school.name)}</h1>
+                <p>${esc(school.address)}</p>
+              </div>
+
+              <div style="font-size:12.5px;font-family:Arial;margin:12px 0 6px">
+                Distribution No. : <b>${esc(d.distribution_no || '')}</b>
+              </div>
+
+              <div class="badge-title green" style="margin:10px 0 14px">
+                <span>Academic Certificate</span>
+              </div>
+
+              <div class="doc-body" style="font-family:'Times New Roman',serif;font-size:13.5px">
+                <p>
+                  This is to certify that,
+                  <span class="fill name" style="min-width:280px">${esc(s.name).toUpperCase()}</span>
+                </p>
+
+                <div class="field-row">
+                  <span class="lbl">Father's Name :</span>
+                  <span class="dots">${esc(s.father_name || '')}</span>
+                </div>
+                <div class="field-row">
+                  <span class="lbl">Mother's Name :</span>
+                  <span class="dots">${esc(s.mother_name || '')}</span>
+                </div>
+
+                <p style="margin-top:8px">
+                  Roll No. : <span class="fill" style="min-width:60px">${esc(s.roll ?? '')}</span>
+                  Student ID : <span class="fill" style="min-width:90px">${esc(s.student_index || '')}</span>
+                </p>
+
+                <p>
+                  Participated in <span class="fill wide">${esc(d.exam_name || '')}</span>
+                  in the year <span class="fill" style="min-width:60px">${d.session_year}</span> arranged by
+                  the <span class="fill full">${esc(school.name)}</span> as a student
+                  of Class : <span class="fill" style="min-width:60px">${esc(cls)}</span>
+                  Group : <span class="fill" style="min-width:60px">${esc(d.group_name || 'N/A')}</span>
+                  Section : <span class="fill" style="min-width:60px">${esc(d.section_name || 'A')}</span>
+                </p>
+
+                <p>
+                  from this institution and passed with G.P.A. <span class="fill" style="min-width:60px">${esc(d.result_gpa || '')}</span>
+                  out of 5.00. As far as I know, while studying in this
+                  institute he/she was not involved in any sort of anti-social or indisciplined activities.
+                  He/She bears a good moral character.
+                </p>
+
+                <p style="font-weight:800;margin-top:8px">I wish him/her every success in life & bright future.</p>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:end;margin-top:26px">
+                <div style="font-size:10.5px;color:#6b7280;font-style:italic;font-family:Arial">
+                  Powered by <b>${esc(school.name)}</b>, ${esc(school.address)}
+                </div>
+                <div class="sign-area" style="text-align:center">
+                  <div class="sign-line" style="border-top:1.5px solid #000;padding-top:4px;min-width:200px;font-weight:700;font-size:12.5px">Head Teacher</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ====================================================
+       📄 3. TESTIMONIAL (Blue Ornate Scalloped Border)
+       ==================================================== */
+    function renderTesti(d) {
+      const s = d.student;
+      const cls = allClasses.find(c => c.id == s.class_id)?.class_name || '';
+
+      return `
+        <div class="doc-page doc-tm">
+          <div class="frame">
+            <div class="frame-inner">
+              <div class="frame-content">
+
+                <div class="doc-school-head">
+                  <h1>${esc(school.name)}</h1>
+                  <p>${esc(school.address)}</p>
+                </div>
+
+                <div style="font-size:12.5px;font-family:Arial;margin:12px 0 6px">
+                  Distribution No. : <b>${esc(d.distribution_no || '')}</b>
+                </div>
+
+                <div class="badge-title green" style="margin:10px 0 14px">
+                  <span style="background:linear-gradient(90deg,#0891b2,#16a34a);color:white;border:none">Testimonial</span>
+                </div>
+
+                <div class="doc-body" style="font-family:'Times New Roman',serif;font-size:13.5px">
+                  <p>
+                    This is to certify that,
+                    <span class="fill name" style="min-width:280px">${esc(s.name).toUpperCase()}</span>
+                  </p>
+
+                  <div class="field-row">
+                    <span class="lbl">Father's Name :</span>
+                    <span class="dots">${esc(s.father_name || '')}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="lbl">Mother's Name :</span>
+                    <span class="dots">${esc(s.mother_name || '')}</span>
+                  </div>
+
+                  <p style="margin-top:8px">
+                    Roll No. : <span class="fill" style="min-width:60px">${esc(s.roll ?? '')}</span>
+                    Registration No. : <span class="fill wide">${esc(d.registration_no || '')}</span>
+                  </p>
+
+                  <p>
+                    Participated in <span class="fill wide">${esc(d.exam_name || '')}</span>
+                    in the year <span class="fill" style="min-width:60px">${d.session_year}</span> arranged by
+                    the <span class="fill full">${esc(d.education_board || 'Board of Intermediate and Secondary Education, Dhaka')}</span>
+                    as a <span class="fill" style="min-width:80px">${esc(d.student_type || 'Regular')}</span>
+                  </p>
+
+                  <p>
+                    student of <span class="fill" style="min-width:80px">${esc(d.group_name || 'N/A')}</span>
+                    group from this institution and passed with G.P.A.
+                    <span class="fill" style="min-width:60px">${esc(d.result_gpa || '')}</span> out of 5.00.
+                  </p>
+
+                  <p>
+                    According to institute's admission register, his/her date of birth is
+                    <span class="fill wide">${esc(d.date_of_birth || '')}</span> As far as I know,
+                    while studying in this institute he/she was not involved in any sort of anti-social or indisciplined activities.
+                    He/She bears a good moral character.
+                  </p>
+
+                  <p style="font-weight:800;margin-top:8px">I wish him/her every success in life & bright future.</p>
+                </div>
+
+                <div class="doc-bottom" style="margin-top:26px">
+                  <div>
+                    <div>Issue Date : ............................</div>
+                    <div class="doc-footer-note" style="text-align:left;margin-top:10px">
+                      Powered by <b>${esc(school.name)}</b>, ${esc(school.address)}
+                    </div>
+                  </div>
+                  <div class="sign-area"><div class="sign-line" style="min-width:220px">Head Teacher</div></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+  </script>
+</body>
+</html>

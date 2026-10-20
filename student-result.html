@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Result Sheet · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ============================================================
+   SCREEN STYLES
+   ============================================================ */
+:root{
+  --rs-primary:#1e40af;--rs-primary-light:#dbeafe;--rs-primary-dark:#1e3a8a;
+  --rs-success:#16a34a;--rs-success-light:#dcfce7;--rs-danger:#dc2626;
+  --rs-danger-light:#fee2e2;--rs-bg:#f1f5f9;--rs-border:#e2e8f0;
+  --rs-text:#0f172a;--rs-gray:#64748b;
+}
+*{box-sizing:border-box}
+.rs-page{padding:0;background:var(--rs-bg);min-height:100vh}
+.rs-top{background:linear-gradient(135deg,#1e40af 0%,#1e3a8a 50%,#0f172a 100%);padding:22px 28px;border-radius:14px 14px 0 0;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:relative;overflow:hidden}
+.rs-top .tl{display:flex;align-items:center;gap:16px}
+.rs-top .ticon{width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(10px)}
+.rs-top h1{margin:0;font-size:22px;font-weight:900;letter-spacing:-.3px}
+.rs-top p{margin:4px 0 0;font-size:13px;opacity:.85;font-weight:500}
+.rs-back{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;cursor:pointer;font-family:inherit;backdrop-filter:blur(10px)}
+.rs-back:hover{background:rgba(255,255,255,.25);transform:translateY(-1px)}
+.rs-body{background:#fff;border-radius:0 0 14px 14px;padding:0;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+.rs-filters{padding:24px 28px;border-bottom:1px solid var(--rs-border)}
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label{font-size:11px;color:var(--rs-gray);font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding-left:2px}
+.fld select,.fld input{padding:11px 13px;border:2px solid var(--rs-border);border-radius:10px;font-size:13.5px;font-family:inherit;font-weight:600;background:#fafbfc;color:var(--rs-text);transition:all .2s;width:100%;cursor:pointer}
+.fld select:focus,.fld input:focus{outline:none;border-color:var(--rs-primary);background:#fff;box-shadow:0 0 0 4px rgba(30,64,175,.1)}
+
+.rs-action-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding-top:14px;border-top:1px dashed var(--rs-border)}
+.rs-btn{padding:12px 24px;border:none;border-radius:10px;font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:all .2s;white-space:nowrap}
+.rs-btn:disabled{opacity:.55;cursor:not-allowed}
+.rs-btn-pri{background:linear-gradient(135deg,var(--rs-primary),var(--rs-primary-dark));color:#fff;box-shadow:0 6px 16px rgba(30,64,175,.35)}
+.rs-btn-pri:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px rgba(30,64,175,.45)}
+.rs-btn-sec{background:#f1f5f9;color:var(--rs-gray)}
+.rs-btn-sec:hover{background:#e2e8f0}
+.adv-toggle{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f8fafc;border:1px solid var(--rs-border);border-radius:10px;font-weight:700;font-size:12.5px;color:var(--rs-gray);cursor:pointer;font-family:inherit;transition:all .15s}
+.adv-toggle:hover{background:#e2e8f0;color:var(--rs-text)}
+.adv-toggle.on{background:var(--rs-primary-light);color:var(--rs-primary);border-color:var(--rs-primary)}
+.adv-toggle .arrow{font-size:10px;transition:transform .25s;display:inline-block}
+.adv-toggle.on .arrow{transform:rotate(180deg)}
+
+/* ADVANCED PANEL */
+.adv-panel{max-height:0;overflow:hidden;transition:max-height .4s ease;background:linear-gradient(180deg,#f8fafc,#fff);border-radius:12px;margin-top:0;border:1px solid transparent}
+.adv-panel.open{max-height:1200px;padding:20px;margin-top:16px;border-color:var(--rs-border);overflow-y:auto}
+.adv-title{font-size:13px;font-weight:800;color:var(--rs-gray);text-transform:uppercase;letter-spacing:.5px;margin:0 0 12px;padding-bottom:8px;border-bottom:2px dashed var(--rs-border);display:flex;align-items:center;gap:8px}
+
+.adv-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.adv-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1.5px solid var(--rs-border);border-radius:9px;cursor:pointer;transition:all .15s}
+.adv-opt:hover{border-color:var(--rs-primary);background:#f8fafc}
+.adv-opt input{width:17px;height:17px;accent-color:var(--rs-primary);cursor:pointer;flex-shrink:0}
+.adv-opt .lbl{font-size:12.5px;font-weight:700;color:var(--rs-text);line-height:1.3}
+
+/* Term Selection Area */
+.term-selector-box { background: #fff; border: 1px solid var(--rs-border); border-radius: 10px; padding: 15px; margin-top: 10px; }
+.term-selector-title { font-weight: 800; font-size: 14px; color: var(--rs-primary-dark); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.term-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.term-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; }
+.term-item label { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; cursor: pointer; flex: 1; }
+.term-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--rs-primary); cursor: pointer; }
+.term-item input[type="number"] { width: 60px; padding: 5px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; font-weight: 700; font-family: inherit; }
+.term-item .pct-symbol { font-weight: 700; color: var(--rs-gray); }
+
+/* Signature Settings Box */
+.sig-settings-box { margin-top: 15px; background: #fff; border: 1px solid var(--rs-border); border-radius: 10px; padding: 15px; }
+.sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.sig-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.sig-row label { font-weight: 700; font-size: 12px; color: var(--rs-gray); width: 80px; }
+.sig-row input[type="text"], .sig-row select { padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; flex: 1; font-family: inherit; }
+.sig-row input[type="file"] { font-size: 11px; width: 160px; }
+.sig-preview { width: 50px; height: 30px; object-fit: contain; border: 1px dashed #ccc; display: none; }
+
+/* Result Table */
+.result-toolbar{padding:16px 28px;background:linear-gradient(180deg,#f8fafc,#fff);border-bottom:1px solid var(--rs-border);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.result-table-wrap{overflow-x:auto;background:#fff;border-bottom:1px solid var(--rs-border)}
+.result-table{width:100%;border-collapse:collapse;font-size:13px;min-width:1000px}
+.result-table thead th{background:linear-gradient(180deg,#1e40af,#1e3a8a);color:white;padding:13px 12px;text-align:center;font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.result-table tbody tr{border-bottom:1px solid var(--rs-border);transition:background .15s;cursor:pointer}
+.result-table tbody tr:hover{background:#f8fafc}
+.result-table tbody tr.pass-row{background:#f0fdf4}
+.result-table tbody tr.fail-row{background:#fef2f2}
+.result-table tbody td{padding:11px 12px;text-align:center;vertical-align:middle;font-weight:600;color:var(--rs-text)}
+.result-table tbody td.name{font-weight:800;text-align:left;color:var(--rs-text);font-size:13px}
+
+.tr-actions{display:flex;gap:12px;justify-content:center;margin-bottom:20px;padding-top:18px;flex-wrap:wrap}
+.tr-actions button{padding:11px 26px;border-radius:10px;font-weight:800;font-size:13.5px;cursor:pointer;border:none;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+
+/* ============================================================
+   TRANSCRIPT PAGE (A4)
+   ============================================================ */
+.tr-outer{background:#e5e7eb;padding:20px 12px;display:flex;justify-content:center;min-height:100vh}
+.tr-page{
+  width:210mm;height:297mm;background:#fff;padding:4mm;
+  box-sizing:border-box;font-family:'Times New Roman','Noto Sans Bengali',serif;
+  color:#000;margin:0 auto;position:relative;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);overflow:hidden;
+}
+.tr-gold-frame{border:3px double #b8860b;padding:1.5px;height:100%;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.tr-black-frame{border:1px solid #000;padding:2mm 3mm;box-sizing:border-box;display:flex;flex-direction:column;flex:1;overflow:hidden}
+
+/* Header Custom Image */
+.tr-custom-header { text-align: center; margin-bottom: 5px; }
+.tr-custom-header img { max-height: 85px; width: auto; max-width: 100%; }
+
+.tr-header{display:grid;grid-template-columns:58px 1fr 90px;gap:6px;align-items:center;padding-bottom:1px}
+.tr-header .logo{width:58px;height:58px;border-radius:50%;overflow:hidden;background:white;display:flex;align-items:center;justify-content:center;font-size:26px}
+.tr-header .logo img{width:100%;height:100%;object-fit:cover}
+.tr-header .center{text-align:center}
+.tr-header .center h1{font-size:22px;font-weight:900;margin:0;letter-spacing:.3px;font-family:'Arial Black','Segoe UI',sans-serif;color:#000;text-transform:uppercase;line-height:1}
+.tr-header .center .addr{font-size:11.5px;margin:2px 0 0;font-family:'Segoe UI',Arial,sans-serif;font-weight:600}
+.tr-header .right{text-align:right;font-family:'Segoe UI',Arial,sans-serif;font-size:11px;padding-bottom:12px}
+.tr-header .right .lbl{color:#000;display:inline}
+.tr-header .right .no{font-weight:800;font-size:12px;color:#000}
+
+.tr-exam-bar{text-align:center;margin:1px 0 3px}
+.tr-exam-bar h2{display:inline-block;font-size:13px;font-weight:900;color:#000;margin:0;padding:0 3px 1px;border-bottom:1.3px solid #000;font-family:'Segoe UI',Arial,sans-serif}
+.tr-exam-bar .subtitle{display:block;margin-top:1px;font-size:11px;font-weight:800;font-style:italic;letter-spacing:1.5px;font-family:'Segoe UI',Arial,sans-serif;color:var(--rs-primary-dark)}
+
+.tr-info-row{display:grid;grid-template-columns:1fr 165px;gap:10px;margin:3px 0 2px}
+.tr-info-tbl{font-size:10.5px;font-family:'Segoe UI',Arial,sans-serif;width:100%;border-collapse:collapse}
+.tr-info-tbl tr td{padding:1px 0;vertical-align:top;line-height:1.25}
+.tr-info-tbl td:first-child{width:95px;color:#000;font-weight:600}
+.tr-info-tbl td.sep{width:8px;font-weight:600}
+.tr-info-tbl td:last-child{font-weight:800;color:#000;text-transform:uppercase}
+.tr-info-tbl td:last-child.nocase{text-transform:none}
+
+.tr-right-side{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.tr-photo{width:100px;height:115px;border:1px solid #000;background:#e5e7eb;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;color:#9ca3af}
+.tr-photo img{width:100%;height:100%;object-fit:cover}
+.tr-grade-key{width:165px;border-collapse:collapse;font-size:9px;font-family:'Segoe UI',Arial,sans-serif}
+.tr-grade-key th,.tr-grade-key td{border:1px solid #000;padding:1px 2px;text-align:center;line-height:1.05}
+.tr-grade-key th{background:#f3f4f6;font-weight:700;font-size:8.5px}
+.tr-grade-key td{font-weight:600;font-size:9px}
+
+.tr-sub-tbl{width:100%;border-collapse:collapse;font-size:10px;font-family:'Segoe UI',Arial,sans-serif;margin-top:3px;table-layout:fixed}
+.tr-sub-tbl th,.tr-sub-tbl td{border:1px solid #000;padding:2px 2px;text-align:center;vertical-align:middle;line-height:1.1}
+.tr-sub-tbl thead th{background:#b4c7e7;font-weight:700;font-size:9px;line-height:1.05}
+.tr-sub-tbl td.sub-name{text-align:left;font-weight:700;font-size:9.5px;padding-left:5px}
+.tr-sub-tbl tbody tr:nth-child(even) td{background:#fafafa}
+.tr-sub-tbl .lg-pass{color:#16a34a;font-weight:800}
+.tr-sub-tbl .lg-fail{color:#dc2626;font-weight:800}
+.tr-sub-tbl tr.fail-row td{background:#fee2e2 !important}
+
+.tr-summary{display:grid;grid-template-columns:1fr 1fr;border:1.2px solid #000;margin-top:4px;font-family:'Segoe UI',Arial,sans-serif;font-size:10px}
+.tr-summary .qs{padding:2px 9px;border-right:1.2px solid #000;border-bottom:1.2px solid #000}
+.tr-summary .qs.tr-right-col{border-right:none}
+.tr-summary .qs.tr-bottom{border-bottom:none}
+.tr-summary .line{display:flex;justify-content:space-between;gap:5px;padding:1px 0;line-height:1.2}
+.tr-summary .lbl{font-weight:600;color:#000;white-space:nowrap}
+.tr-summary .val{font-weight:800;color:#000;text-align:right;white-space:nowrap}
+
+.tr-remarks{display:grid;grid-template-columns:1fr 92px;gap:6px;margin-top:4px;border:1.2px solid #000;padding:5px 9px;font-family:'Segoe UI',Arial,sans-serif;font-size:10px;align-items:stretch;min-height:64px}
+.tr-remarks .remark-text{display:flex;flex-direction:column}
+.tr-remarks .remark-lbl{font-weight:800;margin-bottom:3px;font-size:10.5px}
+.tr-remarks .remark-body{flex:1;font-size:10px;line-height:1.4;color:#000}
+.tr-remarks .qr{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tr-remarks .qr img{width:72px;height:72px;border:1px solid #000;padding:2px;background:#fff}
+
+/* Signatures in Transcript */
+.tr-signs{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:auto;padding-top:22px;font-family:'Segoe UI',Arial,sans-serif;font-size:10px}
+.tr-signs > div{text-align:center;font-weight:700;position:relative}
+.tr-signs .sig-image{height:32px; max-width:120px; object-fit:contain; display:block; margin: 0 auto 2px;}
+.tr-signs .sig-line{border-top:1.3px dotted #000;padding-top:3px; margin-top: 2px; min-width: 150px;}
+.tr-signs > div:first-child{text-align:left;padding-left:6px}
+.tr-signs > div:last-child{text-align:right;padding-right:6px}
+.tr-signs > div:first-child .sig-line {margin-left: 0; margin-right: auto;}
+.tr-signs > div:last-child .sig-line {margin-left: auto; margin-right: 0;}
+
+.tr-footer{text-align:center;margin-top:3px;font-size:8.5px;color:#374151;font-family:'Segoe UI',Arial,sans-serif;line-height:1.2}
+
+/* ============================================================
+   PRINT CSS
+   ============================================================ */
+@media print {
+  @page { size: A4 portrait; margin: 0; }
+  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body > *:not(#app) { display: none !important; }
+  header.top, aside.sidebar, #toast, .no-print { display: none !important; }
+  main.content, main { margin: 0 !important; padding: 0 !important; min-height: 0 !important; width: 100% !important; }
+  .rs-page { background: #fff !important; padding: 0 !important; min-height: 0 !important; }
+  .rs-body { background: #fff !important; padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; }
+  #searchView, #marksheetView, #transcriptView, #printAllArea { display: none !important; }
+  
+  body.print-mode-transcript #transcriptView { display: block !important; margin: 0 !important; padding: 0 !important; }
+  .tr-outer { padding: 0 !important; margin: 0 !important; background: #fff !important; display: block !important; min-height: 0 !important; }
+  .tr-page { width: 210mm !important; height: 297mm !important; padding: 4mm !important; margin: 0 !important; box-sizing: border-box !important; box-shadow: none !important; page-break-after: always !important; overflow: hidden !important; display: block !important; position: relative !important; }
+  .tr-page:last-child { page-break-after: auto !important; }
+  .tr-gold-frame, .tr-black-frame { page-break-inside: avoid !important; height: 100% !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, getSchoolProfile } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'student-result.html', 'Student Result Sheet');
+
+const content = document.getElementById('content');
+const CURRENT_YEAR = new Date().getFullYear();
+const school = await getSchoolProfile();
+
+let classGradeMap = {};
+let allTeachers = [];
+
+async function loadInitialData() {
+  const [grades, teachers] = await Promise.all([
+    supabase.from('grade_system').select('*'),
+    supabase.from('teachers').select('id, name, signature').eq('teacher_type', 'active').order('name')
+  ]);
+  
+  classGradeMap = {};
+  (grades.data || []).forEach(g => {
+    if (!classGradeMap[g.class_name]) classGradeMap[g.class_name] = [];
+    classGradeMap[g.class_name].push(g);
+  });
+  Object.keys(classGradeMap).forEach(k => {
+    classGradeMap[k].sort((a, b) => b.mark_from - a.mark_from);
+  });
+
+  allTeachers = teachers.data || [];
+}
+await loadInitialData();
+
+function getGrade(percent, className) {
+  const list = classGradeMap[className] || [];
+  for (const g of list) {
+    if (percent >= +g.mark_from && percent <= +g.mark_to) return { gp: +g.grading_point, letter: g.grade_name };
+  }
+  if (percent >= 80) return { gp: 5.00, letter: 'A+' };
+  if (percent >= 70) return { gp: 4.00, letter: 'A' };
+  if (percent >= 60) return { gp: 3.50, letter: 'A-' };
+  if (percent >= 50) return { gp: 3.00, letter: 'B' };
+  if (percent >= 40) return { gp: 2.00, letter: 'C' };
+  if (percent >= 33) return { gp: 1.00, letter: 'D' };
+  return { gp: 0, letter: 'F' };
+}
+function gpaToLetter(gpa) {
+  if (gpa >= 5.00) return 'A+';
+  if (gpa >= 4.00) return 'A';
+  if (gpa >= 3.50) return 'A-';
+  if (gpa >= 3.00) return 'B';
+  if (gpa >= 2.00) return 'C';
+  if (gpa >= 1.00) return 'D';
+  return 'F';
+}
+
+/* File to Base64 Converter */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   UI তৈরি
+   ============================================================ */
+content.innerHTML = `
+<div class="rs-page">
+  <div class="rs-top">
+    <div class="tl">
+      <div class="ticon">📊</div>
+      <div>
+        <h1>Student Result Sheet</h1>
+        <p>Individual Student Result Sheet (Multiple Exam System)</p>
+      </div>
+    </div>
+    <button class="rs-back" onclick="window.location.href='dashboard.html'">← Back</button>
+  </div>
+
+  <div class="rs-body">
+    <div id="searchView">
+      <div class="rs-filters">
+        
+        <div class="filter-grid">
+          <div class="fld">
+            <label>Session / Year</label>
+            <select id="sessionYear">
+              ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="fld">
+            <label>Class Name</label>
+            <select id="className"><option value="">-- Select --</option></select>
+          </div>
+          <div class="fld">
+            <label>Section</label>
+            <select id="sectionName"><option value="">All Sections</option></select>
+          </div>
+          <div class="fld">
+            <label>Sort By</label>
+            <select id="sortBy">
+              <option value="roll">Roll No.</option>
+              <option value="name">Student Name</option>
+              <option value="marks">Obtained Marks</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <button class="adv-toggle" id="advToggle">
+            <span>⚙️</span><span>Show Exam List / Calculation & Signature Settings</span><span class="arrow">▾</span>
+          </button>
+        </div>
+
+        <div class="adv-panel" id="advPanel">
+          <div class="adv-title"><span>🎛️</span><span>Display & Calculation Options</span></div>
+          
+          <div class="adv-grid">
+            <label class="adv-opt"><input type="checkbox" id="optShowExamList" checked><span class="lbl">Show Exam List in MarkSheet</span></label>
+            <label class="adv-opt"><input type="checkbox" id="optShowMerit"><span class="lbl">Show Merit Place</span></label>
+            <label class="adv-opt"><input type="checkbox" id="optAutoRemarks" checked><span class="lbl">Auto Generate Remarks</span></label>
+          </div>
+
+          <!-- MULTIPLE EXAM SELECTION -->
+          <div class="term-selector-box">
+            <div class="term-selector-title">
+              <span>Add Custom Term Result (Percentage & Sum Mark)</span>
+              <span style="font-size: 12px; color: var(--rs-danger);">Sum of % should be 100</span>
+            </div>
+            <p style="font-size: 12px; color: var(--rs-gray); margin-bottom: 15px;">
+              Select the exams you want to average together. Enter the percentage weight for each exam.
+            </p>
+            <div class="term-list" id="termList">
+              <div style="grid-column: span 2; text-align: center; color: #9ca3af;">Select Class to load Exams</div>
+            </div>
+          </div>
+
+          <!-- HEADER & SIGNATURE SETTINGS -->
+          <div class="sig-settings-box">
+            <div class="term-selector-title">
+              <span>Header Image & Signatures (Optional)</span>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">Header Image (Replace School Name/Address)</label>
+              <input type="file" id="cfg_header" accept="image/*" style="padding: 5px; border:1px solid #ccc; border-radius:5px;">
+            </div>
+            
+            <div class="sig-grid">
+              <div>
+                <div class="sig-row">
+                  <label>Degisnation1</label>
+                  <input type="text" id="cfg_deg1" placeholder="e.g. Class Teacher" value="Class Teacher">
+                </div>
+                <div class="sig-row">
+                  <label>Sign1</label>
+                  <select id="cfg_sign1_teacher">
+                    <option value="">Select Teacher</option>
+                    ${allTeachers.map(t => `<option value="${t.signature || ''}">${esc(t.name)}</option>`).join('')}
+                  </select>
+                  <img src="" class="sig-preview" id="prev_sign1">
+                </div>
+                <div class="sig-row">
+                  <label></label>
+                  <input type="file" id="cfg_sign1_file" accept="image/*">
+                </div>
+              </div>
+
+              <div>
+                <div class="sig-row">
+                  <label>Degisnation2</label>
+                  <input type="text" id="cfg_deg2" placeholder="e.g. Principal" value="Principal">
+                </div>
+                <div class="sig-row">
+                  <label>Sign2</label>
+                  <select id="cfg_sign2_teacher">
+                    <option value="">Select Teacher</option>
+                    ${allTeachers.map(t => `<option value="${t.signature || ''}">${esc(t.name)}</option>`).join('')}
+                  </select>
+                  <img src="" class="sig-preview" id="prev_sign2">
+                </div>
+                <div class="sig-row">
+                  <label></label>
+                  <input type="file" id="cfg_sign2_file" accept="image/*">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="rs-action-bar" style="margin-top:18px">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="rs-btn rs-btn-pri" id="searchBtn"><span>🔍</span><span>Generate Result Sheet</span></button>
+            <button class="rs-btn rs-btn-sec" id="resetBtn"><span>🔄</span><span>Reset</span></button>
+          </div>
+          <div style="font-size:12px;color:var(--rs-gray);font-weight:600">💡 যেকোনো row-তে ক্লিক করে Transcript দেখুন</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="marksheetView" style="display:none"></div>
+    <div id="transcriptView" style="display:none"></div>
+  </div>
+</div>
+`;
+
+/* Toggle Advanced Panel */
+document.getElementById('advToggle').onclick = function() {
+  this.classList.toggle('on');
+  document.getElementById('advPanel').classList.toggle('open');
+};
+
+let allClasses = [];
+let allExamTerms = [];
+
+async function loadData() {
+  const [cls, exams] = await Promise.all([
+    supabase.from('classes').select('*').order('id'),
+    supabase.from('exams').select('exam_name, exam_serial').order('exam_serial'),
+  ]);
+  allClasses = cls.data || [];
+  allExamTerms = exams.data || [];
+
+  document.getElementById('className').innerHTML =
+    '<option value="">-- Select --</option>' +
+    allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+}
+await loadData();
+
+/* Class change -> Load Sections & Exams */
+document.getElementById('className').onchange = () => {
+  const cls = allClasses.find(c => c.id == document.getElementById('className').value);
+  const sections = cls?.sections?.length ? cls.sections : ['N/A','A','B'];
+  document.getElementById('sectionName').innerHTML =
+    '<option value="">All Sections</option>' + sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  
+  // Load Exams checkboxes
+  const termList = document.getElementById('termList');
+  if (!allExamTerms.length) {
+    termList.innerHTML = '<div style="grid-column: span 2; text-align: center; color: red;">No Exams found. Add exams first.</div>';
+    return;
+  }
+  
+  termList.innerHTML = allExamTerms.map(e => `
+    <div class="term-item">
+      <label>
+        <input type="checkbox" class="exam-chk" value="${esc(e.exam_name)}"> 
+        ${esc(e.exam_name)}
+      </label>
+      <input type="number" class="exam-pct" value="0" min="0" max="100" placeholder="0">
+      <span class="pct-symbol">%</span>
+    </div>
+  `).join('');
+};
+
+document.getElementById('resetBtn').onclick = () => {
+  document.getElementById('searchView').style.display = 'block';
+  document.getElementById('marksheetView').style.display = 'none';
+  document.getElementById('transcriptView').style.display = 'none';
+  toast('🔄 রিসেট হয়েছে', 'success');
+};
+
+// Preview dynamic signature selection
+document.getElementById('cfg_sign1_teacher').onchange = (e) => {
+  const img = document.getElementById('prev_sign1');
+  if (e.target.value) { img.src = e.target.value; img.style.display = 'block'; } 
+  else { img.style.display = 'none'; }
+};
+document.getElementById('cfg_sign2_teacher').onchange = (e) => {
+  const img = document.getElementById('prev_sign2');
+  if (e.target.value) { img.src = e.target.value; img.style.display = 'block'; } 
+  else { img.style.display = 'none'; }
+};
+
+
+/* ============================================================
+   Search & Process Multiple Exams
+   ============================================================ */
+document.getElementById('searchBtn').onclick = async () => {
+  const session = +document.getElementById('sessionYear').value;
+  const classId = document.getElementById('className').value;
+  const section = document.getElementById('sectionName').value;
+  
+  if (!classId) { toast('❌ Class সিলেক্ট করুন', 'error'); return; }
+
+  // Get selected exams and percentages
+  const selectedExams = [];
+  let totalPct = 0;
+  document.querySelectorAll('.exam-chk:checked').forEach(chk => {
+    const termName = chk.value;
+    const pct = +chk.closest('.term-item').querySelector('.exam-pct').value || 0;
+    selectedExams.push({ term: termName, pct });
+    totalPct += pct;
+  });
+
+  if (!selectedExams.length) { toast('❌ অন্তত একটি Exam সিলেক্ট করুন', 'error'); return; }
+  if (totalPct !== 100) { toast(`⚠️ সতর্কতা: পার্সেন্টেজের যোগফল ১০০ হচ্ছে না (বর্তমানে ${totalPct}%)`, 'error'); }
+
+  // Fetch Header & Signature configs
+  const cfgHeaderFile = document.getElementById('cfg_header').files[0];
+  const cfgSign1File = document.getElementById('cfg_sign1_file').files[0];
+  const cfgSign2File = document.getElementById('cfg_sign2_file').files[0];
+  
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.innerHTML = '<span>⏳</span><span>লোড হচ্ছে...</span>';
+
+  try {
+    // Convert Images to Base64
+    let headerImg = '';
+    let sign1Img = document.getElementById('cfg_sign1_teacher').value;
+    let sign2Img = document.getElementById('cfg_sign2_teacher').value;
+    
+    if (cfgHeaderFile) headerImg = await fileToBase64(cfgHeaderFile);
+    if (cfgSign1File) sign1Img = await fileToBase64(cfgSign1File);
+    if (cfgSign2File) sign2Img = await fileToBase64(cfgSign2File);
+
+    const cfgData = {
+      headerImg,
+      sign1Img,
+      sign2Img,
+      deg1: document.getElementById('cfg_deg1').value,
+      deg2: document.getElementById('cfg_deg2').value,
+      showExamList: document.getElementById('optShowExamList').checked,
+      showMerit: document.getElementById('optShowMerit').checked,
+      autoRemarks: document.getElementById('optAutoRemarks').checked,
+    };
+
+    // 1. Fetch Students
+    let q = supabase.from('students').select('*').eq('class_id', classId);
+    if (section) q = q.eq('section', section);
+    q = q.order('roll');
+    const { data: students } = await q;
+    if (!students || !students.length) throw new Error('No students found');
+
+    // 2. Fetch Subjects (from the first exam term)
+    const firstTerm = selectedExams[0].term;
+    const { data: subjects } = await supabase.from('subjects').select('*')
+      .eq('session_year', session).eq('class_id', classId).eq('exam_term', firstTerm).order('id');
+    const subjectList = subjects || [];
+    if (!subjectList.length) throw new Error(`No subjects found for ${firstTerm}`);
+
+    // 3. Fetch Results for ALL selected exam terms
+    const idxs = students.map(s => s.student_index).filter(Boolean);
+    const termNames = selectedExams.map(e => e.term);
+    const { data: allResults } = await supabase.from('exam_results').select('*')
+      .eq('session_year', session).eq('class_id', classId)
+      .in('exam_term', termNames)
+      .in('student_index', idxs);
+
+    const resultMap = {};
+    (allResults || []).forEach(r => {
+      if (!resultMap[r.student_index]) resultMap[r.student_index] = {};
+      if (!resultMap[r.student_index][r.exam_term]) resultMap[r.student_index][r.exam_term] = {};
+      const subKey = r.subject_code || r.subject_name;
+      resultMap[r.student_index][r.exam_term][subKey] = r;
+    });
+
+    // 4. Compute Weighted Average
+    const computed = students.map(s => {
+      let totalObt = 0, totalFull = 0, totalGP = 0, subjectCount = 0, hasAnyF = false;
+      const subjectRows = [];
+
+      subjectList.forEach(sub => {
+        const subKey = sub.subject_code || sub.subject_name;
+        let weightedSubObt = 0;
+        const examBreakdown = []; 
+
+        selectedExams.forEach(ex => {
+          const r = resultMap[s.student_index]?.[ex.term]?.[subKey] || {};
+          const isAbsent = r.is_absent === true || r.present === false;
+          const obt = isAbsent ? 0 : (
+            (+r.subjective_marks||0) + (+r.objective_marks||0) + 
+            (+r.practical_marks||0) + (+r.ct_mt_marks||0)
+          );
+          
+          const weighted = (obt * (ex.pct / 100));
+          weightedSubObt += weighted;
+          
+          examBreakdown.push({ term: ex.term, pct: ex.pct, rawObt: obt, weighted, isAbsent });
+        });
+
+        const subFull = +sub.total_marks || 100;
+        const pct = subFull ? (weightedSubObt / subFull * 100) : 0;
+        
+        let g = getGrade(pct, classId);
+        if (pct < 33) { g = { gp: 0, letter: 'F' }; hasAnyF = true; }
+
+        totalObt += weightedSubObt;
+        totalFull += subFull;
+        totalGP += g.gp;
+        subjectCount++;
+
+        subjectRows.push({
+          name: sub.subject_name, full: subFull, obt: weightedSubObt, pct, 
+          letter: g.letter, gp: g.gp, fail: pct < 33, breakdown: examBreakdown
+        });
+      });
+
+      let gpa = subjectCount ? (totalGP / subjectCount) : 0;
+      if (hasAnyF) gpa = 0;
+      
+      return {
+        student: s, totalObt: +totalObt.toFixed(2), totalFull,
+        gpa: +gpa.toFixed(2), letter: hasAnyF ? 'F' : gpaToLetter(gpa),
+        hasAnyF, subjects: subjectRows
+      };
+    });
+
+    // 5. Sort for Merit
+    computed.sort((a, b) => {
+      if (a.hasAnyF !== b.hasAnyF) return a.hasAnyF ? 1 : -1;
+      return b.totalObt - a.totalObt;
+    });
+    let meritCounter = 0;
+    computed.forEach((row, i) => {
+      if (!row.hasAnyF) {
+        if (i > 0 && computed[i-1].totalObt === row.totalObt && !computed[i-1].hasAnyF) row.merit = computed[i-1].merit;
+        else { meritCounter++; row.merit = meritCounter; }
+      }
+    });
+
+    // 6. Render
+    renderMarksheet(computed, { session, classId, selectedExams, cfgData });
+
+    document.getElementById('searchView').style.display = 'none';
+    document.getElementById('marksheetView').style.display = 'block';
+    toast('✅ রেজাল্ট তৈরি সম্পন্ন', 'success');
+
+  } catch (err) {
+    toast('❌ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<span>🔍</span><span>Generate Result Sheet</span>';
+  }
+};
+
+/* ============================================================
+   Render MarkSheet
+   ============================================================ */
+function renderMarksheet(computed, ctx) {
+  const sortBy = document.getElementById('sortBy').value;
+  
+  if (sortBy === 'roll') computed.sort((a,b) => (a.student.roll||0) - (b.student.roll||0));
+  if (sortBy === 'name') computed.sort((a,b) => (a.student.name||'').localeCompare(b.student.name||''));
+
+  const examListText = ctx.selectedExams.map(e => `${e.term} (${e.pct}%)`).join(' + ');
+
+  let html = `
+    <div class="rs-top">
+      <div class="tl">
+        <div class="ticon">📋</div>
+        <div>
+          <h1>MarkSheet Result</h1>
+          <p>Calculation: ${examListText}</p>
+        </div>
+      </div>
+      <button class="rs-back" id="msBack">← Back</button>
+    </div>
+
+    <div class="rs-body">
+      <div class="result-toolbar">
+        <div class="info">
+          <span class="stat">মোট: <b>${computed.length}</b></span>
+        </div>
+      </div>
+
+      <div class="result-table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th style="width:55px">Serial</th>
+              <th style="width:110px">Student Index</th>
+              <th class="left" style="text-align:left;padding-left:10px">Student Name</th>
+              <th style="width:65px">Roll No.</th>
+              <th style="width:95px">Obtained Mark</th>
+              <th style="width:65px">GPA</th>
+              <th style="width:70px">Letter Grade</th>
+              ${ctx.cfgData.showMerit ? '<th style="width:95px">Merit Place</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+  `;
+
+  computed.forEach((c, i) => {
+    const pass = !c.hasAnyF;
+    html += `
+      <tr class="result-row ${pass ? 'pass-row' : 'fail-row'}" data-sid="${c.student.id}">
+        <td>${i + 1}</td>
+        <td class="index">${esc(c.student.student_index || '-')}</td>
+        <td class="name" style="text-align:left;padding-left:10px">${esc(c.student.name)}</td>
+        <td>${esc(c.student.roll ?? '-')}</td>
+        <td class="marks">${c.totalObt}</td>
+        <td class="gpa">${c.gpa.toFixed(2)}</td>
+        <td class="grade ${pass ? 'pass' : 'fail'}">${c.letter}</td>
+        ${ctx.cfgData.showMerit ? `<td><b>${c.merit ? c.merit : '-'}</b></td>` : ''}
+      </tr>
+    `;
+  });
+
+  html += `
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  document.getElementById('marksheetView').innerHTML = html;
+
+  document.getElementById('msBack').onclick = () => {
+    document.getElementById('marksheetView').style.display = 'none';
+    document.getElementById('searchView').style.display = 'block';
+  };
+
+  document.querySelectorAll('.result-row').forEach(tr => {
+    tr.onclick = () => {
+      const c = computed.find(x => String(x.student.id) === tr.dataset.sid);
+      if (c) renderTranscript(c, ctx);
+    };
+  });
+}
+
+/* ============================================================
+   Render Transcript with Breakdown & Custom Header/Signs
+   ============================================================ */
+function renderTranscript(c, ctx) {
+  const s = c.student;
+  const classObj = allClasses.find(cl => cl.id == ctx.classId);
+  const cfg = ctx.cfgData;
+  
+  const qrText = `${school.emis||''}|${s.student_index}|${s.name}|${c.gpa}|${c.letter}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrText)}`;
+
+  // Subject rows
+  const subRows = c.subjects.map(sr => {
+    const isPass = !sr.fail;
+    return `
+      <tr class="${sr.fail ? 'fail-row' : ''}">
+        <td class="sub-name">${esc(sr.name)}</td>
+        <td>${sr.full}</td>
+        <td>${sr.obt}</td>
+        <td>${sr.pct.toFixed(1)}%</td>
+        <td class="${isPass ? 'lg-pass' : 'lg-fail'}">${sr.letter}</td>
+        <td class="${isPass ? 'lg-pass' : 'lg-fail'}">${sr.gp.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const examListText = ctx.selectedExams.map(e => `${e.term} (${e.pct}%)`).join(' + ');
+
+  // Custom Header Logic
+  let headerHtml = '';
+  if (cfg.headerImg) {
+    headerHtml = `<div class="tr-custom-header"><img src="${cfg.headerImg}"></div>`;
+  } else {
+    headerHtml = `
+      <div class="tr-header">
+        <div class="logo">${school.logo ? `<img src="${school.logo}">` : '🏫'}</div>
+        <div class="center">
+          <h1>${esc(school.name).toUpperCase()}</h1>
+          <div class="addr">${esc(school.address)}</div>
+        </div>
+        <div class="right">
+          <span class="lbl">EMIS: </span><span class="no">${esc(school.emis || '-')}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Custom Signature Logic
+  let sig1Html = '', sig2Html = '';
+  if (cfg.sign1Img) {
+    sig1Html = `<img src="${cfg.sign1Img}" class="sig-image">`;
+  }
+  if (cfg.sign2Img) {
+    sig2Html = `<img src="${cfg.sign2Img}" class="sig-image">`;
+  }
+
+  let html = `
+    <div class="rs-top">
+      <div class="tl">
+        <div class="ticon">📜</div>
+        <div>
+          <h1>Academic Transcript</h1>
+          <p>${esc(c.student.name)}</p>
+        </div>
+      </div>
+      <button class="rs-back" id="trBack">← Back</button>
+    </div>
+
+    <div class="rs-body">
+      <div class="tr-actions no-print">
+        <button class="rs-btn rs-btn-sec" id="trBack2">← MarkSheet এ ফিরে যান</button>
+        <button class="rs-btn rs-btn-pri" id="printTrBtn">🖨️ প্রিন্ট / PDF সেভ (A4)</button>
+      </div>
+      <div class="tr-outer">
+        <div class="tr-page">
+          <div class="tr-gold-frame">
+            <div class="tr-black-frame">
+              
+              ${headerHtml}
+
+              <div class="tr-exam-bar">
+                <h2>ACADEMIC TRANSCRIPT</h2>
+                ${cfg.showExamList ? `<span class="subtitle">${esc(examListText)}</span>` : ''}
+              </div>
+
+              <div class="tr-info-row">
+                <table class="tr-info-tbl">
+                  <tr><td>Session / Year</td><td class="sep">:</td><td class="nocase">${ctx.session}</td></tr>
+                  <tr><td>Student Id</td><td class="sep">:</td><td class="nocase">${esc(s.student_index || s.student_id)}</td></tr>
+                  <tr><td>Name of Student</td><td class="sep">:</td><td>${esc(s.name)}</td></tr>
+                  <tr><td>Father's Name</td><td class="sep">:</td><td class="nocase">${esc(s.father_name || '-')}</td></tr>
+                  <tr><td>Class</td><td class="sep">:</td><td class="nocase">${esc(classObj?.class_name || '-')}</td></tr>
+                  <tr><td>Roll No.</td><td class="sep">:</td><td class="nocase">${esc(s.roll ?? '-')}</td></tr>
+                  <tr><td>Section</td><td class="sep">:</td><td>${esc(s.section || 'A')}</td></tr>
+                </table>
+
+                <div class="tr-right-side">
+                  <div class="tr-photo">${s.student_photo ? `<img src="${s.student_photo}">` : '👤'}</div>
+                  <table class="tr-grade-key">
+                    <thead><tr><th>Marks Interval</th><th>Grade Point</th><th>Letter Grade</th></tr></thead>
+                    <tbody>
+                      <tr><td>80-100</td><td>5</td><td>A+</td></tr>
+                      <tr><td>70-79</td><td>4</td><td>A</td></tr>
+                      <tr><td>60-69</td><td>3.5</td><td>A-</td></tr>
+                      <tr><td>50-59</td><td>3</td><td>B</td></tr>
+                      <tr><td>40-49</td><td>2</td><td>C</td></tr>
+                      <tr><td>33-39</td><td>1</td><td>D</td></tr>
+                      <tr><td>0-32</td><td>0</td><td>F</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <table class="tr-sub-tbl">
+                <colgroup>
+                  <col style="width:auto"><col style="width:46px"><col style="width:48px">
+                  <col style="width:48px"><col style="width:50px"><col style="width:38px">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th style="text-align:left;padding-left:5px">Name of the Subjects</th>
+                    <th>Full<br>Marks</th>
+                    <th>Weighted<br>Marks</th>
+                    <th>Percent<br>(%)</th>
+                    <th>Letter<br>Grade</th>
+                    <th>GP</th>
+                  </tr>
+                </thead>
+                <tbody>${subRows}</tbody>
+              </table>
+
+              <div class="tr-summary">
+                <div class="qs">
+                  <div class="line"><span class="lbl">Total Marks</span><span class="val">${c.totalFull}</span></div>
+                  <div class="line"><span class="lbl">Obtained Marks</span><span class="val">${c.totalObt}</span></div>
+                </div>
+                <div class="qs tr-right-col">
+                  <div class="line"><span class="lbl">GPA</span><span class="val">${c.gpa.toFixed(2)}</span></div>
+                  <div class="line"><span class="lbl">Letter Grade</span><span class="val ${c.hasAnyF ? 'red' : 'green'}">${c.letter}</span></div>
+                </div>
+              </div>
+
+              <div class="tr-remarks">
+                <div class="remark-text">
+                  <div class="remark-lbl">Remarks :</div>
+                  <div class="remark-body">
+                    ${cfg.autoRemarks ? (c.hasAnyF ? 'Needs improvement.' : 'Excellent performance!') : ''}
+                    <br><br>
+                    <span style="font-size: 8px; color: #666;">
+                      Calculation: ${examListText}
+                    </span>
+                  </div>
+                </div>
+                <div class="qr">
+                  <img src="${qrUrl}" alt="QR">
+                </div>
+              </div>
+
+              <div class="tr-signs">
+                <div>
+                  ${sig1Html}
+                  <div class="sig-line">${esc(cfg.deg1)}</div>
+                </div>
+                <div>
+                  ${sig2Html}
+                  <div class="sig-line">${esc(cfg.deg2)}</div>
+                </div>
+              </div>
+
+              <div class="tr-footer">
+                This is an automatically computer generated result.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('transcriptView').innerHTML = html;
+  document.getElementById('transcriptView').style.display = 'block';
+  document.getElementById('marksheetView').style.display = 'none';
+
+  document.getElementById('trBack').onclick = () => {
+    document.getElementById('transcriptView').style.display = 'none';
+    document.getElementById('marksheetView').style.display = 'block';
+  };
+  document.getElementById('trBack2').onclick = () => {
+    document.getElementById('transcriptView').style.display = 'none';
+    document.getElementById('marksheetView').style.display = 'block';
+  };
+
+  document.getElementById('printTrBtn').onclick = () => {
+    document.body.classList.add('print-mode-transcript');
+    window.print();
+    setTimeout(() => document.body.classList.remove('print-mode-transcript'), 800);
+  };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>নোটিশ · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .nt-header {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+      padding: 22px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+      overflow: hidden;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .nt-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .nt-header > * { position: relative; z-index: 1; }
+
+    .nt-header .left { display: flex; align-items: center; gap: 16px; }
+    .nt-header .icon-box {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .nt-header h1 {
+      font-size: 22px; font-weight: 900;
+      margin: 0; letter-spacing: -0.3px;
+    }
+    .nt-header p {
+      font-size: 13px; margin: 4px 0 0 0;
+      opacity: 0.9; font-weight: 500;
+    }
+
+    .nt-back {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 10px 18px; border-radius: 10px; cursor: pointer;
+      font-weight: 700; font-size: 13.5px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nt-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .nt-back .arrow {
+      background: white; color: #c2410c;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+
+    .nt-body {
+      background: white;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+      border-radius: 0 0 10px 10px;
+    }
+
+    /* Top controls */
+    .nt-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 2px dashed #fed7aa;
+    }
+    .nt-search {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+      max-width: 380px;
+    }
+    .nt-search::before {
+      content: '🔍';
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .nt-search input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 2px solid #e5e7eb;
+      border-radius: 11px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      transition: all 0.2s;
+    }
+    .nt-search input:focus {
+      outline: none;
+      border-color: #f97316;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
+    }
+
+    .nt-add-btn {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 6px 16px rgba(249,115,22,0.35);
+      transition: all 0.2s;
+    }
+    .nt-add-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(249,115,22,0.45);
+    }
+
+    /* Stats */
+    .nt-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .nt-stat {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    .nt-stat h4 {
+      font-size: 11px;
+      color: #9a3412;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+    .nt-stat p {
+      font-size: 22px;
+      font-weight: 900;
+      color: #c2410c;
+      line-height: 1;
+    }
+
+    /* Notice list cards */
+    .nt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .nt-card {
+      background: white;
+      border-left: 5px solid #f97316;
+      border-radius: 10px;
+      padding: 18px 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 18px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .nt-card:hover {
+      box-shadow: 0 8px 20px rgba(249,115,22,0.15);
+      transform: translateX(4px);
+    }
+    .nt-card.pinned {
+      background: linear-gradient(90deg, #fef3c7 0%, #ffffff 20%);
+      border-left-color: #f59e0b;
+    }
+
+    .nt-card .pin-badge {
+      position: absolute;
+      top: -8px; right: 12px;
+      background: #f59e0b;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 10px;
+      letter-spacing: 0.4px;
+    }
+
+    .nt-card .info { min-width: 0; }
+    .nt-card .nt-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #9a3412;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .nt-card .nt-body-text {
+      font-size: 13.5px;
+      color: #4b5563;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .nt-card .nt-meta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 11.5px;
+      color: #9ca3af;
+      font-weight: 600;
+    }
+    .nt-card .nt-meta .item {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .nt-card .nt-actions-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .nt-card .nt-actions-col button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .act-edit { background: #dbeafe; color: #1e40af; }
+    .act-edit:hover { background: #bfdbfe; }
+    .act-pin { background: #fef3c7; color: #92400e; }
+    .act-pin:hover { background: #fde68a; }
+    .act-pin.active { background: #f59e0b; color: white; }
+    .act-delete { background: #fee2e2; color: #991b1b; }
+    .act-delete:hover { background: #fecaca; }
+    .act-preview { background: #ede9fe; color: #6d28d9; }
+    .act-preview:hover { background: #ddd6fe; }
+
+    /* Empty / Loading */
+    .nt-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      font-size: 14px;
+    }
+    .nt-empty .icon {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 14px;
+      opacity: 0.4;
+    }
+    .nt-empty h3 {
+      color: #374151;
+      font-style: normal;
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .nt-loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #f97316;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .nt-loading::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 3px solid #fed7aa;
+      border-top-color: #f97316;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(15,23,42,0.75);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      padding: 20px 24px;
+      border-radius: 20px 20px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 {
+      font-size: 17px; font-weight: 800; margin: 0;
+    }
+    .modal-close {
+      background: rgba(255,255,255,0.15);
+      border: none; color: white;
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      font-weight: 700;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+
+    .modal-body { padding: 22px 24px; }
+
+    .fld {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 16px;
+    }
+    .fld.required label::after {
+      content: ' *';
+      color: #dc2626;
+    }
+    .fld label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding-left: 2px;
+    }
+    .fld input,
+    .fld textarea {
+      padding: 12px 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      transition: all 0.2s;
+      width: 100%;
+      color: #1f2937;
+    }
+    .fld textarea {
+      min-height: 130px;
+      resize: vertical;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+    .fld input:focus,
+    .fld textarea:focus {
+      outline: none;
+      border-color: #f97316;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
+    }
+    .fld .hint {
+      font-size: 11.5px;
+      color: #9ca3af;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .char-counter {
+      text-align: right;
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .char-counter.warn { color: #f59e0b; }
+    .char-counter.danger { color: #dc2626; }
+
+    .pin-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-radius: 11px;
+      border: 1px solid #f59e0b;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+    .pin-toggle input {
+      width: 18px; height: 18px;
+      accent-color: #f59e0b;
+      cursor: pointer;
+    }
+    .pin-toggle .lbl {
+      font-weight: 800;
+      font-size: 13.5px;
+      color: #92400e;
+    }
+    .pin-toggle .sub {
+      font-size: 11px;
+      color: #b45309;
+      font-weight: 600;
+      margin-top: 1px;
+    }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 8px;
+    }
+    .btn-cancel {
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-save {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 6px 16px rgba(249,115,22,0.3);
+    }
+    .btn-save:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(249,115,22,0.4);
+    }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: auto;
+    }
+    .btn-delete:hover { background: #dc2626; color: white; }
+
+    /* Preview Modal */
+    .preview-modal-inner {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .preview-head {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      padding: 18px 24px;
+      border-radius: 20px 20px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .preview-head h3 { margin: 0; font-size: 16px; font-weight: 800; }
+    .preview-body {
+      padding: 26px 28px;
+    }
+    .preview-body .pv-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #9a3412;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .preview-body .pv-date {
+      font-size: 12.5px;
+      color: #9ca3af;
+      font-weight: 700;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 2px dashed #e5e7eb;
+    }
+    .preview-body .pv-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #374151;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 768px) {
+      .nt-header { padding: 16px 18px; }
+      .nt-header h1 { font-size: 17px; }
+      .nt-header .icon-box { width: 46px; height: 46px; font-size: 22px; }
+      .nt-body { padding: 16px; }
+      .nt-card {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .nt-card .nt-actions-col {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .nt-card .nt-actions-col button { flex: 1; }
+      .nt-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, logAction } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'notices.html', 'নোটিশ ব্যবস্থাপনা');
+
+    const content = document.getElementById('content');
+
+    let allNotices = [];
+    let currentSearch = '';
+    let editingNotice = null;
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div class="nt-header">
+        <div class="left">
+          <div class="icon-box">📢</div>
+          <div>
+            <h1>নোটিশ ব্যবস্থাপনা</h1>
+            <p>Notice Board · Home Page-এ দেখাবে</p>
+          </div>
+        </div>
+        <a class="nt-back" href="dashboard.html">
+          Back <span class="arrow">←</span>
+        </a>
+      </div>
+
+      <div class="nt-body">
+        <div class="nt-controls">
+          <div class="nt-search">
+            <input id="searchBox" placeholder="Search notice title or body...">
+          </div>
+          <button class="nt-add-btn" id="addNewBtn">
+            <span>➕</span>
+            <span>নতুন নোটিশ</span>
+          </button>
+        </div>
+
+        <div class="nt-stats" id="ntStats"></div>
+
+        <div class="nt-list" id="ntList">
+          <div class="nt-loading">লোড হচ্ছে...</div>
+        </div>
+      </div>
+    `;
+
+    /* ============ Load Notices ============ */
+    async function loadNotices() {
+      const listEl = document.getElementById('ntList');
+      listEl.innerHTML = '<div class="nt-loading">লোড হচ্ছে...</div>';
+
+      const { data, error } = await supabase
+        .from('notices')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        listEl.innerHTML = `
+          <div class="nt-empty">
+            <span class="icon">❌</span>
+            <h3>লোড করা যায়নি</h3>
+            <p>${esc(error.message)}</p>
+          </div>
+        `;
+        return;
+      }
+
+      allNotices = data || [];
+      renderStats();
+      renderList();
+    }
+    await loadNotices();
+
+    /* ============ Stats ============ */
+    function renderStats() {
+      const total = allNotices.length;
+      const pinned = allNotices.filter(n => n.is_pinned).length;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const thisMonth = allNotices.filter(n => {
+        const d = n.created_at || n.date;
+        return d && d.startsWith(today.slice(0, 7));
+      }).length;
+
+      document.getElementById('ntStats').innerHTML = `
+        <div class="nt-stat">
+          <h4>মোট নোটিশ</h4>
+          <p>${total}</p>
+        </div>
+        <div class="nt-stat" style="border-left-color:#f59e0b">
+          <h4>📌 Pinned</h4>
+          <p style="color:#92400e">${pinned}</p>
+        </div>
+        <div class="nt-stat" style="border-left-color:#16a34a">
+          <h4>এই মাসে</h4>
+          <p style="color:#16a34a">${thisMonth}</p>
+        </div>
+      `;
+    }
+
+    /* ============ Render List ============ */
+    function renderList() {
+      const listEl = document.getElementById('ntList');
+
+      let list = allNotices;
+
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase();
+        list = list.filter(n =>
+          (n.title || '').toLowerCase().includes(q) ||
+          (n.body || '').toLowerCase().includes(q)
+        );
+      }
+
+      // Pinned upore
+      list = [...list].sort((a, b) => {
+        if (!!a.is_pinned !== !!b.is_pinned) return a.is_pinned ? -1 : 1;
+        const da = a.created_at || a.date || '';
+        const db = b.created_at || b.date || '';
+        return db.localeCompare(da);
+      });
+
+      if (!list.length) {
+        listEl.innerHTML = `
+          <div class="nt-empty">
+            <span class="icon">${currentSearch ? '🔍' : '📭'}</span>
+            <h3>${currentSearch ? 'কিছু পাওয়া যায়নি' : 'এখনো কোনো নোটিশ নেই'}</h3>
+            <p>${currentSearch ? 'অন্য কিছু দিয়ে খুঁজুন' : 'নতুন নোটিশ যোগ করে শুরু করুন'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = list.map(n => renderCard(n)).join('');
+
+      listEl.querySelectorAll('[data-act]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.act;
+          const notice = allNotices.find(x => String(x.id) === String(id));
+          if (!notice) return;
+
+          if (act === 'edit') openForm(notice);
+          else if (act === 'delete') deleteNotice(notice);
+          else if (act === 'pin') togglePin(notice);
+          else if (act === 'preview') showPreview(notice);
+        };
+      });
+    }
+
+    function renderCard(n) {
+      const dateStr = n.created_at || n.date
+        ? new Date(n.created_at || n.date).toLocaleDateString('bn-BD', {
+            day: '2-digit', month: 'long', year: 'numeric'
+          })
+        : 'তারিখ নেই';
+
+      const shortBody = (n.body || '').length > 220
+        ? (n.body || '').slice(0, 220) + '...'
+        : (n.body || '');
+
+      return `
+        <div class="nt-card ${n.is_pinned ? 'pinned' : ''}">
+          ${n.is_pinned ? '<div class="pin-badge">📌 PINNED</div>' : ''}
+          <div class="info">
+            <div class="nt-title">${esc(n.title || 'শিরোনাম নেই')}</div>
+            <div class="nt-body-text">${esc(shortBody)}</div>
+            <div class="nt-meta">
+              <span class="item">📅 ${esc(dateStr)}</span>
+              <span class="item">✍️ ${esc(n.created_by || 'Admin')}</span>
+              ${n.body ? `<span class="item">📝 ${n.body.length} অক্ষর</span>` : ''}
+            </div>
+          </div>
+          <div class="nt-actions-col">
+            <button class="act-preview" data-act="preview" data-id="${n.id}">👁️ Preview</button>
+            <button class="act-pin ${n.is_pinned ? 'active' : ''}" data-act="pin" data-id="${n.id}">
+              ${n.is_pinned ? '📌 Unpin' : '📌 Pin'}
+            </button>
+            <button class="act-edit" data-act="edit" data-id="${n.id}">✏️ Edit</button>
+            <button class="act-delete" data-act="delete" data-id="${n.id}">🗑️ Delete</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Search ============ */
+    document.getElementById('searchBox').oninput = (e) => {
+      currentSearch = e.target.value;
+      renderList();
+    };
+
+    /* ============ Add New ============ */
+    document.getElementById('addNewBtn').onclick = () => openForm();
+
+    /* ============ Open Form (Add / Edit) ============ */
+    function openForm(notice = null) {
+      editingNotice = notice;
+      const isEdit = !!notice?.id;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ নোটিশ এডিট করুন' : '➕ নতুন নোটিশ যোগ করুন'}</h3>
+            <button class="modal-close" id="mClose">✕</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld required">
+              <label>শিরোনাম (Title)</label>
+              <input id="n_title"
+                value="${esc(notice?.title || '')}"
+                placeholder="যেমন: অর্ধবার্ষিক পরীক্ষার রুটিন প্রকাশিত হয়েছে"
+                maxlength="150">
+              <div class="char-counter" id="titleCount">0/150</div>
+            </div>
+
+            <div class="fld required">
+              <label>বিস্তারিত (Body)</label>
+              <textarea id="n_body"
+                placeholder="নোটিশের বিস্তারিত লিখুন..."
+                maxlength="3000">${esc(notice?.body || '')}</textarea>
+              <div class="char-counter" id="bodyCount">0/3000</div>
+            </div>
+
+            <label class="pin-toggle">
+              <input type="checkbox" id="n_pinned" ${notice?.is_pinned ? 'checked' : ''}>
+              <div>
+                <div class="lbl">📌 Pin this notice</div>
+                <div class="sub">Home page-এ সবার উপরে দেখাবে</div>
+              </div>
+            </label>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">বাতিল</button>
+              <button class="btn-save" id="mSave">${isEdit ? '💾 Update' : '💾 প্রকাশ করুন'}</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      // Character counter
+      const titleInp = document.getElementById('n_title');
+      const bodyInp = document.getElementById('n_body');
+      const titleCount = document.getElementById('titleCount');
+      const bodyCount = document.getElementById('bodyCount');
+
+      function updateCounts() {
+        const tl = titleInp.value.length;
+        const bl = bodyInp.value.length;
+
+        titleCount.textContent = `${tl}/150`;
+        titleCount.className = 'char-counter' + (tl > 130 ? ' warn' : '') + (tl >= 150 ? ' danger' : '');
+
+        bodyCount.textContent = `${bl}/3000`;
+        bodyCount.className = 'char-counter' + (bl > 2700 ? ' warn' : '') + (bl >= 3000 ? ' danger' : '');
+      }
+      titleInp.oninput = updateCounts;
+      bodyInp.oninput = updateCounts;
+      updateCounts();
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      /* ============ Delete ============ */
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`"${notice.title}" নোটিশ মুছবেন?\n\n⚠️ এটা ফেরানো যাবে না!`)) return;
+
+          const { error } = await supabase.from('notices').delete().eq('id', notice.id);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+          await logAction('delete', 'notices', notice.id, `নোটিশ মুছে ফেলা: ${notice.title}`);
+          toast('🗑️ নোটিশ মুছে ফেলা হয়েছে', 'success');
+          closeModal();
+          await loadNotices();
+        };
+      }
+
+      /* ============ Save ============ */
+      document.getElementById('mSave').onclick = async () => {
+        const title = titleInp.value.trim();
+        const body = bodyInp.value.trim();
+        const isPinned = document.getElementById('n_pinned').checked;
+
+        if (!title) { toast('শিরোনাম দিন', 'error'); return; }
+        if (!body) { toast('বিস্তারিত লিখুন', 'error'); return; }
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true;
+        btn.textContent = '⏳ সেভ হচ্ছে...';
+
+        const payload = {
+          title,
+          body,
+          is_pinned: isPinned,
+          created_by: profile.full_name || 'Admin',
+        };
+
+        let error;
+        if (isEdit) {
+          const r = await supabase.from('notices').update(payload).eq('id', notice.id);
+          error = r.error;
+        } else {
+          payload.created_at = new Date().toISOString();
+          payload.date = new Date().toISOString().slice(0, 10);
+          const r = await supabase.from('notices').insert(payload);
+          error = r.error;
+        }
+
+        btn.disabled = false;
+        btn.textContent = isEdit ? '💾 Update' : '💾 প্রকাশ করুন';
+
+        if (error) {
+          // is_pinned কলাম না থাকলে fallback
+          if (error.message.includes('is_pinned')) {
+            delete payload.is_pinned;
+            let retryError;
+            if (isEdit) {
+              ({ error: retryError } = await supabase.from('notices').update(payload).eq('id', notice.id));
+            } else {
+              ({ error: retryError } = await supabase.from('notices').insert(payload));
+            }
+            if (retryError) { toast('❌ ' + retryError.message, 'error'); return; }
+            toast('✅ সেভ হয়েছে (Pin ছাড়া)', 'success');
+          } else {
+            toast('❌ ' + error.message, 'error');
+            return;
+          }
+        } else {
+          toast(isEdit ? '✅ আপডেট হয়েছে' : '✅ নোটিশ প্রকাশিত হয়েছে', 'success');
+        }
+
+        await logAction(isEdit ? 'update' : 'create', 'notices', notice?.id || title,
+          `${isEdit ? 'Update' : 'Create'} notice: ${title}`);
+
+        closeModal();
+        await loadNotices();
+      };
+    }
+
+    /* ============ Toggle Pin ============ */
+    async function togglePin(notice) {
+      const newVal = !notice.is_pinned;
+
+      const { error } = await supabase
+        .from('notices')
+        .update({ is_pinned: newVal })
+        .eq('id', notice.id);
+
+      if (error) {
+        if (error.message.includes('is_pinned')) {
+          toast('❌ is_pinned কলাম নেই — চালু করতে হবে', 'error');
+        } else {
+          toast('❌ ' + error.message, 'error');
+        }
+        return;
+      }
+
+      toast(newVal ? '📌 Pinned করা হয়েছে' : '📍 Unpin করা হয়েছে', 'success');
+      await loadNotices();
+    }
+
+    /* ============ Delete Notice ============ */
+    async function deleteNotice(notice) {
+      if (!confirm(`"${notice.title}" নোটিশ মুছবেন?\n\n⚠️ এটা ফেরানো যাবে না!`)) return;
+
+      const { error } = await supabase.from('notices').delete().eq('id', notice.id);
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      await logAction('delete', 'notices', notice.id, `নোটিশ মুছে ফেলা: ${notice.title}`);
+      toast('🗑️ নোটিশ মুছে ফেলা হয়েছে', 'success');
+      await loadNotices();
+    }
+
+    /* ============ Preview ============ */
+    function showPreview(notice) {
+      const dateStr = new Date(notice.created_at || notice.date || Date.now())
+        .toLocaleDateString('bn-BD', {
+          day: '2-digit', month: 'long', year: 'numeric'
+        });
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="preview-modal-inner">
+          <div class="preview-head">
+            <h3>👁️ Home Page-এ যেভাবে দেখাবে</h3>
+            <button class="modal-close" id="pvClose">✕</button>
+          </div>
+          <div class="preview-body">
+            ${notice.is_pinned ? '<div style="color:#f59e0b;font-weight:800;font-size:12px;margin-bottom:8px">📌 PINNED</div>' : ''}
+            <div class="pv-title">${esc(notice.title)}</div>
+            <div class="pv-date">📅 ${esc(dateStr)} · ✍️ ${esc(notice.created_by || 'Admin')}</div>
+            <div class="pv-text">${esc(notice.body)}</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+      document.getElementById('pvClose').onclick = () => modalDiv.remove();
+    }
+  </script>
+</body>
+</html>

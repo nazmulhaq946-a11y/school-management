@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login · School Management</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.login-tabs{display:flex;gap:6px;background:#f3f4f6;padding:5px;border-radius:12px;margin-bottom:22px}
+.login-tabs button{flex:1;padding:11px 14px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:800;font-size:13px;color:#6b7280;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.login-tabs button.active{background:#fff;color:#7c3aed;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.login-tabs button:hover:not(.active){color:#374151}
+.login-pane{display:none}
+.login-pane.active{display:block}
+.info-box{background:#f5f3ff;border-left:4px solid #7c3aed;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:12.5px;color:#4c1d95;line-height:1.6}
+.info-box b{font-weight:800}
+
+/* ✅ Password field with eye button in corner */
+.pw-wrap{position:relative;display:block}
+.pw-wrap input{
+  padding-right:48px !important;
+  margin-bottom:16px !important;
+}
+.pw-wrap .pw-eye{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  background:#f3f4f6;
+  border:1px solid #e5e7eb;
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  transition:all .15s;
+  margin-top:-8px; /* adjust for margin-bottom of input */
+  z-index:2;
+}
+.pw-wrap .pw-eye:hover{background:#ede9fe;border-color:#c4b5fd}
+.pw-wrap .pw-eye:active{transform:translateY(-50%) scale(.95)}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div style="position:absolute;top:20px;left:20px">
+    <a href="home.html" style="color:white;text-decoration:none;font-weight:700;font-size:14px;
+      background:rgba(255,255,255,0.2);padding:9px 18px;border-radius:8px;backdrop-filter:blur(10px)">
+      🏠 হোমে ফিরে যান
+    </a>
+  </div>
+
+  <div class="login-card">
+    <h1>🏫 School Management</h1>
+    <p class="sub">আপনার অ্যাকাউন্টে লগইন করুন</p>
+
+    <div class="login-tabs">
+      <button class="active" data-tab="staff">🔐 শিক্ষক / অ্যাডমিন</button>
+      <button data-tab="student">🎓 ছাত্র লগইন</button>
+    </div>
+
+    <!-- ============ STAFF / ADMIN ============ -->
+    <div class="login-pane active" id="pane-staff">
+      <label>ইমেইল</label>
+      <input id="email" type="email" placeholder="you@example.com">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label style="margin:0">পাসওয়ার্ড</label>
+        <a href="forgot-password.html" style="font-size:12.5px;color:#7c3aed;font-weight:700;text-decoration:none">
+          পাসওয়ার্ড ভুলে গেছেন?
+        </a>
+      </div>
+      <div class="pw-wrap">
+        <input id="password" type="password" placeholder="••••••••">
+        <button type="button" class="pw-eye" id="staffEye" title="Show / Hide">👁️</button>
+      </div>
+
+      <button id="loginBtn">লগইন</button>
+      <p id="msg"></p>
+
+      <p style="text-align:center;margin-top:20px;font-size:14px;color:#6b7280">
+        নতুন শিক্ষক?
+        <a href="register-teacher.html" style="color:#7c3aed;font-weight:600;text-decoration:none">শিক্ষক রেজিস্ট্রেশন</a>
+      </p>
+    </div>
+
+    <!-- ============ STUDENT LOGIN ============ -->
+    <div class="login-pane" id="pane-student">
+      <div class="info-box">
+        🎓 <b>ছাত্রদের জন্য:</b> শুধু <b>Student Index</b> আর <b>Password</b> দিন।
+        স্কুল থেকে যে ID কার্ড পেয়েছেন, সেই password ব্যবহার করুন।
+      </div>
+
+      <label>Student Index</label>
+      <input id="s_index" placeholder="যেমন: 100001" inputmode="numeric" autocomplete="off">
+
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input id="s_password" type="password" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="pw-eye" id="studentEye" title="Show / Hide">👁️</button>
+      </div>
+
+      <button id="studentLoginBtn">🎓 ছাত্র হিসেবে লগইন</button>
+      <p id="sMsg"></p>
+
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:#6b7280">
+        পাসওয়ার্ড ভুলে গেছেন?
+        <br>
+        আপনার <b>শ্রেণি শিক্ষকের সাথে</b> যোগাযোগ করুন।
+      </p>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px dashed #d1d5db">
+      <a href="result-publish.html" style="color:#16a34a;font-weight:700;text-decoration:none;font-size:14px">
+        🏆 পাবলিক রেজাল্ট দেখুন (লগইন ছাড়াই)
+      </a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+
+const STUDENT_DOMAIN = 'student.local';
+
+/* Already logged in → dashboard */
+const { data: { session } } = await supabase.auth.getSession();
+if (session) window.location.href = 'dashboard.html';
+
+/* ===== Tab Switching ===== */
+document.querySelectorAll('.login-tabs button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.login-tabs button').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.login-pane').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('pane-' + b.dataset.tab).classList.add('active');
+    localStorage.setItem('last_login_tab', b.dataset.tab);
+  };
+});
+
+const lastTab = localStorage.getItem('last_login_tab') || 'staff';
+if (lastTab === 'student') {
+  document.querySelector('[data-tab="student"]').click();
+}
+
+/* ===== Password Eye Toggle ===== */
+function setupEye(btnId, inputId) {
+  const btn = document.getElementById(btnId);
+  const inp = document.getElementById(inputId);
+  if (!btn || !inp) return;
+
+  btn.onclick = (e) => {
+    e.preventDefault();
+    const isPw = inp.type === 'password';
+    inp.type = isPw ? 'text' : 'password';
+    btn.textContent = isPw ? '🙈' : '👁️';
+    btn.title = isPw ? 'Hide' : 'Show';
+    /* Keep focus on input */
+    inp.focus();
+  };
+}
+
+setupEye('staffEye', 'password');
+setupEye('studentEye', 's_password');
+
+/* ===== STAFF LOGIN ===== */
+const loginBtn = document.getElementById('loginBtn');
+const msg = document.getElementById('msg');
+
+loginBtn.onclick = async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  msg.textContent = '';
+  msg.style.color = '';
+
+  if (!email || !password) {
+    msg.textContent = 'ইমেইল ও পাসওয়ার্ড দিন';
+    msg.style.color = 'red';
+    return;
+  }
+
+  loginBtn.disabled = true;
+  msg.textContent = 'অপেক্ষা করুন...';
+  msg.style.color = '#7c3aed';
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  loginBtn.disabled = false;
+
+  if (error) {
+    msg.textContent = '❌ ' + error.message;
+    msg.style.color = 'red';
+    return;
+  }
+
+  msg.textContent = '✅ সফল! ড্যাশবোর্ডে যাচ্ছে...';
+  msg.style.color = '#10b981';
+  setTimeout(() => window.location.href = 'dashboard.html', 500);
+};
+
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loginBtn.click();
+});
+
+/* ===== STUDENT LOGIN ===== */
+const sBtn = document.getElementById('studentLoginBtn');
+const sMsg = document.getElementById('sMsg');
+const sPw = document.getElementById('s_password');
+
+sBtn.onclick = async () => {
+  const index = document.getElementById('s_index').value.trim();
+  const password = sPw.value;
+
+  sMsg.textContent = '';
+  sMsg.style.color = '';
+
+  if (!index) { sMsg.textContent = '❌ Student Index দিন'; sMsg.style.color = 'red'; return; }
+  if (!password) { sMsg.textContent = '❌ Password দিন'; sMsg.style.color = 'red'; return; }
+
+  sBtn.disabled = true;
+  sMsg.textContent = '⏳ যাচাই করা হচ্ছে...';
+  sMsg.style.color = '#7c3aed';
+
+  try {
+    /* Step 1: Check student in DB */
+    const { data: check, error: checkErr } = await supabase
+      .rpc('check_student_login', { p_index: index });
+
+    if (checkErr) throw checkErr;
+
+    const student = Array.isArray(check) ? check[0] : check;
+
+    if (!student) {
+      throw new Error('এই Student Index আমাদের স্কুলে নেই');
+    }
+
+    if (student.login_enabled === false) {
+      throw new Error('আপনার login বন্ধ করা হয়েছে। অফিসে যোগাযোগ করুন।');
+    }
+
+    /* Step 2: Try sign in */
+    const internalEmail = index + '@' + STUDENT_DOMAIN;
+
+    const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+      email: internalEmail,
+      password: password,
+    });
+
+    /* Step 3: First-time login → auto-create account */
+    if (signInErr) {
+      const errMsg = (signInErr.message || '').toLowerCase();
+      const isFirstTime =
+        errMsg.indexOf('invalid login') >= 0 ||
+        errMsg.indexOf('email not confirmed') >= 0 ||
+        errMsg.indexOf('user not found') >= 0;
+
+      if (!isFirstTime) {
+        throw new Error('পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।');
+      }
+
+      if (password !== student.login_password) {
+        throw new Error('পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।');
+      }
+
+      sMsg.textContent = '🎉 প্রথমবার login! অ্যাকাউন্ট তৈরি হচ্ছে...';
+
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+        email: internalEmail,
+        password: password,
+        options: {
+          data: {
+            full_name: student.name,
+            role: 'student',
+            linked_id: index,
+          },
+        },
+      });
+
+      if (signUpErr) {
+        if (signUpErr.message.toLowerCase().indexOf('already registered') >= 0) {
+          throw new Error('পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।');
+        }
+        throw signUpErr;
+      }
+
+      if (!signUpData.session) {
+        throw new Error('Admin এর সাথে যোগাযোগ করুন (email confirmation বন্ধ করতে হবে)');
+      }
+
+      await supabase.from('students')
+        .update({ auth_user_id: signUpData.user.id })
+        .eq('student_index', index);
+
+      await supabase.from('profiles').upsert({
+        id: signUpData.user.id,
+        full_name: student.name,
+        role: 'student',
+        linked_id: index,
+      }, { onConflict: 'id' });
+
+      sMsg.textContent = '✅ সফল! ড্যাশবোর্ডে যাচ্ছে...';
+      sMsg.style.color = '#10b981';
+
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+      return;
+    }
+
+    sMsg.textContent = '✅ সফল! ড্যাশবোর্ডে যাচ্ছে...';
+    sMsg.style.color = '#10b981';
+
+    setTimeout(() => window.location.href = 'dashboard.html', 500);
+
+  } catch (err) {
+    console.error('Student login error:', err);
+    sMsg.textContent = '❌ ' + (err.message || 'লগইন হয়নি');
+    sMsg.style.color = 'red';
+    sBtn.disabled = false;
+    sBtn.textContent = '🎓 ছাত্র হিসেবে লগইন';
+  }
+};
+
+document.getElementById('s_index').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sPw.focus();
+});
+sPw.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sBtn.click();
+});
+</script>
+</body>
+</html>

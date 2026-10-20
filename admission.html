@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ভর্তি · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+:root{
+  --ad-primary:#7c3aed;
+  --ad-primary-dark:#6d28d9;
+  --ad-success:#10b981;
+  --ad-rose:#f43f5e;
+  --ad-amber:#f59e0b;
+  --ad-blue:#3b82f6;
+  --ad-bg:#f8fafc;
+  --ad-border:#e2e8f0;
+  --ad-text:#0f172a;
+  --ad-gray:#64748b;
+}
+*{box-sizing:border-box}
+.ad-page{padding:0;background:var(--ad-bg);min-height:100vh}
+
+.ad-top{
+  background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 50%,#5b21b6 100%);
+  padding:22px 28px;border-radius:12px 12px 0 0;color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;
+}
+.ad-top::before{
+  content:'';position:absolute;top:-50%;right:-10%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%);
+  border-radius:50%;
+}
+.ad-top>*{position:relative;z-index:1}
+.ad-top .tl{display:flex;align-items:center;gap:16px}
+.ad-top .ticon{
+  width:56px;height:56px;background:rgba(255,255,255,.2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:28px;border:1px solid rgba(255,255,255,.3);
+}
+.ad-top h1{margin:0;font-size:22px;font-weight:900}
+.ad-top p{margin:4px 0 0;font-size:13px;opacity:.9}
+.ad-tabs-top{display:flex;gap:6px;background:rgba(255,255,255,.15);padding:5px;border-radius:12px}
+.ad-tabs-top button{
+  padding:9px 18px;background:transparent;border:none;color:#fff;
+  font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;
+  border-radius:8px;transition:all .2s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.ad-tabs-top button:hover:not(.on){background:rgba(255,255,255,.1)}
+.ad-tabs-top button.on{background:#fff;color:var(--ad-primary-dark)}
+.ad-back{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:10px 18px;border-radius:10px;
+  font-weight:700;font-size:13px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.ad-back:hover{background:rgba(255,255,255,.25)}
+
+.ad-body{background:#fff;border-radius:0 0 12px 12px;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ad-split{display:grid;grid-template-columns:1fr 340px;gap:0}
+.ad-left{padding:28px 32px;border-right:1px dashed #e2e8f0}
+.ad-right{
+  padding:28px 22px;
+  background:linear-gradient(180deg,#fafbfc 0%,#f1f5f9 100%);
+  display:flex;flex-direction:column;gap:16px;
+}
+.ad-right-title{
+  font-size:13px;font-weight:800;color:var(--ad-gray);
+  text-transform:uppercase;letter-spacing:.5px;
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;
+}
+.ad-right-title::before{content:'';width:4px;height:16px;background:var(--ad-primary);border-radius:2px}
+
+.ad-steps{display:flex;gap:6px;margin-bottom:26px;background:#f1f5f9;padding:6px;border-radius:14px}
+.ad-step{
+  flex:1;padding:12px 10px;text-align:center;border-radius:10px;cursor:pointer;
+  font-size:12px;font-weight:800;color:var(--ad-gray);transition:all .2s;
+  position:relative;border:2px solid transparent;
+}
+.ad-step .sn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;
+  background:#cbd5e1;color:#fff;font-size:12px;font-weight:800;margin-right:6px;
+}
+.ad-step.done .sn{background:var(--ad-success)}
+.ad-step.done{color:var(--ad-success)}
+.ad-step.current{background:#fff;color:var(--ad-primary);box-shadow:0 2px 8px rgba(124,58,237,.15);border-color:var(--ad-primary)}
+.ad-step.current .sn{background:var(--ad-primary)}
+.ad-step:not(.current):hover{background:#fff}
+
+.ad-step-pane{display:none;animation:stepIn .35s ease}
+.ad-step-pane.on{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateX(15px)}to{opacity:1;transform:translateX(0)}}
+
+.step-head{margin-bottom:22px}
+.step-head h2{font-size:20px;font-weight:900;color:var(--ad-text);margin:0 0 6px;letter-spacing:-.3px}
+.step-head p{font-size:13px;color:var(--ad-gray);margin:0;line-height:1.6}
+
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fgrid.one{grid-template-columns:1fr}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld.full{grid-column:1/-1}
+.fld label{
+  font-size:11.5px;color:var(--ad-gray);font-weight:800;
+  text-transform:uppercase;letter-spacing:.4px;
+}
+.fld.req label::after{content:' *';color:var(--ad-rose)}
+.fld input,.fld select,.fld textarea{
+  padding:11px 14px;border:2px solid var(--ad-border);
+  border-radius:10px;font-size:14px;font-family:inherit;
+  font-weight:600;background:#fafbfc;color:var(--ad-text);
+  transition:all .2s;width:100%;
+}
+.fld textarea{min-height:70px;resize:vertical;font-weight:500;line-height:1.6}
+.fld input:focus,.fld select:focus,.fld textarea:focus{
+  outline:none;border-color:var(--ad-primary);
+  background:#fff;box-shadow:0 0 0 4px rgba(124,58,237,.1);
+}
+.fld input.err{border-color:var(--ad-rose);background:#fef2f2}
+.fld .hint{font-size:11px;color:#94a3b8;font-weight:500}
+
+/* Auto index wrapper */
+.idx-wrap{position:relative}
+.idx-wrap input{
+  padding-right:110px !important;
+  font-family:'Courier New',monospace;
+  font-weight:900 !important;
+  font-size:16px !important;
+  letter-spacing:1px;
+  color:var(--ad-primary-dark) !important;
+}
+.idx-wrap .auto-badge{
+  position:absolute;right:74px;top:50%;transform:translateY(-50%);
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;font-size:10px;font-weight:900;
+  padding:3px 8px;border-radius:6px;letter-spacing:.5px;
+  pointer-events:none;
+}
+.idx-wrap .refresh-idx{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:#f3f4f6;border:1px solid var(--ad-border);
+  width:34px;height:34px;border-radius:8px;cursor:pointer;
+  font-size:14px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.idx-wrap .refresh-idx:hover{background:#ede9fe;border-color:#c4b5fd}
+.idx-wrap .refresh-idx:active{transform:translateY(-50%) scale(.93)}
+.idx-wrap .refresh-idx.spinning{animation:spin .8s linear}
+@keyframes spin{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}
+
+.photo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.pbox{
+  text-align:center;padding:14px;background:#fafbfc;
+  border:2px dashed var(--ad-border);border-radius:14px;
+  transition:all .2s;cursor:pointer;position:relative;
+}
+.pbox:hover{border-color:var(--ad-primary);background:#f5f3ff}
+.pbox.has{border-color:var(--ad-success);background:#f0fdf4;border-style:solid}
+.pbox .pl{font-size:11.5px;font-weight:800;color:var(--ad-gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.pbox .preview{
+  width:100%;height:180px;margin:0 auto 10px;background:#fff;
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:52px;color:#cbd5e1;overflow:hidden;border:1px solid var(--ad-border);
+}
+.pbox .preview img{width:100%;height:100%;object-fit:cover}
+.pbox input[type=file]{display:none}
+.pbox .pbtn{
+  display:inline-block;padding:8px 14px;background:#fff;
+  border:2px solid var(--ad-primary);color:var(--ad-primary);
+  font-size:12px;font-weight:800;border-radius:8px;cursor:pointer;transition:all .15s;
+}
+.pbox.has .pbtn{background:var(--ad-success);border-color:var(--ad-success);color:#fff}
+.pbox .pbtn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(124,58,237,.2)}
+
+.nav-row{
+  display:flex;gap:10px;justify-content:space-between;
+  margin-top:26px;padding-top:20px;
+  border-top:2px dashed var(--ad-border);flex-wrap:wrap;
+}
+.nav-btn{
+  padding:13px 26px;border:none;border-radius:10px;
+  font-weight:800;font-size:14px;cursor:pointer;
+  font-family:inherit;display:inline-flex;align-items:center;
+  gap:8px;transition:all .2s;
+}
+.nav-btn:disabled{opacity:.5;cursor:not-allowed}
+.nav-btn-prev{background:#f1f5f9;color:var(--ad-gray)}
+.nav-btn-prev:hover:not(:disabled){background:#e2e8f0}
+.nav-btn-next{
+  background:linear-gradient(135deg,var(--ad-primary),var(--ad-primary-dark));
+  color:#fff;box-shadow:0 6px 16px rgba(124,58,237,.3);
+}
+.nav-btn-next:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(124,58,237,.4)}
+.nav-btn-save{
+  background:linear-gradient(135deg,var(--ad-success),#059669);
+  color:#fff;box-shadow:0 6px 16px rgba(16,185,129,.3);
+}
+.nav-btn-save:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(16,185,129,.4)}
+
+.preview-card{
+  background:#fff;border-radius:16px;padding:20px;
+  box-shadow:0 4px 14px rgba(15,23,42,.08);
+  border:2px solid #e2e8f0;position:sticky;top:20px;transition:all .3s;
+}
+.preview-card:hover{box-shadow:0 8px 22px rgba(124,58,237,.15)}
+.preview-card .pc-head{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:14px;margin-bottom:14px;
+  border-bottom:2px dashed var(--ad-border);
+}
+.preview-card .pc-photo{
+  width:64px;height:76px;border-radius:10px;
+  background:linear-gradient(135deg,#ede9fe,#c4b5fd);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;color:#7c3aed;overflow:hidden;
+  border:2px solid #a78bfa;flex-shrink:0;
+}
+.preview-card .pc-photo img{width:100%;height:100%;object-fit:cover}
+.preview-card .pc-name{font-size:15px;font-weight:900;color:var(--ad-text);margin-bottom:3px;line-height:1.25;word-break:break-word}
+.preview-card .pc-id{
+  font-size:11.5px;font-family:'Courier New',monospace;
+  color:var(--ad-primary);font-weight:800;
+  background:#f5f3ff;padding:3px 8px;border-radius:6px;display:inline-block;
+}
+.preview-card .pc-row{
+  display:flex;justify-content:space-between;gap:10px;
+  padding:6px 0;font-size:12px;border-bottom:1px dotted #f1f5f9;
+}
+.preview-card .pc-row:last-child{border:none}
+.preview-card .pc-lbl{color:var(--ad-gray);font-weight:700}
+.preview-card .pc-val{color:var(--ad-text);font-weight:700;text-align:right;word-break:break-word}
+.preview-card .pc-empty{color:#cbd5e1;font-style:italic}
+
+.ad-alert{
+  padding:12px 16px;border-radius:10px;font-size:13px;
+  margin-bottom:16px;display:flex;gap:10px;line-height:1.55;align-items:flex-start;
+}
+.ad-alert.blue{background:#dbeafe;border-left:4px solid #2563eb;color:#1e40af}
+.ad-alert.amber{background:#fef3c7;border-left:4px solid #f59e0b;color:#92400e}
+.ad-alert.green{background:#d1fae5;border-left:4px solid #16a34a;color:#065f46}
+
+.cr-bg{
+  position:fixed;inset:0;background:rgba(15,23,42,.75);
+  backdrop-filter:blur(6px);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  animation:fadeIn .25s;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cr-m{
+  background:#fff;border-radius:22px;padding:32px;
+  max-width:440px;width:100%;text-align:center;
+  box-shadow:0 30px 60px rgba(0,0,0,.4);
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.cr-m .bi{font-size:68px;display:block;margin-bottom:8px}
+.cr-m h3{color:var(--ad-success);font-size:24px;font-weight:900;margin:0 0 6px}
+.cr-m .sb{color:var(--ad-gray);font-size:13.5px;margin:0 0 22px}
+.cr-b{
+  background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+  border-radius:16px;padding:22px;text-align:left;
+  margin-bottom:18px;border:2px dashed var(--ad-primary);
+}
+.cr-b .lb{font-size:10.5px;color:var(--ad-gray);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cr-b .vl{font-size:16px;font-weight:900;color:var(--ad-text);margin-bottom:14px;word-break:break-all}
+.cr-b .vl.idx{font-size:24px;color:var(--ad-primary);font-family:'Courier New',monospace;letter-spacing:2px}
+.cr-b .vl.pwd{font-size:24px;color:var(--ad-success);font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:0}
+.cr-n{font-size:12px;color:#94a3b8;margin:0 0 20px;line-height:1.6}
+.cr-a{display:flex;gap:10px}
+.cr-a button{
+  flex:1;padding:14px;border:none;border-radius:12px;
+  font-weight:800;cursor:pointer;font-family:inherit;font-size:14px;transition:all .2s;
+}
+.cr-p{background:var(--ad-primary);color:#fff}
+.cr-p:hover{background:var(--ad-primary-dark);transform:translateY(-1px)}
+.cr-c{background:#f1f5f9;color:var(--ad-gray)}
+.cr-c:hover{background:#e2e8f0}
+
+.list-wrap{padding:24px 28px}
+.list-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.lstat{
+  background:linear-gradient(135deg,#fff,#fafbfc);
+  border:1px solid var(--ad-border);border-radius:12px;
+  padding:16px 18px;position:relative;overflow:hidden;
+}
+.lstat::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--ad-primary)}
+.lstat.green::before{background:var(--ad-success)}
+.lstat.rose::before{background:var(--ad-rose)}
+.lstat.blue::before{background:var(--ad-blue)}
+.lstat h4{font-size:10.5px;color:var(--ad-gray);text-transform:uppercase;font-weight:800;letter-spacing:.4px;margin:0 0 6px}
+.lstat p{font-size:22px;font-weight:900;color:var(--ad-text);margin:0;line-height:1}
+.lstat.green p{color:var(--ad-success)}
+.lstat.rose p{color:var(--ad-rose)}
+.lstat.blue p{color:var(--ad-blue)}
+
+.list-search{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.list-search input,.list-search select{
+  flex:1;min-width:180px;padding:11px 14px;
+  border:2px solid var(--ad-border);border-radius:10px;
+  font-size:14px;font-family:inherit;font-weight:600;background:#fff;
+}
+.list-search input:focus,.list-search select:focus{
+  outline:none;border-color:var(--ad-primary);
+  box-shadow:0 0 0 4px rgba(124,58,237,.1);
+}
+
+.stu-card{
+  background:#fff;border:1px solid var(--ad-border);
+  border-radius:14px;padding:16px 18px;margin-bottom:10px;
+  display:flex;justify-content:space-between;gap:14px;
+  align-items:center;transition:all .2s;
+  border-left:4px solid var(--ad-primary);flex-wrap:wrap;
+}
+.stu-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.08)}
+.stu-card .sc-i{flex:1;min-width:220px}
+.stu-card .sc-n{font-size:15px;font-weight:800;color:var(--ad-text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.stu-card .sc-id{
+  font-size:11px;font-family:'Courier New',monospace;
+  color:var(--ad-primary);background:#f5f3ff;
+  padding:3px 8px;border-radius:6px;font-weight:800;
+}
+.stu-card .sc-m{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ad-gray)}
+.stu-card .sc-m b{color:var(--ad-text);font-weight:700}
+.stu-card .sc-acts{display:flex;gap:6px;flex-wrap:wrap}
+.stu-card .sc-acts button{
+  padding:8px 14px;border:none;border-radius:8px;
+  font-size:12px;font-weight:800;cursor:pointer;
+  font-family:inherit;transition:all .15s;
+}
+.a-info{background:#d1fae5;color:#065f46}
+.a-info:hover{background:#a7f3d0}
+.a-edit{background:#dbeafe;color:#1e40af}
+.a-edit:hover{background:#bfdbfe}
+.a-del{background:#fee2e2;color:#991b1b}
+.a-del:hover{background:#fecaca}
+
+.list-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-weight:600;font-size:14px}
+.list-empty .ic{font-size:64px;display:block;margin-bottom:14px;opacity:.4}
+
+@media(max-width:1100px){
+  .ad-split{grid-template-columns:1fr}
+  .ad-left{border-right:none;border-bottom:1px dashed var(--ad-border)}
+  .preview-card{position:static;max-width:400px;margin:0 auto}
+}
+@media(max-width:700px){
+  .ad-left,.ad-right,.list-wrap{padding:18px}
+  .fgrid{grid-template-columns:1fr}
+  .photo-grid{grid-template-columns:1fr}
+  .ad-steps{flex-direction:column;gap:4px}
+  .ad-step{padding:10px 14px;text-align:left}
+  .nav-btn{flex:1;justify-content:center;padding:12px 16px}
+  .nav-row{flex-direction:column-reverse}
+  .ad-top{padding:16px 18px}
+  .ad-top h1{font-size:17px}
+  .ad-top .ticon{width:46px;height:46px;font-size:22px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, logAction } from './js/helpers.js';
+
+const profile = await requireLogin(['admin']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'admission.html', 'ভর্তি ব্যবস্থাপনা');
+
+const content = document.getElementById('content');
+let allClasses = [];
+let allStudents = [];
+let editingId = null;
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+const FIXED_PASSWORD = 'knsstudent';
+const SERIAL_DIGITS = 3; /* 001, 002, ... */
+
+let photoStudent = '';
+let photoFather = '';
+let photoMother = '';
+let originalPhotos = { student:'', father:'', mother:'' };
+
+content.innerHTML = `
+<div class="ad-page">
+
+  <div class="ad-top">
+    <div class="tl">
+      <div class="ticon">🎓</div>
+      <div>
+        <h1>Student Admission</h1>
+        <p>ছাত্র ভর্তি ব্যবস্থাপনা</p>
+      </div>
+    </div>
+    <div class="ad-tabs-top">
+      <button class="on" id="tabNew">➕ নতুন ভর্তি</button>
+      <button id="tabList">📋 ছাত্র তালিকা</button>
+    </div>
+    <a class="ad-back" href="dashboard.html">← Back</a>
+  </div>
+
+  <div class="ad-body">
+    <div id="paneNew">
+      <div class="ad-split">
+
+        <div class="ad-left">
+          <div class="ad-alert blue">
+            <span>💡</span>
+            <span><b>Student Index</b> স্বয়ংক্রিয়ভাবে তৈরি হবে — <b>সেশন + সিরিয়াল</b> (যেমন: 2026001)।</span>
+          </div>
+
+          <div class="ad-steps" id="stepsBar">
+            <div class="ad-step current" data-step="1"><span class="sn">1</span>ছবি</div>
+            <div class="ad-step" data-step="2"><span class="sn">2</span>ছাত্র তথ্য</div>
+            <div class="ad-step" data-step="3"><span class="sn">3</span>পিতা-মাতা</div>
+            <div class="ad-step" data-step="4"><span class="sn">4</span>ঠিকানা</div>
+          </div>
+
+          <div class="ad-step-pane on" data-pane="1">
+            <div class="step-head">
+              <h2>📷 ছবি আপলোড</h2>
+              <p>তিনজনের ছবি দিতে পারেন (ঐচ্ছিক)।</p>
+            </div>
+            <div class="photo-grid">
+              <div class="pbox" id="boxStudent">
+                <div class="pl">ছাত্রের ছবি</div>
+                <div class="preview" id="prevStudent">👤</div>
+                <div class="pbtn">ছবি বাছুন</div>
+                <input type="file" id="fileStudent" accept="image/*">
+              </div>
+              <div class="pbox" id="boxFather">
+                <div class="pl">বাবার ছবি</div>
+                <div class="preview" id="prevFather">👨</div>
+                <div class="pbtn">ছবি বাছুন</div>
+                <input type="file" id="fileFather" accept="image/*">
+              </div>
+              <div class="pbox" id="boxMother">
+                <div class="pl">মায়ের ছবি</div>
+                <div class="preview" id="prevMother">👩</div>
+                <div class="pbtn">ছবি বাছুন</div>
+                <input type="file" id="fileMother" accept="image/*">
+              </div>
+            </div>
+          </div>
+
+          <div class="ad-step-pane" data-pane="2">
+            <div class="step-head">
+              <h2>👤 ছাত্রের তথ্য</h2>
+              <p>Student Index স্বয়ংক্রিয়ভাবে তৈরি হয়েছে। চাইলে হাতে বদলাতে পারেন।</p>
+            </div>
+
+            <div class="fgrid">
+              <div class="fld req full">
+                <label>Student Index (Auto)</label>
+                <div class="idx-wrap">
+                  <input id="f_index" placeholder="Loading..." readonly>
+                  <span class="auto-badge">AUTO</span>
+                  <button type="button" class="refresh-idx" id="btnRefreshIdx" title="নতুন Index">🔄</button>
+                </div>
+                <div class="hint">সেশন (৪ ডিজিট) + সিরিয়াল (৩ ডিজিট) = ৭ ডিজিট</div>
+              </div>
+
+              <div class="fld req">
+                <label>পূর্ণ নাম</label>
+                <input id="f_name" placeholder="রহিম উদ্দিন">
+              </div>
+              <div class="fld req">
+                <label>ক্লাস</label>
+                <select id="f_class"><option value="">-- সিলেক্ট --</option></select>
+              </div>
+              <div class="fld">
+                <label>সেকশন</label>
+                <select id="f_section"><option value="">-- --</option></select>
+              </div>
+              <div class="fld">
+                <label>রোল নম্বর</label>
+                <input id="f_roll" type="number" placeholder="1" inputmode="numeric">
+              </div>
+              <div class="fld">
+                <label>Group</label>
+                <select id="f_group">
+                  <option value="">-- None --</option>
+                  <option value="N/A">N/A</option>
+                  <option value="Science">Science</option>
+                  <option value="Business Studies">Business Studies</option>
+                  <option value="Humanities">Humanities</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>Session Year</label>
+                <input id="f_session" type="number" placeholder="2026" inputmode="numeric">
+              </div>
+              <div class="fld">
+                <label>Student Type</label>
+                <select id="f_type">
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>জন্ম তারিখ</label>
+                <input id="f_dob" type="date">
+              </div>
+              <div class="fld">
+                <label>রক্তের গ্রুপ</label>
+                <select id="f_blood">
+                  <option value="">-- --</option>
+                  <option>A+</option><option>A-</option>
+                  <option>B+</option><option>B-</option>
+                  <option>O+</option><option>O-</option>
+                  <option>AB+</option><option>AB-</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>Gender</label>
+                <select id="f_gender">
+                  <option value="">-- --</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label>Birth Certificate No</label>
+                <input id="f_birth" placeholder="ঐচ্ছিক">
+              </div>
+              <div class="fld full">
+                <label>ছাত্রের ইমেইল</label>
+                <input id="f_email" type="email" placeholder="student@example.com">
+              </div>
+            </div>
+          </div>
+
+          <div class="ad-step-pane" data-pane="3">
+            <div class="step-head">
+              <h2>👨‍👩‍👦 পিতা-মাতার তথ্য</h2>
+              <p>বাবা ও মায়ের তথ্য দিন।</p>
+            </div>
+
+            <div style="background:#eff6ff;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:12.5px;color:#1e40af;font-weight:700;display:flex;align-items:center;gap:8px">
+              <span style="font-size:20px">👨</span> বাবার তথ্য
+            </div>
+            <div class="fgrid" style="margin-bottom:22px">
+              <div class="fld"><label>বাবার নাম</label><input id="f_father" placeholder="করিম উদ্দিন"></div>
+              <div class="fld"><label>পেশা</label><input id="f_foccupation" placeholder="ব্যবসা / চাকরি"></div>
+              <div class="fld"><label>মোবাইল</label><input id="f_fmobile" placeholder="01XXXXXXXXX" inputmode="numeric" maxlength="11"></div>
+              <div class="fld"><label>NID নম্বর</label><input id="f_fnid" placeholder="ঐচ্ছিক" inputmode="numeric"></div>
+            </div>
+
+            <div style="background:#fce7f3;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:12.5px;color:#9d174d;font-weight:700;display:flex;align-items:center;gap:8px">
+              <span style="font-size:20px">👩</span> মায়ের তথ্য
+            </div>
+            <div class="fgrid">
+              <div class="fld"><label>মায়ের নাম</label><input id="f_mother" placeholder="ফাতেমা বেগম"></div>
+              <div class="fld"><label>পেশা</label><input id="f_moccupation" placeholder="গৃহিণী"></div>
+              <div class="fld"><label>মোবাইল</label><input id="f_mmobile" placeholder="01XXXXXXXXX" inputmode="numeric" maxlength="11"></div>
+              <div class="fld"><label>NID নম্বর</label><input id="f_mnid" placeholder="ঐচ্ছিক" inputmode="numeric"></div>
+            </div>
+          </div>
+
+          <div class="ad-step-pane" data-pane="4">
+            <div class="step-head">
+              <h2>📍 ঠিকানা ও অভিভাবক</h2>
+              <p>অভিভাবকের তথ্য এবং ঠিকানা দিন।</p>
+            </div>
+
+            <div class="fgrid" style="margin-bottom:16px">
+              <div class="fld"><label>অভিভাবকের নাম</label><input id="f_guardian" placeholder="খালি রাখলে বাবার নাম হবে"></div>
+              <div class="fld"><label>অভিভাবকের মোবাইল</label><input id="f_gphone" placeholder="01XXXXXXXXX" inputmode="numeric" maxlength="11"></div>
+            </div>
+
+            <div class="fgrid one">
+              <div class="fld"><label>বর্তমান ঠিকানা</label><textarea id="f_present" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা"></textarea></div>
+              <div class="fld"><label>স্থায়ী ঠিকানা</label><textarea id="f_permanent" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা"></textarea></div>
+            </div>
+
+            <div class="ad-alert amber" style="margin-top:16px">
+              <span>🔑</span>
+              <span>Save করলে স্বয়ংক্রিয়ভাবে তৈরি হবে — <b>Password: knsstudent</b></span>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="nav-btn nav-btn-prev" id="btnPrev" disabled>← পূর্ববর্তী</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="nav-btn nav-btn-prev" id="btnReset" style="background:#fef3c7;color:#92400e">🔄 রিসেট</button>
+              <button class="nav-btn nav-btn-next" id="btnNext">পরবর্তী →</button>
+              <button class="nav-btn nav-btn-save" id="btnSave" style="display:none">💾 ছাত্র ভর্তি করুন</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="ad-right">
+          <div>
+            <div class="ad-right-title">👁️ Live Preview</div>
+            <div class="preview-card" id="previewCard"></div>
+          </div>
+          <div style="font-size:11.5px;color:#94a3b8;line-height:1.6;padding:12px;background:#fff;border-radius:10px;border:1px dashed var(--ad-border)">
+            💡 টাইপ করার সাথে সাথে ডানপাশে update হবে।
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="paneList" style="display:none">
+      <div class="list-wrap">
+        <div class="list-stats" id="listStats"></div>
+        <div class="list-search">
+          <input id="searchBox" placeholder="🔍 নাম / ID / ফোন দিয়ে খুঁজুন...">
+          <select id="filterClass"><option value="">সব ক্লাস</option></select>
+          <select id="filterType">
+            <option value="">সব ধরন</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div id="listArea"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+`;
+
+/* ============================================================
+   🎯 AUTO-GENERATE STUDENT INDEX
+   Format: সেশন(4) + সিরিয়াল(3) = 2026001, 2026002...
+   ============================================================ */
+async function generateNextIndex(sessionYear) {
+  const year = sessionYear || new Date().getFullYear();
+  const prefix = String(year);
+
+  try {
+    /* Fetch all student_index starting with prefix */
+    const { data, error } = await supabase
+      .from('students')
+      .select('student_index')
+      .like('student_index', prefix + '%');
+
+    if (error) {
+      console.warn('Index fetch error:', error);
+      return prefix + String(1).padStart(SERIAL_DIGITS, '0');
+    }
+
+    /* Find highest numeric value */
+    let maxSerial = 0;
+    (data || []).forEach(s => {
+      if (!s.student_index) return;
+      const str = String(s.student_index);
+      /* Take last SERIAL_DIGITS chars as serial */
+      if (str.length >= prefix.length + SERIAL_DIGITS) {
+        const serialPart = str.slice(prefix.length);
+        const n = parseInt(serialPart, 10);
+        if (!isNaN(n) && n > maxSerial) maxSerial = n;
+      }
+    });
+
+    const nextSerial = maxSerial + 1;
+    return prefix + String(nextSerial).padStart(SERIAL_DIGITS, '0');
+
+  } catch (err) {
+    console.error('Generate index error:', err);
+    return prefix + String(1).padStart(SERIAL_DIGITS, '0');
+  }
+}
+
+/* Refresh button */
+document.getElementById('btnRefreshIdx').onclick = async (e) => {
+  if (editingId) {
+    if (!confirm('এডিট মোডে Index পরিবর্তন করলে duplicate হতে পারে। নিশ্চিত?')) return;
+  }
+  const btn = document.getElementById('btnRefreshIdx');
+  btn.classList.add('spinning');
+  const session = +document.getElementById('f_session').value || new Date().getFullYear();
+  const idx = await generateNextIndex(session);
+  document.getElementById('f_index').value = idx;
+  setTimeout(() => btn.classList.remove('spinning'), 800);
+  updatePreview();
+  toast('🔄 নতুন Index: ' + idx, 'success');
+};
+
+/* Session change → regenerate index (only for new student) */
+document.getElementById('f_session').addEventListener('change', async () => {
+  if (editingId) return;
+  const session = +document.getElementById('f_session').value || new Date().getFullYear();
+  const idx = await generateNextIndex(session);
+  document.getElementById('f_index').value = idx;
+  updatePreview();
+});
+
+/* ============ TABS ============ */
+document.getElementById('tabNew').onclick = () => {
+  document.getElementById('tabNew').classList.add('on');
+  document.getElementById('tabList').classList.remove('on');
+  document.getElementById('paneNew').style.display = 'block';
+  document.getElementById('paneList').style.display = 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+document.getElementById('tabList').onclick = () => {
+  document.getElementById('tabList').classList.add('on');
+  document.getElementById('tabNew').classList.remove('on');
+  document.getElementById('paneNew').style.display = 'none';
+  document.getElementById('paneList').style.display = 'block';
+  loadStudents();
+};
+
+/* ============ STEP NAVIGATION ============ */
+function goToStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
+  currentStep = n;
+  document.querySelectorAll('.ad-step-pane').forEach(p => {
+    p.classList.toggle('on', parseInt(p.dataset.pane) === n);
+  });
+  document.querySelectorAll('.ad-step').forEach(s => {
+    const sn = parseInt(s.dataset.step);
+    s.classList.remove('current','done');
+    if (sn === n) s.classList.add('current');
+    else if (sn < n) s.classList.add('done');
+  });
+  document.getElementById('btnPrev').disabled = (n === 1);
+  document.getElementById('btnNext').style.display = (n === TOTAL_STEPS) ? 'none' : 'inline-flex';
+  document.getElementById('btnSave').style.display = (n === TOTAL_STEPS) ? 'inline-flex' : 'none';
+  document.querySelector('.ad-left').scrollIntoView({top:0,behavior:'smooth'});
+}
+
+document.getElementById('btnPrev').onclick = () => goToStep(currentStep - 1);
+document.getElementById('btnNext').onclick = () => {
+  if (currentStep === 2) {
+    const index = document.getElementById('f_index').value.trim();
+    const name = document.getElementById('f_name').value.trim();
+    const classId = document.getElementById('f_class').value;
+    if (!index) { toast('❌ Student Index নেই', 'error'); return; }
+    if (!name) { toast('❌ নাম দিন', 'error'); return; }
+    if (!classId) { toast('❌ ক্লাস সিলেক্ট করুন', 'error'); return; }
+  }
+  goToStep(currentStep + 1);
+};
+
+document.querySelectorAll('.ad-step').forEach(s => {
+  s.onclick = () => {
+    const n = parseInt(s.dataset.step);
+    if (n > currentStep + 1) return;
+    goToStep(n);
+  };
+});
+
+/* ============ LOAD CLASSES ============ */
+async function loadClasses() {
+  try {
+    const { data, error } = await supabase.from('classes').select('*').order('id');
+    if (error) throw error;
+    allClasses = data || [];
+    const opts = allClasses.map(c => '<option value="' + c.id + '">' + esc(c.class_name) + '</option>').join('');
+    document.getElementById('f_class').innerHTML = '<option value="">-- সিলেক্ট --</option>' + opts;
+    document.getElementById('filterClass').innerHTML = '<option value="">সব ক্লাস</option>' + opts;
+  } catch (err) {
+    console.error('Class load:', err);
+  }
+}
+await loadClasses();
+
+document.getElementById('f_class').onchange = () => {
+  const classId = document.getElementById('f_class').value;
+  const cls = allClasses.find(c => String(c.id) === classId);
+  const sections = (cls && cls.sections) ? cls.sections : [];
+  document.getElementById('f_section').innerHTML =
+    '<option value="">-- --</option>' +
+    sections.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('');
+  updatePreview();
+};
+
+/* ============ INIT AUTO INDEX ============ */
+const currentYear = new Date().getFullYear();
+document.getElementById('f_session').value = currentYear;
+const firstIdx = await generateNextIndex(currentYear);
+document.getElementById('f_index').value = firstIdx;
+
+/* ============ PHOTO COMPRESS ============ */
+function compressImage(file, maxSize) {
+  maxSize = maxSize || 800;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxSize || h > maxSize) {
+          if (w > h) { h = h * maxSize / w; w = maxSize; }
+          else { w = w * maxSize / h; h = maxSize; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function bindPhoto(inputId, boxId, previewId, setter) {
+  document.getElementById(inputId).onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast('❌ ছবি ৫ MB এর কম হতে হবে', 'error');
+      e.target.value = '';
+      return;
+    }
+    try {
+      const b64 = await compressImage(file);
+      document.getElementById(previewId).innerHTML = '<img src="' + b64 + '">';
+      document.getElementById(boxId).classList.add('has');
+      setter(b64);
+      updatePreview();
+      toast('✅ ছবি লোড হয়েছে', 'success');
+    } catch (err) {
+      toast('❌ ছবি লোড হয়নি', 'error');
+    }
+  };
+  document.getElementById(boxId).onclick = (e) => {
+    if (e.target.tagName !== 'INPUT') document.getElementById(inputId).click();
+  };
+}
+
+bindPhoto('fileStudent','boxStudent','prevStudent', v => photoStudent = v);
+bindPhoto('fileFather','boxFather','prevFather', v => photoFather = v);
+bindPhoto('fileMother','boxMother','prevMother', v => photoMother = v);
+
+/* ============ LIVE PREVIEW ============ */
+function updatePreview() {
+  const name = document.getElementById('f_name').value.trim();
+  const index = document.getElementById('f_index').value.trim();
+  const classId = document.getElementById('f_class').value;
+  const section = document.getElementById('f_section').value;
+  const roll = document.getElementById('f_roll').value;
+  const group = document.getElementById('f_group').value;
+  const blood = document.getElementById('f_blood').value;
+  const dob = document.getElementById('f_dob').value;
+  const gender = document.getElementById('f_gender').value;
+  const father = document.getElementById('f_father').value.trim();
+  const mother = document.getElementById('f_mother').value.trim();
+  const fmobile = document.getElementById('f_fmobile').value.trim();
+
+  const cls = allClasses.find(c => String(c.id) === classId);
+  const clsName = cls ? cls.class_name : '';
+  const genderLabel = gender === 'male' ? 'ছাত্র' : (gender === 'female' ? 'ছাত্রী' : '—');
+  const photoHtml = photoStudent ? '<img src="' + photoStudent + '">' : '👤';
+
+  let html = '';
+  html += '<div class="pc-head">';
+  html += '<div class="pc-photo">' + photoHtml + '</div>';
+  html += '<div style="flex:1;min-width:0">';
+  html += '<div class="pc-name">' + (name ? esc(name) : '<span class="pc-empty">নাম লিখুন</span>') + '</div>';
+  html += '<div class="pc-id">' + (index ? esc(index) : '— AUTO —') + '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="pc-row"><span class="pc-lbl">ক্লাস</span><span class="pc-val">' + (clsName ? esc(clsName) : '<span class="pc-empty">—</span>') + '</span></div>';
+  if (section) html += '<div class="pc-row"><span class="pc-lbl">সেকশন</span><span class="pc-val">' + esc(section) + '</span></div>';
+  if (roll) html += '<div class="pc-row"><span class="pc-lbl">রোল</span><span class="pc-val">' + esc(roll) + '</span></div>';
+  if (group) html += '<div class="pc-row"><span class="pc-lbl">Group</span><span class="pc-val">' + esc(group) + '</span></div>';
+  if (gender) html += '<div class="pc-row"><span class="pc-lbl">ধরন</span><span class="pc-val">' + genderLabel + '</span></div>';
+  if (dob) html += '<div class="pc-row"><span class="pc-lbl">জন্ম তারিখ</span><span class="pc-val">' + esc(dob) + '</span></div>';
+  if (blood) html += '<div class="pc-row"><span class="pc-lbl">রক্তের গ্রুপ</span><span class="pc-val">' + esc(blood) + '</span></div>';
+  if (father) html += '<div class="pc-row"><span class="pc-lbl">পিতা</span><span class="pc-val">' + esc(father) + '</span></div>';
+  if (mother) html += '<div class="pc-row"><span class="pc-lbl">মাতা</span><span class="pc-val">' + esc(mother) + '</span></div>';
+  if (fmobile) html += '<div class="pc-row"><span class="pc-lbl">ফোন</span><span class="pc-val">' + esc(fmobile) + '</span></div>';
+
+  html += '<div class="pc-row" style="margin-top:6px;padding-top:10px;border-top:1px dashed #e2e8f0">';
+  html += '<span class="pc-lbl">Password</span>';
+  html += '<span class="pc-val" style="color:#10b981">knsstudent</span>';
+  html += '</div>';
+
+  document.getElementById('previewCard').innerHTML = html;
+}
+
+['f_index','f_name','f_class','f_section','f_roll','f_group','f_blood','f_dob','f_gender','f_father','f_mother','f_fmobile'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updatePreview);
+  if (el) el.addEventListener('change', updatePreview);
+});
+updatePreview();
+
+/* ============ SAVE ============ */
+document.getElementById('btnSave').onclick = async () => {
+  const index = document.getElementById('f_index').value.trim();
+  const name = document.getElementById('f_name').value.trim();
+  const classId = document.getElementById('f_class').value;
+  const section = document.getElementById('f_section').value;
+  const roll = document.getElementById('f_roll').value;
+  const group = document.getElementById('f_group').value;
+  const session = document.getElementById('f_session').value;
+  const type = document.getElementById('f_type').value;
+  const dob = document.getElementById('f_dob').value;
+  const blood = document.getElementById('f_blood').value;
+  const gender = document.getElementById('f_gender').value;
+  const birth = document.getElementById('f_birth').value.trim();
+  const email = document.getElementById('f_email').value.trim();
+
+  const fatherName = document.getElementById('f_father').value.trim();
+  const fatherOcc = document.getElementById('f_foccupation').value.trim();
+  const fatherMob = document.getElementById('f_fmobile').value.trim();
+  const fatherNid = document.getElementById('f_fnid').value.trim();
+
+  const motherName = document.getElementById('f_mother').value.trim();
+  const motherOcc = document.getElementById('f_moccupation').value.trim();
+  const motherMob = document.getElementById('f_mmobile').value.trim();
+  const motherNid = document.getElementById('f_mnid').value.trim();
+
+  const guardian = document.getElementById('f_guardian').value.trim();
+  const gphone = document.getElementById('f_gphone').value.trim();
+  const present = document.getElementById('f_present').value.trim();
+  const permanent = document.getElementById('f_permanent').value.trim();
+
+  if (!index) { toast('❌ Student Index নেই', 'error'); goToStep(2); return; }
+  if (!name) { toast('❌ নাম দিন', 'error'); goToStep(2); return; }
+  if (!classId) { toast('❌ ক্লাস সিলেক্ট করুন', 'error'); goToStep(2); return; }
+
+  const loginEmail = index + '@student.local';
+  const loginPassword = FIXED_PASSWORD;
+
+  const payload = {
+    student_index: index,
+    student_id: index.startsWith('STU-') ? index : ('STU-' + index),
+    name: name,
+    class_id: +classId,
+    section: section || null,
+    roll: roll ? +roll : null,
+    group_name: group || null,
+    session_year: session ? +session : new Date().getFullYear(),
+    student_type: type || 'active',
+    date_of_birth: dob || null,
+    blood_group: blood || null,
+    gender: gender || null,
+    birth_certificate_no: birth || null,
+    email: email || null,
+    father_name: fatherName || null,
+    father_occupation: fatherOcc || null,
+    father_mobile: fatherMob || null,
+    father_nid: fatherNid || null,
+    mother_name: motherName || null,
+    mother_occupation: motherOcc || null,
+    mother_mobile: motherMob || null,
+    mother_nid: motherNid || null,
+    guardian_name: guardian || fatherName || null,
+    guardian_phone: gphone || fatherMob || null,
+    present_address: present || null,
+    permanent_address: permanent || null,
+    student_photo: photoStudent || originalPhotos.student || null,
+    father_photo: photoFather || originalPhotos.father || null,
+    mother_photo: photoMother || originalPhotos.mother || null,
+    login_email: loginEmail,
+    login_password: loginPassword,
+    login_enabled: true
+  };
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = '⏳ সেভ হচ্ছে...';
+
+  try {
+    let result;
+    if (editingId) {
+      result = await supabase.from('students').update(payload).eq('id', editingId).select().single();
+      if (result.error) throw result.error;
+      await logAction('update','students',editingId,'Update: ' + name);
+      toast('✅ আপডেট হয়েছে', 'success');
+    } else {
+      result = await supabase.from('students').insert(payload).select().single();
+      if (result.error) throw result.error;
+      await logAction('create','students',result.data.id,'New: ' + name);
+      toast('✅ ভর্তি সম্পন্ন', 'success');
+      showCredentials(name, index, loginPassword);
+    }
+    resetForm();
+    document.getElementById('tabList').click();
+  } catch (err) {
+    console.error('Save error:', err);
+    let m = err.message || 'সেভ হয়নি';
+    if (m.toLowerCase().indexOf('duplicate') >= 0 || m.toLowerCase().indexOf('unique') >= 0) {
+      m = 'এই Student Index আগেই ব্যবহার হয়েছে';
+    }
+    toast('❌ ' + m, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editingId ? '💾 আপডেট করুন' : '💾 ছাত্র ভর্তি করুন';
+  }
+};
+
+/* ============ RESET ============ */
+async function resetForm() {
+  editingId = null;
+  photoStudent = ''; photoFather = ''; photoMother = '';
+  originalPhotos = { student:'', father:'', mother:'' };
+
+  ['f_name','f_roll','f_dob','f_birth','f_email',
+   'f_father','f_foccupation','f_fmobile','f_fnid',
+   'f_mother','f_moccupation','f_mmobile','f_mnid',
+   'f_guardian','f_gphone','f_present','f_permanent'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  ['f_class','f_section','f_group','f_blood','f_gender'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  document.getElementById('f_type').value = 'active';
+  document.getElementById('f_section').innerHTML = '<option value="">-- --</option>';
+
+  document.getElementById('prevStudent').innerHTML = '👤';
+  document.getElementById('prevFather').innerHTML = '👨';
+  document.getElementById('prevMother').innerHTML = '👩';
+  document.getElementById('boxStudent').classList.remove('has');
+  document.getElementById('boxFather').classList.remove('has');
+  document.getElementById('boxMother').classList.remove('has');
+  document.getElementById('fileStudent').value = '';
+  document.getElementById('fileFather').value = '';
+  document.getElementById('fileMother').value = '';
+
+  document.getElementById('btnSave').textContent = '💾 ছাত্র ভর্তি করুন';
+
+  /* Reset session and regenerate index */
+  const y = new Date().getFullYear();
+  document.getElementById('f_session').value = y;
+  const newIdx = await generateNextIndex(y);
+  document.getElementById('f_index').value = newIdx;
+
+  updatePreview();
+  goToStep(1);
+}
+
+document.getElementById('btnReset').onclick = async () => {
+  if (editingId && !confirm('পরিবর্তন বাতিল করবেন?')) return;
+  await resetForm();
+  toast('🆕 নতুন ফর্ম', 'success');
+};
+
+/* ============ CREDENTIALS POPUP ============ */
+function showCredentials(name, index, password) {
+  const div = document.createElement('div');
+  div.className = 'cr-bg';
+
+  let html = '';
+  html += '<div class="cr-m">';
+  html += '<span class="bi">🎉</span>';
+  html += '<h3>ভর্তি সম্পন্ন!</h3>';
+  html += '<p class="sb">ছাত্রকে এই তথ্য লিখে দিন</p>';
+  html += '<div class="cr-b">';
+  html += '<div class="lb">নাম</div><div class="vl">' + esc(name) + '</div>';
+  html += '<div class="lb">Student Index</div><div class="vl idx">' + esc(index) + '</div>';
+  html += '<div class="lb">Password</div><div class="vl pwd">' + esc(password) + '</div>';
+  html += '</div>';
+  html += '<p class="cr-n">Website-এ "🎓 ছাত্র লগইন" tab-এ এই Index আর Password দিয়ে login করবেন।</p>';
+  html += '<div class="cr-a">';
+  html += '<button class="cr-p" id="crPrint">🖨️ Print</button>';
+  html += '<button class="cr-c" id="crClose">ঠিক আছে</button>';
+  html += '</div>';
+  html += '</div>';
+
+  div.innerHTML = html;
+  document.body.appendChild(div);
+
+  document.getElementById('crClose').onclick = () => div.remove();
+  document.getElementById('crPrint').onclick = () => printCard(name, index, password);
+}
+
+/* ============ PRINT ============ */
+function printCard(name, index, password) {
+  const pa = document.createElement('div');
+  pa.id = 'printArea_' + Date.now();
+  pa.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:999999;padding:40px 30px;display:none;overflow:auto';
+
+  let html = '';
+  html += '<div style="text-align:center;font-family:Arial,sans-serif;color:#1f2937;max-width:500px;margin:0 auto">';
+  html += '<div style="border-bottom:2px dashed #cbd5e1;padding-bottom:16px;margin-bottom:24px">';
+  html += '<h1 style="color:#7c3aed;font-size:22px;font-weight:800;margin:0 0 6px">🎓 Student Login Information</h1>';
+  html += '<p style="color:#6b7280;font-size:13px;margin:0">' + esc(name) + '</p>';
+  html += '</div>';
+  html += '<div style="border:3px dashed #7c3aed;padding:26px 20px;border-radius:14px;margin:20px 0;background:#f5f3ff;text-align:left">';
+  html += '<div style="font-size:11px;color:#6b7280;font-weight:800;text-transform:uppercase;margin-bottom:6px">ছাত্রের নাম</div>';
+  html += '<div style="font-size:20px;font-weight:800;color:#1e1b4b;font-family:monospace;margin-bottom:16px">' + esc(name) + '</div>';
+  html += '<div style="font-size:11px;color:#6b7280;font-weight:800;text-transform:uppercase;margin-bottom:6px">Student Index</div>';
+  html += '<div style="font-size:28px;font-weight:800;color:#7c3aed;font-family:monospace;letter-spacing:2px;margin-bottom:16px">' + esc(index) + '</div>';
+  html += '<div style="font-size:11px;color:#6b7280;font-weight:800;text-transform:uppercase;margin-bottom:6px">Password</div>';
+  html += '<div style="font-size:28px;font-weight:800;color:#10b981;font-family:monospace;letter-spacing:2px">' + esc(password) + '</div>';
+  html += '</div>';
+  html += '<div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px 18px;border-radius:6px;text-align:left;font-size:13px;color:#1e40af;margin-top:20px;line-height:1.8">';
+  html += '<b>📱 Login করার নিয়ম:</b><br>';
+  html += '১. Website খুলুন<br>২. <b>"ছাত্র লগইন"</b> tab-এ ক্লিক করুন<br>';
+  html += '৩. উপরের Index লিখুন<br>৪. Password লিখুন<br>৫. লগইন ক্লিক করুন';
+  html += '</div>';
+  html += '<div style="font-size:12px;color:#6b7280;line-height:1.7;margin-top:24px">⚠️ এই কাগজটা নিরাপদে রাখুন।</div>';
+  html += '</div>';
+
+  pa.innerHTML = html;
+  document.body.appendChild(pa);
+  pa.style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => pa.remove(), 1000);
+  }, 100);
+}
+
+/* ============ LOAD STUDENTS ============ */
+async function loadStudents() {
+  const area = document.getElementById('listArea');
+  area.innerHTML = '<div class="list-empty"><span class="ic">⏳</span>লোড হচ্ছে...</div>';
+
+  try {
+    const { data, error } = await supabase.from('students').select('*')
+      .or('is_deleted.is.null,is_deleted.eq.false')
+      .order('id',{ascending:false}).limit(500);
+    if (error) throw error;
+    allStudents = data || [];
+    renderStats();
+    renderList();
+  } catch (err) {
+    area.innerHTML = '<div class="list-empty"><span class="ic">❌</span>' + esc(err.message) + '</div>';
+  }
+}
+
+function renderStats() {
+  const total = allStudents.length;
+  const active = allStudents.filter(s => s.student_type !== 'inactive').length;
+  const inactive = total - active;
+  const classesCount = new Set(allStudents.map(s => s.class_id).filter(Boolean)).size;
+  document.getElementById('listStats').innerHTML =
+    '<div class="lstat"><h4>মোট ছাত্র</h4><p>' + total + '</p></div>' +
+    '<div class="lstat green"><h4>Active</h4><p>' + active + '</p></div>' +
+    '<div class="lstat rose"><h4>Inactive</h4><p>' + inactive + '</p></div>' +
+    '<div class="lstat blue"><h4>ক্লাস</h4><p>' + classesCount + '</p></div>';
+}
+
+function renderList() {
+  const area = document.getElementById('listArea');
+  const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+  const classF = document.getElementById('filterClass').value;
+  const typeF = document.getElementById('filterType').value;
+
+  let list = allStudents;
+  if (q) {
+    list = list.filter(s =>
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.student_index || '').toLowerCase().includes(q) ||
+      (s.guardian_phone || '').includes(q) ||
+      (s.father_name || '').toLowerCase().includes(q)
+    );
+  }
+  if (classF) list = list.filter(s => String(s.class_id) === classF);
+  if (typeF) list = list.filter(s => (s.student_type || 'active') === typeF);
+
+  if (!list.length) {
+    area.innerHTML = '<div class="list-empty"><span class="ic">🔍</span>কোনো ছাত্র পাওয়া যায়নি</div>';
+    return;
+  }
+
+  let html = '';
+  list.forEach(s => {
+    const cls = allClasses.find(c => c.id == s.class_id);
+    const clsName = cls ? cls.class_name : '-';
+
+    html += '<div class="stu-card">';
+    html += '<div class="sc-i">';
+    html += '<div class="sc-n">' + esc(s.name) + ' <span class="sc-id">' + esc(s.student_index || '-') + '</span></div>';
+    html += '<div class="sc-m">';
+    html += '<span>ক্লাস: <b>' + esc(clsName) + '</b></span>';
+    if (s.section) html += '<span>সেকশন: <b>' + esc(s.section) + '</b></span>';
+    if (s.roll) html += '<span>রোল: <b>' + esc(s.roll) + '</b></span>';
+    if (s.father_name) html += '<span>পিতা: <b>' + esc(s.father_name) + '</b></span>';
+    if (s.guardian_phone) html += '<span>📞 <b>' + esc(s.guardian_phone) + '</b></span>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="sc-acts">';
+    html += '<button class="a-info" data-act="info" data-id="' + s.id + '">🔑 Login Info</button>';
+    html += '<button class="a-edit" data-act="edit" data-id="' + s.id + '">✏️ এডিট</button>';
+    html += '<button class="a-del" data-act="del" data-id="' + s.id + '">🗑️</button>';
+    html += '</div>';
+    html += '</div>';
+  });
+  area.innerHTML = html;
+
+  area.querySelectorAll('[data-act]').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.id;
+      const act = b.dataset.act;
+      const s = allStudents.find(x => String(x.id) === String(id));
+      if (!s) return;
+      if (act === 'info') showCredentials(s.name, s.student_index || '-', s.login_password || FIXED_PASSWORD);
+      else if (act === 'edit') editStudent(s);
+      else if (act === 'del') deleteStudent(s);
+    };
+  });
+}
+
+document.getElementById('searchBox').oninput = renderList;
+document.getElementById('filterClass').onchange = renderList;
+document.getElementById('filterType').onchange = renderList;
+
+/* ============ EDIT ============ */
+function editStudent(s) {
+  document.getElementById('tabNew').click();
+  editingId = s.id;
+
+  document.getElementById('f_index').value = s.student_index || '';
+  document.getElementById('f_name').value = s.name || '';
+  document.getElementById('f_class').value = s.class_id || '';
+  document.getElementById('f_class').dispatchEvent(new Event('change'));
+
+  setTimeout(() => {
+    document.getElementById('f_section').value = s.section || '';
+    updatePreview();
+  }, 50);
+
+  document.getElementById('f_roll').value = s.roll || '';
+  document.getElementById('f_group').value = s.group_name || '';
+  document.getElementById('f_session').value = s.session_year || '';
+  document.getElementById('f_type').value = s.student_type || 'active';
+  document.getElementById('f_dob').value = s.date_of_birth || '';
+  document.getElementById('f_blood').value = s.blood_group || '';
+  document.getElementById('f_gender').value = s.gender || '';
+  document.getElementById('f_birth').value = s.birth_certificate_no || '';
+  document.getElementById('f_email').value = s.email || '';
+  document.getElementById('f_father').value = s.father_name || '';
+  document.getElementById('f_foccupation').value = s.father_occupation || '';
+  document.getElementById('f_fmobile').value = s.father_mobile || '';
+  document.getElementById('f_fnid').value = s.father_nid || '';
+  document.getElementById('f_mother').value = s.mother_name || '';
+  document.getElementById('f_moccupation').value = s.mother_occupation || '';
+  document.getElementById('f_mmobile').value = s.mother_mobile || '';
+  document.getElementById('f_mnid').value = s.mother_nid || '';
+  document.getElementById('f_guardian').value = s.guardian_name || '';
+  document.getElementById('f_gphone').value = s.guardian_phone || '';
+  document.getElementById('f_present').value = s.present_address || '';
+  document.getElementById('f_permanent').value = s.permanent_address || '';
+
+  originalPhotos = {
+    student: s.student_photo || '',
+    father: s.father_photo || '',
+    mother: s.mother_photo || '',
+  };
+  photoStudent = ''; photoFather = ''; photoMother = '';
+
+  if (s.student_photo) {
+    document.getElementById('prevStudent').innerHTML = '<img src="' + s.student_photo + '">';
+    document.getElementById('boxStudent').classList.add('has');
+  }
+  if (s.father_photo) {
+    document.getElementById('prevFather').innerHTML = '<img src="' + s.father_photo + '">';
+    document.getElementById('boxFather').classList.add('has');
+  }
+  if (s.mother_photo) {
+    document.getElementById('prevMother').innerHTML = '<img src="' + s.mother_photo + '">';
+    document.getElementById('boxMother').classList.add('has');
+  }
+
+  document.getElementById('btnSave').textContent = '💾 আপডেট করুন';
+  updatePreview();
+  goToStep(1);
+  toast('✏️ এডিট মোড', 'success');
+}
+
+/* ============ DELETE ============ */
+async function deleteStudent(s) {
+  if (!confirm('"' + s.name + '" কে Recycle Bin-এ পাঠাবেন?')) return;
+  try {
+    const { error } = await supabase.from('students')
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() })
+      .eq('id', s.id);
+    if (error) throw error;
+    await logAction('delete','students',s.id,'Delete: ' + s.name);
+    toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+    loadStudents();
+  } catch (err) {
+    toast('❌ ' + err.message, 'error');
+  }
+}
+
+/* ============ INIT ============ */
+goToStep(1);
+</script>
+</body>
+</html>

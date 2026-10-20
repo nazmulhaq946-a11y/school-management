@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bulk Fee Assign · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bf-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #16a34a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .bf-header .left { display: flex; align-items: center; gap: 14px; }
+    .bf-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #16a34a; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .bf-header h1 { color: #16a34a; font-size: 22px; margin: 0; font-weight: 700; }
+    .bf-header p { color: #14532d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .bf-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .bf-back:hover { background: #111827; }
+    .bf-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .bf-body {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .bf-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 900px; margin: 0 auto;
+    }
+    .bf-row {
+      display: grid; grid-template-columns: 140px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .bf-row label {
+      color: #374151; font-weight: 700; font-size: 13.5px; text-align: right;
+    }
+    .bf-row input, .bf-row select {
+      padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white;
+    }
+    .bf-row input:focus, .bf-row select:focus { outline: none; border-color: #16a34a; }
+
+    .bf-note {
+      grid-column: 1 / -1;
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #1e3a8a;
+      margin-top: 4px;
+    }
+
+    .bf-btn-row {
+      grid-column: 1 / -1;
+      display: flex; gap: 14px; justify-content: center;
+      margin-top: 14px; flex-wrap: wrap;
+    }
+    .bf-gen-btn {
+      background: #16a34a; color: white; border: none;
+      padding: 13px 38px; border-radius: 6px;
+      font-weight: 700; font-size: 15px; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(22,163,74,0.35);
+    }
+    .bf-gen-btn:hover { background: #15803d; }
+    .bf-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Preview box */
+    .preview-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 16px;
+      max-width: 900px;
+      margin-left: auto; margin-right: auto;
+    }
+    .preview-box h3 {
+      color: #16a34a;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #d1fae5;
+    }
+    .preview-stat {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .preview-stat span {
+      background: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      font-weight: 700;
+    }
+    .preview-stat .big { color: #16a34a; }
+    .preview-stat .warn { color: #f59e0b; }
+
+    .stu-preview-list {
+      max-height: 220px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #4b5563;
+    }
+    .stu-preview-list .item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #e5e7eb;
+      padding: 3px 0;
+    }
+    .stu-preview-list .item:last-child { border-bottom: none; }
+    .stu-preview-list .item.done { color: #16a34a; text-decoration: line-through; opacity: 0.6; }
+    .stu-preview-list .item .name { font-weight: 600; }
+    .stu-preview-list .item .badge {
+      font-size: 10.5px;
+      padding: 1px 8px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-done { background: #d1fae5; color: #065f46; }
+
+    /* Info banner */
+    .info-banner {
+      background: #d1fae5;
+      border-left: 4px solid #16a34a;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #065f46;
+      max-width: 900px;
+      margin-left: auto; margin-right: auto;
+      margin-bottom: 16px;
+    }
+    .info-banner.warn {
+      background: #fef3c7;
+      border-left-color: #f59e0b;
+      color: #92400e;
+    }
+    .info-banner a { color: #1e3a8a; font-weight: 700; }
+
+    @media (max-width: 900px) {
+      .bf-form { grid-template-columns: 1fr; }
+      .bf-row { grid-template-columns: 1fr; }
+      .bf-row label { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'fee-bulk-assign.html', 'এক ক্লিকে ফি প্রয়োগ');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    content.innerHTML = `
+      <div class="bf-header">
+        <div class="left">
+          <div class="icon">⚡</div>
+          <div>
+            <h1>Bulk Fee Assignment</h1>
+            <p>এক ক্লিকে একটি ক্লাসের সব ছাত্রের ফি সেট করুন</p>
+          </div>
+        </div>
+        <button class="bf-back" onclick="window.location.href='fee-management.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="bf-body">
+        <div class="info-banner">
+          💡 এখানে ফি সেট করলে <b>Due (বাকি)</b> হিসেবে সংরক্ষিত হবে।
+          এরপর <a href="fee-management.html">💵 ফি আদায়</a> পেজ থেকে সহজে আদায় করতে পারবেন।
+        </div>
+
+        <div class="bf-form">
+          <div class="bf-row">
+            <label>Session / Year</label>
+            <select id="sessionYear">
+              ${[CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="bf-row">
+            <label>Class *</label>
+            <select id="className"><option value="">-- Class --</option></select>
+          </div>
+
+          <div class="bf-row">
+            <label>Section</label>
+            <select id="sectionName"><option value="">All Sections</option></select>
+          </div>
+          <div class="bf-row">
+            <label>Fee Type *</label>
+            <select id="feeType"><option value="">-- Fee Type --</option></select>
+          </div>
+
+          <div class="bf-row">
+            <label>Month (মাসিক হলে) *</label>
+            <select id="feeMonth"></select>
+          </div>
+          <div class="bf-row">
+            <label>Amount (৳) *</label>
+            <input id="amount" type="number" placeholder="যেমন: 500">
+          </div>
+
+          <div class="bf-note">
+            <b>ℹ️ তথ্য:</b> যেসব ছাত্রের ইতিমধ্যে এই মাসের এই ফি দেওয়া/সেট করা আছে, তাদের **বাংলাদেশে যুক্ত করা হবে না** (অটো skip)।
+          </div>
+
+          <div class="bf-btn-row">
+            <button class="bf-gen-btn" id="previewBtn">👁️ প্রিভিউ দেখুন</button>
+            <button class="bf-gen-btn" id="assignBtn" style="background:#c0392b;box-shadow:0 2px 8px rgba(192,57,43,0.35)" disabled>
+              ⚡ সব ছাত্রের উপর প্রয়োগ করুন
+            </button>
+          </div>
+        </div>
+
+        <div id="previewArea"></div>
+      </div>
+    `;
+
+    /* ============ Data Load ============ */
+    let allClasses = [];
+    let allFeeTypes = [];
+
+    async function loadBase() {
+      const [c, t] = await Promise.all([
+        supabase.from('classes').select('*').order('id'),
+        supabase.from('fee_types').select('*')
+          .eq('account_type', 'income')
+          .eq('is_active', true)
+          .order('account_no'),
+      ]);
+      allClasses = c.data || [];
+      allFeeTypes = t.data || [];
+
+      document.getElementById('className').innerHTML =
+        '<option value="">-- Class --</option>' +
+        allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+
+      document.getElementById('feeType').innerHTML =
+        '<option value="">-- Fee Type --</option>' +
+        allFeeTypes.map(x => `<option value="${x.id}" data-monthly="${x.is_monthly}">${esc(x.type_name)}${x.is_monthly ? ' (মাসিক)' : ''}</option>`).join('');
+
+      // Month dropdown
+      const monthOpts = [];
+      for (let i = -6; i <= 6; i++) {
+        const d = new Date(CURRENT_YEAR, new Date().getMonth() + i, 1);
+        const label = d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        monthOpts.push(label);
+      }
+      const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      document.getElementById('feeMonth').innerHTML =
+        monthOpts.map(m => `<option value="${m}" ${m === currentMonth ? 'selected' : ''}>${m}</option>`).join('');
+    }
+    await loadBase();
+
+    /* ============ Class → Section ============ */
+    document.getElementById('className').onchange = () => {
+      const cls = allClasses.find(c => c.id == document.getElementById('className').value);
+      document.getElementById('sectionName').innerHTML =
+        '<option value="">All Sections</option>' +
+        ((cls?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+    };
+
+    /* ============ Fee Type → Amount auto ============ */
+    document.getElementById('feeType').onchange = async () => {
+      const ftId = document.getElementById('feeType').value;
+      const classId = document.getElementById('className').value;
+      if (!ftId || !classId) return;
+
+      // fee_structure থেকে amount আন
+      const session = +document.getElementById('sessionYear').value;
+      const { data } = await supabase.from('fee_structure').select('amount')
+        .eq('session_year', session)
+        .eq('class_id', classId)
+        .eq('fee_type_id', +ftId)
+        .maybeSingle();
+
+      if (data && data.amount > 0) {
+        document.getElementById('amount').value = data.amount;
+      }
+
+      // মাসিক কিনা দেখে month dropdown disable/enable
+      const ft = allFeeTypes.find(x => String(x.id) === ftId);
+      const monthSel = document.getElementById('feeMonth');
+      monthSel.disabled = !ft?.is_monthly;
+      if (!ft?.is_monthly) monthSel.style.opacity = '0.5';
+      else monthSel.style.opacity = '1';
+    };
+
+    /* ============ Preview ============ */
+    document.getElementById('previewBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const section = document.getElementById('sectionName').value;
+      const ftId = document.getElementById('feeType').value;
+      const month = document.getElementById('feeMonth').value;
+      const amount = +document.getElementById('amount').value;
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+      if (!ftId) { toast('Fee Type সিলেক্ট করুন', 'error'); return; }
+      if (!amount || amount <= 0) { toast('Amount দিন', 'error'); return; }
+
+      const btn = document.getElementById('previewBtn');
+      btn.disabled = true; btn.textContent = '⏳ লোড হচ্ছে...';
+
+      const ft = allFeeTypes.find(x => String(x.id) === ftId);
+      const cls = allClasses.find(c => c.id == classId);
+      const useMonth = ft?.is_monthly ? month : null;
+
+      // ছাত্র লোড
+      let q = supabase.from('students').select('*').eq('class_id', classId).order('roll');
+      if (section) q = q.eq('section', section);
+      const { data: students } = await q;
+      const list = students || [];
+
+      // ইতিমধ্যে কাদের সেট আছে চেক
+      let alreadyMap = {};
+      if (list.length) {
+        const idxs = list.map(s => s.student_index).filter(Boolean);
+        let eq = supabase.from('fee_payments').select('student_index, fee_status, paid_amount')
+          .eq('session_year', session)
+          .eq('class_id', classId)
+          .eq('fee_type_id', +ftId)
+          .in('student_index', idxs);
+        if (useMonth) eq = eq.eq('fee_month', useMonth);
+        else eq = eq.is('fee_month', null);
+
+        const { data: existing } = await eq;
+        (existing || []).forEach(e => alreadyMap[e.student_index] = e);
+      }
+
+      const pending = list.filter(s => !alreadyMap[s.student_index]);
+      const done = list.filter(s => alreadyMap[s.student_index]);
+
+      btn.disabled = false; btn.textContent = '👁️ প্রিভিউ দেখুন';
+      document.getElementById('assignBtn').disabled = pending.length === 0;
+
+      // Preview render
+      document.getElementById('previewArea').innerHTML = `
+        <div class="preview-box">
+          <h3>📋 প্রিভিউ · ${esc(cls?.class_name || '')} · ${esc(ft?.type_name || '')}${useMonth ? ' · ' + esc(useMonth) : ''}</h3>
+
+          <div class="preview-stat">
+            <span>Class: <b>${esc(cls?.class_name || '-')}</b></span>
+            <span>Section: <b>${esc(section || 'All')}</b></span>
+            <span>Fee: <b>${esc(ft?.type_name || '-')}</b></span>
+            ${useMonth ? `<span>Month: <b>${esc(useMonth)}</b></span>` : ''}
+            <span class="big">Amount: ৳ ${amount}</span>
+          </div>
+
+          <div class="preview-stat">
+            <span>মোট ছাত্র: <b>${list.length}</b></span>
+            <span class="big">নতুন যোগ হবে: <b>${pending.length}</b> জন</span>
+            <span class="warn">আগেই আছে: <b>${done.length}</b> জন</span>
+          </div>
+
+          ${list.length === 0 ? '<div style="color:#9ca3af;text-align:center;padding:20px">কোনো ছাত্র নেই</div>' : `
+            <div class="stu-preview-list">
+              ${list.map(s => {
+                const done = !!alreadyMap[s.student_index];
+                return `
+                  <div class="item ${done ? 'done' : ''}">
+                    <span class="name">${esc(s.name)} · Roll ${esc(s.roll ?? '-')} · ${esc(s.section || '-')}</span>
+                    <span class="badge ${done ? 'badge-done' : 'badge-pending'}">${done ? '✅ আগেই সেট' : '⏳ নতুন যোগ হবে'}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+        </div>
+      `;
+
+      // Save context for assign
+      window.__bulkCtx = {
+        session, classId, section, ftId: +ftId, month: useMonth, amount,
+        ftName: ft?.type_name, className: cls?.class_name,
+        pendingCount: pending.length,
+      };
+    };
+
+    /* ============ Assign ============ */
+    document.getElementById('assignBtn').onclick = async () => {
+      const ctx = window.__bulkCtx;
+      if (!ctx || !ctx.pendingCount) { toast('প্রথমে প্রিভিউ দেখুন', 'error'); return; }
+
+      if (!confirm(`⚠️ ${ctx.pendingCount} জন ছাত্রের উপর "${ctx.ftName}" (৳${ctx.amount}) ফি প্রয়োগ করা হবে। নিশ্চিত?`)) return;
+
+      const btn = document.getElementById('assignBtn');
+      btn.disabled = true; btn.textContent = '⏳ প্রয়োগ হচ্ছে...';
+
+      const { data, error } = await supabase.rpc('bulk_assign_fee', {
+        p_session: ctx.session,
+        p_class_id: ctx.classId,
+        p_fee_type_id: ctx.ftId,
+        p_month: ctx.month,
+        p_amount: ctx.amount,
+        p_section: ctx.section || null,
+      });
+
+      btn.disabled = false; btn.textContent = '⚡ সব ছাত্রের উপর প্রয়োগ করুন';
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      const inserted = data?.inserted ?? 0;
+      const skipped = data?.skipped ?? 0;
+
+      toast(`✅ ${inserted} জন ছাত্রের জন্য ফি সেট হয়েছে · ${skipped} জন স্কিপ`, 'success');
+
+      // Re-preview
+      document.getElementById('previewBtn').click();
+    };
+  </script>
+</body>
+</html>

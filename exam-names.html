@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exam Name · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============ HEADER ============ */
+    .en-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .en-header .left { display: flex; align-items: center; gap: 14px; }
+    .en-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .en-header h1 { color: #7c3aed; font-size: 22px; margin: 0; font-weight: 700; }
+    .en-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .en-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .en-back:hover { background: #111827; }
+    .en-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* ============ TOPBAR ============ */
+    .en-topbar {
+      background: #d1d5db;
+      padding: 10px 16px;
+      display: flex; justify-content: flex-end;
+      border-bottom: 1px solid #9ca3af;
+    }
+    .en-add-new {
+      background: #e74c3c; color: white;
+      border: none; padding: 8px 22px;
+      border-radius: 20px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 2px 5px rgba(231,76,60,0.3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .en-add-new:hover { background: #c0392b; }
+
+    /* ============ TABLE ============ */
+    .en-body {
+      background: white;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .en-table-wrap { overflow-x: auto; }
+    .en-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+      min-width: 900px;
+    }
+    .en-table thead th {
+      background: #c0392b;
+      color: white;
+      padding: 12px 10px;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      white-space: nowrap;
+    }
+    .en-table thead th:last-child { border-right: none; }
+
+    .en-table tbody td {
+      padding: 10px 12px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #f3f4f6;
+      font-size: 13.5px;
+    }
+    .en-table tbody td:last-child { border-right: none; }
+    .en-table tbody tr:nth-child(odd) td { background: #ffffff; }
+    .en-table tbody tr:nth-child(even) td { background: #f3f4f6; }
+    .en-table tbody tr:hover td { background: #fef2f2; }
+
+    .en-table td.serial-cell {
+      font-weight: 700;
+      color: #c0392b;
+      font-size: 14.5px;
+    }
+    .en-table td.name-cell {
+      text-align: left;
+      padding-left: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .en-table td.bangla-cell {
+      text-align: center;
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+    .en-table td.date-cell {
+      color: #4b5563;
+      font-size: 13px;
+    }
+
+    .yes-badge {
+      color: #16a34a;
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+    .no-badge {
+      color: #dc2626;
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 3px 6px;
+      color: #c0392b;
+      transition: transform 0.15s;
+    }
+    .edit-btn:hover { transform: scale(1.25); }
+
+    .empty-row {
+      text-align: center !important;
+      padding: 40px !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+
+    /* ============ MODAL ============ */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      background: #7c3aed; color: white;
+      padding: 16px 22px;
+      border-radius: 12px 12px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; }
+    .modal-close {
+      background: transparent; border: none; color: white;
+      font-size: 26px; cursor: pointer; line-height: 1;
+    }
+    .modal-body { padding: 22px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+    .fld { display: flex; flex-direction: column; gap: 6px; }
+    .fld.full { grid-column: 1 / -1; }
+    .fld label {
+      font-size: 12.5px; color: #374151; font-weight: 700;
+    }
+    .fld input, .fld select {
+      padding: 9px 12px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 14px; font-family: inherit;
+    }
+    .fld input:focus, .fld select:focus {
+      outline: none; border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+    }
+
+    .toggle-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .slider { background: #16a34a; }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    .toggle-label {
+      font-weight: 700; font-size: 13.5px; color: #374151;
+    }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 10px;
+    }
+    .btn-cancel {
+      background: #6b7280; color: white; border: none;
+      padding: 10px 24px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-cancel:hover { background: #4b5563; }
+    .btn-save {
+      background: #16a34a; color: white; border: none;
+      padding: 10px 32px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-save:hover { background: #15803d; }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: #dc2626; color: white; border: none;
+      padding: 10px 24px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+      margin-right: auto;
+    }
+    .btn-delete:hover { background: #b91c1c; }
+
+    @media (max-width: 900px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'exam-names.html', 'Exam Name Management');
+
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <!-- Header -->
+      <div class="en-header">
+        <div class="left">
+          <div class="icon">📝</div>
+          <div>
+            <h1>Exam Name</h1>
+            <p>Manage Your Yearly Exams</p>
+          </div>
+        </div>
+        <button class="en-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <!-- Topbar -->
+      <div class="en-topbar">
+        <button class="en-add-new" id="addNewBtn">➕ Add New</button>
+      </div>
+
+      <!-- Table -->
+      <div class="en-body">
+        <div class="en-table-wrap">
+          <table class="en-table">
+            <thead>
+              <tr>
+                <th style="width:90px">Exam Serial</th>
+                <th style="min-width:220px">Exam Name</th>
+                <th style="min-width:200px">In Bangla</th>
+                <th style="width:130px">Published Date</th>
+                <th style="width:130px">Show In WebSite</th>
+                <th style="width:140px">Show In Software</th>
+                <th style="width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    /* ============================================
+       Auto Serial
+       ============================================ */
+    async function generateNextSerial() {
+      const { data } = await supabase.from('exams')
+        .select('exam_serial')
+        .not('exam_serial', 'is', null)
+        .order('exam_serial', { ascending: false })
+        .limit(1);
+      if (data && data.length && data[0].exam_serial) {
+        return data[0].exam_serial + 1;
+      }
+      return 1;
+    }
+
+    /* ============================================
+       Modal Form
+       ============================================ */
+    function openExamForm(exam = null) {
+      const isEdit = !!exam?.id;
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ Exam Edit করুন' : '➕ নতুন Exam যোগ করুন'}</h3>
+            <button class="modal-close" id="mClose">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="fld">
+                <label>Exam Serial *</label>
+                <input id="e_serial" type="number" value="${exam?.exam_serial || ''}">
+              </div>
+              <div class="fld">
+                <label>Year *</label>
+                <input id="e_year" type="number" value="${exam?.year || new Date().getFullYear()}">
+              </div>
+
+              <div class="fld full">
+                <label>Exam Name (English) *</label>
+                <input id="e_name" value="${esc(exam?.exam_name || '')}" placeholder="যেমন: First Model Test 2026">
+              </div>
+
+              <div class="fld full">
+                <label>In Bangla (বাংলা নাম)</label>
+                <input id="e_bangla" value="${esc(exam?.exam_name_bangla || '')}" placeholder="যেমন: প্রথম মডেল টেস্ট ২০২৬">
+              </div>
+
+              <div class="fld full">
+                <label>Published Date</label>
+                <input id="e_pubdate" type="date" value="${exam?.published_date || ''}">
+              </div>
+
+              <div class="fld full" style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#f9fafb">
+                <div class="toggle-row">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="e_website" ${exam?.show_in_website !== false ? 'checked' : ''}>
+                    <span class="slider"></span>
+                  </label>
+                  <span class="toggle-label">🌐 Show In WebSite</span>
+                </div>
+                <div class="toggle-row">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="e_software" ${exam?.show_in_software !== false ? 'checked' : ''}>
+                    <span class="slider"></span>
+                  </label>
+                  <span class="toggle-label">💻 Show In Software</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">বাতিল</button>
+              <button class="btn-save" id="mSave">💾 সেভ করুন</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      // Delete
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`"${exam.exam_name}" মুছবেন? এই পরীক্ষার সব রেজাল্টও মুছে যাবে!`)) return;
+          const { error } = await supabase.from('exams').delete().eq('id', exam.id);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+          toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+          closeModal();
+          loadExams();
+        };
+      }
+
+      // Save
+      document.getElementById('mSave').onclick = async () => {
+        const name = document.getElementById('e_name').value.trim();
+        const serial = +document.getElementById('e_serial').value;
+
+        if (!name) { toast('Exam Name দিন', 'error'); return; }
+        if (!serial) { toast('Exam Serial দিন', 'error'); return; }
+
+        const payload = {
+          exam_serial: serial,
+          exam_name: name,
+          exam_name_bangla: document.getElementById('e_bangla').value.trim() || null,
+          year: +document.getElementById('e_year').value || new Date().getFullYear(),
+          published_date: document.getElementById('e_pubdate').value || null,
+          show_in_website: document.getElementById('e_website').checked,
+          show_in_software: document.getElementById('e_software').checked,
+        };
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
+
+        let error;
+        if (isEdit) {
+          ({ error } = await supabase.from('exams').update(payload).eq('id', exam.id));
+        } else {
+          ({ error } = await supabase.from('exams').insert(payload));
+        }
+
+        btn.disabled = false; btn.textContent = '💾 সেভ করুন';
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast(isEdit ? '✅ আপডেট হয়েছে' : '✅ Exam যোগ হয়েছে', 'success');
+        closeModal();
+        loadExams();
+      };
+    }
+
+    /* ============================================
+       Add New
+       ============================================ */
+    document.getElementById('addNewBtn').onclick = async () => {
+      const next = await generateNextSerial();
+      openExamForm({ exam_serial: next });
+    };
+
+    /* ============================================
+       Load Exams
+       ============================================ */
+    async function loadExams() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>';
+
+      const { data, error } = await supabase.from('exams')
+        .select('*')
+        .order('exam_serial', { ascending: true });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-row">❌ ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-row">কোনো Exam নেই। <b>+ Add New</b> ক্লিক করুন।</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(e => {
+        const webYes = e.show_in_website !== false;
+        const swYes = e.show_in_software !== false;
+        const pubDate = e.published_date
+          ? new Date(e.published_date).toLocaleDateString('en-GB')
+          : '-';
+
+        return `
+          <tr>
+            <td class="serial-cell">${esc(e.exam_serial ?? e.id)}</td>
+            <td class="name-cell">${esc(e.exam_name)}</td>
+            <td class="bangla-cell">${esc(e.exam_name_bangla || '-')}</td>
+            <td class="date-cell">${pubDate}</td>
+            <td><span class="${webYes ? 'yes-badge' : 'no-badge'}">${webYes ? 'Yes' : 'No'}</span></td>
+            <td><span class="${swYes ? 'yes-badge' : 'no-badge'}">${swYes ? 'Yes' : 'No'}</span></td>
+            <td>
+              <button class="edit-btn" data-edit="${e.id}" title="Edit">✏️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => {
+          const exam = data.find(x => String(x.id) === b.dataset.edit);
+          if (exam) openExamForm(exam);
+        };
+      });
+    }
+
+    /* ============================================
+       Initial Load
+       ============================================ */
+    await loadExams();
+  </script>
+</body>
+</html>

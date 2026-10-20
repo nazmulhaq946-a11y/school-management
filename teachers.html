@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>শিক্ষক · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tch-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .tch-header .left { display: flex; align-items: center; gap: 14px; }
+    .tch-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tch-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .tch-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .tch-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .tch-back:hover { background: #111827; }
+    .tch-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    .tch-search-bar {
+      background: #e5e7eb;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #d1d5db;
+    }
+    .tch-search-bar .lbl {
+      color: #1f2937; font-weight: 700; font-size: 15px;
+    }
+    .tch-search-bar select {
+      padding: 7px 12px; border: 1px solid #d1d5db;
+      border-radius: 3px; font-size: 13.5px; min-width: 140px;
+      background: white;
+    }
+    .tch-search-btn {
+      background: #c0392b; color: white; border: none;
+      padding: 8px 22px; border-radius: 3px;
+      font-size: 13.5px; font-weight: 700; cursor: pointer;
+    }
+    .tch-search-btn:hover { background: #a93226; }
+
+    .tch-add-new {
+      background: #e74c3c; color: white;
+      border: none; padding: 8px 22px;
+      border-radius: 20px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      margin-left: auto;
+      box-shadow: 0 2px 5px rgba(231,76,60,0.3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tch-add-new:hover { background: #c0392b; }
+
+    .tch-body {
+      background: white;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .tch-table-wrap { overflow-x: auto; }
+    .tch-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+      min-width: 1000px;
+    }
+    .tch-table thead th {
+      background: #c0392b;
+      color: white;
+      padding: 11px 10px;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      white-space: nowrap;
+    }
+    .tch-table thead th:last-child { border-right: none; }
+
+    .tch-table tbody td {
+      padding: 10px 12px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #f3f4f6;
+    }
+    .tch-table tbody td:last-child { border-right: none; }
+    .tch-table tbody tr:nth-child(odd) td { background: #ffffff; }
+    .tch-table tbody tr:nth-child(even) td { background: #f3f4f6; }
+    .tch-table tbody tr:hover td { background: #fef2f2; }
+
+    .tch-table td.index-cell {
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 15px;
+      font-family: 'Courier New', monospace;
+    }
+    .tch-table td.name-cell {
+      font-weight: 700;
+      color: #c0392b;
+      font-size: 14px;
+    }
+    .tch-table td.mobile-cell {
+      color: #4b5563;
+      font-size: 13.5px;
+    }
+    .tch-table td.designation-cell {
+      color: #1f2937;
+      font-weight: 600;
+      font-size: 13.5px;
+    }
+
+    .tch-table td.images-cell {
+      padding: 6px 8px;
+    }
+    .img-pair {
+      display: flex; gap: 6px; justify-content: center; align-items: center;
+    }
+    .img-pair .photo {
+      width: 50px; height: 60px;
+      border: 1px solid #d1d5db;
+      border-radius: 3px;
+      object-fit: cover;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      font-size: 22px;
+    }
+    .img-pair .signature {
+      width: 78px; height: 60px;
+      border: 1px solid #d1d5db;
+      border-radius: 3px;
+      object-fit: contain;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      font-size: 20px;
+    }
+
+    .tch-table td.edu-cell {
+      padding: 8px;
+    }
+    .tch-table td.edu-cell a {
+      display: block;
+      color: #1e3a8a;
+      text-decoration: underline;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 3px 0;
+      cursor: pointer;
+    }
+    .tch-table td.edu-cell a:hover { color: #c0392b; }
+    .tch-table td.edu-cell a.disabled {
+      color: #9ca3af;
+      text-decoration: none;
+      cursor: default;
+    }
+
+    .tch-table td.action-cell {
+      padding: 8px 6px;
+      white-space: nowrap;
+    }
+    .tch-table td.action-cell button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 3px 5px;
+      vertical-align: middle;
+    }
+    .tch-table td.action-cell button:hover { transform: scale(1.2); }
+    .tch-table td.action-cell .view-link {
+      display: block;
+      color: #1e3a8a;
+      text-decoration: underline;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+    .tch-table td.action-cell .view-link:hover { color: #c0392b; }
+
+    .type-badge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 10px; font-size: 10.5px; font-weight: 700;
+    }
+    .type-active { background: #d1fae5; color: #065f46; }
+    .type-inactive { background: #fee2e2; color: #991b1b; }
+
+    .empty-row {
+      text-align: center !important;
+      padding: 40px !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      background: #c0392b; color: white;
+      padding: 16px 22px;
+      border-radius: 12px 12px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; }
+    .modal-close {
+      background: transparent; border: none; color: white;
+      font-size: 26px; cursor: pointer; line-height: 1;
+    }
+    .modal-body { padding: 22px; }
+
+    .form-section {
+      margin-bottom: 22px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fafafa;
+    }
+    .form-section h4 {
+      color: #c0392b; font-size: 14px; margin-bottom: 14px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 2px solid #c0392b;
+      padding-bottom: 6px;
+    }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 20px; }
+    .fld { display: flex; flex-direction: column; gap: 5px; }
+    .fld label { font-size: 12.5px; color: #374151; font-weight: 700; }
+    .fld input, .fld select, .fld textarea {
+      padding: 8px 10px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 13.5px; font-family: inherit;
+    }
+    .fld input:focus, .fld select:focus, .fld textarea:focus {
+      outline: none; border-color: #c0392b;
+    }
+    .fld textarea { min-height: 60px; resize: vertical; }
+
+    .photo-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .photo-box {
+      text-align: center;
+      padding: 12px;
+      background: white;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+    }
+    .photo-box img {
+      width: 100%; max-width: 150px; height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #f3f4f6;
+      margin-bottom: 8px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .photo-box input[type="file"] {
+      width: 100%; font-size: 11px;
+    }
+    .photo-box .title {
+      font-weight: 700; color: #374151; font-size: 12.5px; margin-bottom: 6px;
+    }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid-2, .form-grid-3, .photo-grid { grid-template-columns: 1fr; }
+      .tch-search-bar { flex-direction: column; align-items: stretch; }
+      .tch-add-new { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'teachers.html', 'শিক্ষক ব্যবস্থাপনা');
+
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <div class="tch-header">
+        <div class="left">
+          <div class="icon">👩‍🏫</div>
+          <div>
+            <h1>Teachers</h1>
+            <p>Manage all teachers name list</p>
+          </div>
+        </div>
+        <button class="tch-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="tch-search-bar">
+        <span class="lbl">Search</span>
+        <select id="typeFilter">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="">All</option>
+        </select>
+        <button class="tch-search-btn" id="searchBtn">Search</button>
+        <button class="tch-add-new" id="addNewBtn">➕ Add New</button>
+      </div>
+
+      <div class="tch-body">
+        <div class="tch-table-wrap">
+          <table class="tch-table">
+            <thead>
+              <tr>
+                <th style="width:110px">Teacher Index</th>
+                <th style="min-width:180px">Teacher Name</th>
+                <th style="min-width:170px">Designation</th>
+                <th style="width:130px">Mobile Number</th>
+                <th style="width:150px">Images</th>
+                <th style="width:130px">Educations</th>
+                <th style="width:90px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    /* ====================================================
+       ছবি ছোট করা
+       ==================================================== */
+    function compressImage(file, maxSize = 400, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height;
+            if (w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
+            else if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ============================================================
+       ✅ FIX: Auto Teacher Index — এখন সঠিক numeric sort হবে
+
+       আগে: id দিয়ে sort করা হত → ভুল
+       এখন: teacher_index numeric sort করে highest + 1
+       ============================================================ */
+    async function generateNextTeacherIndex() {
+      // সব teacher_index আনো
+      const { data } = await supabase.from('teachers')
+        .select('teacher_index')
+        .not('teacher_index', 'is', null);
+
+      if (!data || !data.length) return '201901';
+
+      // Numeric highest বের করো
+      const nums = data
+        .map(t => parseInt(t.teacher_index, 10))
+        .filter(n => !isNaN(n));
+
+      if (!nums.length) return '201901';
+
+      const max = Math.max(...nums);
+      return String(max + 1);
+    }
+
+    /* ====================================================
+       Modal ফর্ম
+       ==================================================== */
+    function openTeacherForm(teacher = null) {
+      const isEdit = !!teacher?.id;
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ শিক্ষক এডিট করুন' : '➕ নতুন শিক্ষক যোগ করুন'}</h3>
+            <button class="modal-close" id="mClose">×</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="form-section">
+              <h4>📷 ছবি ও স্বাক্ষর</h4>
+              <div class="photo-grid">
+                <div class="photo-box">
+                  <div class="title">শিক্ষকের ছবি</div>
+                  <img id="prevPhoto" src="${teacher?.photo || ''}" onerror="this.style.visibility='hidden'">
+                  <input type="file" id="filePhoto" accept="image/*">
+                </div>
+                <div class="photo-box">
+                  <div class="title">স্বাক্ষর (Signature)</div>
+                  <img id="prevSign" src="${teacher?.signature || ''}" onerror="this.style.visibility='hidden'" style="object-fit:contain;background:white">
+                  <input type="file" id="fileSign" accept="image/*">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>👤 শিক্ষকের তথ্য</h4>
+              <div class="form-grid-3">
+                <div class="fld">
+                  <label>Teacher Index *</label>
+                  <input id="t_idx" value="${esc(teacher?.teacher_index || '')}">
+                </div>
+                <div class="fld">
+                  <label>পূর্ণ নাম *</label>
+                  <input id="t_name" value="${esc(teacher?.name || '')}">
+                </div>
+                <div class="fld">
+                  <label>Designation *</label>
+                  <select id="t_desig">
+                    <option value="Head Teacher" ${teacher?.designation==='Head Teacher'?'selected':''}>Head Teacher</option>
+                    <option value="Assistant Head Teacher" ${teacher?.designation==='Assistant Head Teacher'?'selected':''}>Assistant Head Teacher</option>
+                    <option value="Senior Teacher" ${teacher?.designation==='Senior Teacher'?'selected':''}>Senior Teacher</option>
+                    <option value="Teacher" ${(!teacher||teacher?.designation==='Teacher')?'selected':''}>Teacher</option>
+                    <option value="Assistant Teacher" ${teacher?.designation==='Assistant Teacher'?'selected':''}>Assistant Teacher</option>
+                    <option value="Lecturer" ${teacher?.designation==='Lecturer'?'selected':''}>Lecturer</option>
+                    <option value="Staff" ${teacher?.designation==='Staff'?'selected':''}>Staff</option>
+                  </select>
+                </div>
+                <div class="fld">
+                  <label>Mobile Number *</label>
+                  <input id="t_phone" value="${esc(teacher?.phone || '')}" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="fld">
+                  <label>ইমেইল</label>
+                  <input id="t_email" type="email" value="${esc(teacher?.email || '')}">
+                </div>
+                <div class="fld">
+                  <label>Subject</label>
+                  <input id="t_subject" value="${esc(teacher?.subject || '')}">
+                </div>
+                <div class="fld">
+                  <label>Date of Birth</label>
+                  <input id="t_dob" type="date" value="${teacher?.date_of_birth || ''}">
+                </div>
+                <div class="fld">
+                  <label>Blood Group</label>
+                  <input id="t_blood" value="${esc(teacher?.blood_group || '')}" placeholder="A+ / B+ / O+">
+                </div>
+                <div class="fld">
+                  <label>Joining Date</label>
+                  <input id="t_join" type="date" value="${teacher?.joining_date || ''}">
+                </div>
+                <div class="fld">
+                  <label>Type</label>
+                  <select id="t_type">
+                    <option value="active" ${teacher?.teacher_type==='active'?'selected':''}>Active</option>
+                    <option value="inactive" ${teacher?.teacher_type==='inactive'?'selected':''}>Inactive</option>
+                  </select>
+                </div>
+                <div class="fld">
+                  <label>পূর্ণ ঠিকানা</label>
+                  <input id="t_address" value="${esc(teacher?.address || '')}">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>🎓 শিক্ষাগত তথ্য</h4>
+              <div class="form-grid-2">
+                <div class="fld">
+                  <label>Qualification (যোগ্যতা)</label>
+                  <textarea id="t_qual" placeholder="যেমন: M.A in Bangla, B.Ed">${esc(teacher?.qualification || '')}</textarea>
+                </div>
+                <div class="fld">
+                  <label>Certificates</label>
+                  <textarea id="t_cert" placeholder="যেমন: NTRCA, B.Ed Certificate">${esc(teacher?.certificates || '')}</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="tch-search-btn" id="mCancel" style="background:#6b7280;min-width:120px">বাতিল</button>
+              <button class="tch-search-btn" id="mSave" style="background:#16a34a;min-width:180px">💾 সেভ করুন</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      let photo = teacher?.photo || '';
+      let signature = teacher?.signature || '';
+
+      async function handleFile(inpId, prevId, setter) {
+        const file = document.getElementById(inpId).files[0];
+        if (!file) return;
+        const b64 = await compressImage(file, 500, 0.75);
+        document.getElementById(prevId).src = b64;
+        document.getElementById(prevId).style.visibility = 'visible';
+        setter(b64);
+      }
+
+      document.getElementById('filePhoto').onchange = () => handleFile('filePhoto','prevPhoto', v => photo = v);
+      document.getElementById('fileSign').onchange  = () => handleFile('fileSign','prevSign',   v => signature = v);
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      document.getElementById('mSave').onclick = async () => {
+        const idx = document.getElementById('t_idx').value.trim();
+        const name = document.getElementById('t_name').value.trim();
+        const phone = document.getElementById('t_phone').value.trim();
+
+        if (!idx) { toast('Teacher Index দিন', 'error'); return; }
+        if (!name) { toast('নাম দিন', 'error'); return; }
+
+        const payload = {
+          teacher_index: idx,
+          teacher_id: teacher?.teacher_id || ('TCH-' + idx),
+          name,
+          designation: document.getElementById('t_desig').value || 'Teacher',
+          phone: phone || null,
+          email: document.getElementById('t_email').value.trim() || null,
+          subject: document.getElementById('t_subject').value.trim() || null,
+          date_of_birth: document.getElementById('t_dob').value || null,
+          blood_group: document.getElementById('t_blood').value.trim() || null,
+          joining_date: document.getElementById('t_join').value || null,
+          teacher_type: document.getElementById('t_type').value || 'active',
+          address: document.getElementById('t_address').value.trim() || null,
+          qualification: document.getElementById('t_qual').value.trim() || null,
+          certificates: document.getElementById('t_cert').value.trim() || null,
+          photo: photo || null,
+          signature: signature || null,
+        };
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
+
+        let error;
+        if (isEdit) {
+          ({ error } = await supabase.from('teachers').update(payload).eq('id', teacher.id));
+        } else {
+          ({ error } = await supabase.from('teachers').insert(payload));
+        }
+
+        btn.disabled = false; btn.textContent = '💾 সেভ করুন';
+
+        if (error) {
+          let msg = error.message;
+          if (msg.includes('duplicate') || msg.includes('unique')) {
+            msg = 'এই Teacher Index আগেই ব্যবহৃত হয়েছে';
+          }
+          toast('❌ ' + msg, 'error');
+          return;
+        }
+        toast(isEdit ? '✅ আপডেট হয়েছে' : '✅ শিক্ষক যোগ হয়েছে', 'success');
+        closeModal();
+        loadTeachers();
+      };
+    }
+
+    /* ====================================================
+       Add New
+       ==================================================== */
+    document.getElementById('addNewBtn').onclick = async () => {
+      const next = await generateNextTeacherIndex();
+      openTeacherForm({ teacher_index: next });
+    };
+
+    /* ====================================================
+       Search
+       ==================================================== */
+    document.getElementById('searchBtn').onclick = loadTeachers;
+    document.getElementById('typeFilter').onchange = loadTeachers;
+
+    /* ====================================================
+       Load Teachers
+       ==================================================== */
+    async function loadTeachers() {
+      const type = document.getElementById('typeFilter').value;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>';
+
+      let q = supabase.from('teachers').select('*').order('teacher_index');
+      if (type) q = q.eq('teacher_type', type);
+
+      const { data, error } = await q;
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-row">❌ ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-row">কোনো শিক্ষক পাওয়া যায়নি। <b>+ Add New</b> ক্লিক করুন।</td></tr>';
+        return;
+      }
+
+      // Numeric sort করি teacher_index অনুযায়ী (আরো নিশ্চিত)
+      const sorted = [...data].sort((a, b) => {
+        const ai = parseInt(a.teacher_index || 0, 10) || 0;
+        const bi = parseInt(b.teacher_index || 0, 10) || 0;
+        return ai - bi;
+      });
+
+      tbody.innerHTML = sorted.map(t => {
+        const photoImg = t.photo
+          ? `<img src="${t.photo}" class="photo" alt="photo">`
+          : `<div class="photo">👤</div>`;
+        const signImg = t.signature
+          ? `<img src="${t.signature}" class="signature" alt="signature">`
+          : `<div class="signature">✍️</div>`;
+
+        const qualLink = t.qualification
+          ? `<a data-edu="qual" data-id="${t.id}">Qualification</a>`
+          : `<a class="disabled">Qualification</a>`;
+        const certLink = t.certificates
+          ? `<a data-edu="cert" data-id="${t.id}">Certificates</a>`
+          : `<a class="disabled">Certificates</a>`;
+
+        return `
+          <tr>
+            <td class="index-cell">${esc(t.teacher_index || t.teacher_id)}</td>
+            <td class="name-cell">${esc(t.name)}</td>
+            <td class="designation-cell">${esc(t.designation || 'Teacher')}</td>
+            <td class="mobile-cell">${esc(t.phone || '-')}</td>
+            <td class="images-cell">
+              <div class="img-pair">
+                ${photoImg}
+                ${signImg}
+              </div>
+            </td>
+            <td class="edu-cell">
+              ${qualLink}
+              ${certLink}
+            </td>
+            <td class="action-cell">
+              <button data-act="edit" data-id="${t.id}" title="Edit" style="color:#c0392b">✏️</button>
+              <button data-act="delete" data-id="${t.id}" title="Delete" style="color:#6b7280">🗑️</button>
+              <span class="view-link" data-act="view" data-id="${t.id}">View</span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('[data-act]').forEach(el => {
+        el.onclick = () => handleAction(el.dataset.act, el.dataset.id, sorted);
+      });
+      tbody.querySelectorAll('[data-edu]').forEach(el => {
+        el.onclick = () => showEducation(el.dataset.edu, el.dataset.id, sorted);
+      });
+    }
+
+    /* ====================================================
+       Action handler
+       ==================================================== */
+    async function handleAction(act, id, list) {
+      const t = list.find(x => String(x.id) === id);
+      if (!t) return;
+
+      if (act === 'edit') {
+        openTeacherForm(t);
+      }
+      else if (act === 'delete') {
+        if (!confirm(`"${t.name}" কে সত্যিই মুছবেন?`)) return;
+        const { error } = await supabase.from('teachers').delete().eq('id', id);
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+        loadTeachers();
+      }
+      else if (act === 'view') {
+        showFullProfile(t);
+      }
+    }
+
+    /* ====================================================
+       Education links
+       ==================================================== */
+    function showEducation(kind, id, list) {
+      const t = list.find(x => String(x.id) === id);
+      if (!t) return;
+      const title = kind === 'qual' ? '🎓 Qualification' : '📜 Certificates';
+      const body = kind === 'qual' ? (t.qualification || '-') : (t.certificates || '-');
+      alert(`${title}\n\n${t.name}\n\n${body}`);
+    }
+
+    /* ====================================================
+       Full Profile Modal
+       ==================================================== */
+    function showFullProfile(t) {
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal" style="max-width:600px">
+          <div class="modal-header">
+            <h3>👤 শিক্ষকের পূর্ণ প্রোফাইল</h3>
+            <button class="modal-close" id="vClose">×</button>
+          </div>
+          <div class="modal-body">
+            <div style="text-align:center;margin-bottom:16px">
+              ${t.photo
+                ? `<img src="${t.photo}" style="width:120px;height:140px;object-fit:cover;border:2px solid #c0392b;border-radius:6px">`
+                : `<div style="width:120px;height:140px;background:#f3f4f6;border:2px solid #c0392b;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:40px;color:#9ca3af">👤</div>`}
+              <h2 style="color:#c0392b;margin-top:12px;font-size:18px">${esc(t.name)}</h2>
+              <p style="color:#1e3a8a;font-weight:700;margin-top:4px">${esc(t.designation || 'Teacher')}</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13.5px">
+              <div><b>Teacher Index:</b> ${esc(t.teacher_index || '-')}</div>
+              <div><b>Teacher ID:</b> ${esc(t.teacher_id || '-')}</div>
+              <div><b>Mobile:</b> ${esc(t.phone || '-')}</div>
+              <div><b>Email:</b> ${esc(t.email || '-')}</div>
+              <div><b>Subject:</b> ${esc(t.subject || '-')}</div>
+              <div><b>Type:</b> ${esc(t.teacher_type || 'active')}</div>
+              <div><b>Blood Group:</b> ${esc(t.blood_group || '-')}</div>
+              <div><b>DOB:</b> ${esc(t.date_of_birth || '-')}</div>
+              <div><b>Joining Date:</b> ${esc(t.joining_date || '-')}</div>
+              <div><b>Address:</b> ${esc(t.address || '-')}</div>
+            </div>
+
+            <div style="margin-top:16px;padding:12px;background:#fafafa;border-radius:6px;font-size:13px">
+              <b style="color:#c0392b">🎓 Qualification:</b><br>
+              <div style="white-space:pre-wrap;margin-top:4px">${esc(t.qualification || 'তথ্য নেই')}</div>
+            </div>
+
+            <div style="margin-top:10px;padding:12px;background:#fafafa;border-radius:6px;font-size:13px">
+              <b style="color:#c0392b">📜 Certificates:</b><br>
+              <div style="white-space:pre-wrap;margin-top:4px">${esc(t.certificates || 'তথ্য নেই')}</div>
+            </div>
+
+            ${t.signature ? `
+              <div style="margin-top:12px;text-align:center">
+                <b style="font-size:13px;color:#c0392b">স্বাক্ষর:</b><br>
+                <img src="${t.signature}" style="max-width:180px;max-height:70px;border:1px solid #d1d5db;margin-top:6px">
+              </div>` : ''}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+      document.getElementById('vClose').onclick = () => modalDiv.remove();
+    }
+
+    /* ====================================================
+       Load on start
+       ==================================================== */
+    await loadTeachers();
+  </script>
+</body>
+</html>

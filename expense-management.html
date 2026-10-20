@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense Management · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #f43f5e;
+      --primary-dark: #e11d48;
+      --primary-light: #ffe4e6;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --dark: #0f172a;
+      --gray: #64748b;
+      --gray-light: #f1f5f9;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 25px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', 'Noto Sans Bengali', sans-serif; background: #f8fafc; }
+
+    /* HEADER */
+    .ex-header {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
+      padding: 24px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white; position: relative; overflow: hidden;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ex-header::before {
+      content: ''; position: absolute;
+      top: -50%; right: -10%; width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .ex-header > * { position: relative; z-index: 1; }
+    .ex-header .left { display: flex; align-items: center; gap: 16px; }
+    .ex-header .icon-box {
+      width: 60px; height: 60px;
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3); border-radius: 18px;
+      display: flex; align-items: center; justify-content: center; font-size: 30px;
+    }
+    .ex-header h1 { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
+    .ex-header p { font-size: 13.5px; margin: 4px 0 0 0; opacity: 0.9; font-weight: 500; }
+    .ex-back {
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25); color: white;
+      padding: 11px 20px; border-radius: 12px; cursor: pointer;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .ex-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .ex-back .arrow {
+      background: white; color: #be123c; border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+
+    .ex-wrap { padding: 24px; max-width: 1600px; margin: 0 auto; }
+
+    /* CASH HERO */
+    .cash-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      color: white; border-radius: 24px; padding: 28px 32px;
+      box-shadow: var(--shadow-lg); margin-bottom: 20px;
+      position: relative; overflow: hidden;
+    }
+    .cash-hero::before {
+      content: ''; position: absolute;
+      top: -60%; right: -15%; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+    .cash-hero::after {
+      content: ''; position: absolute;
+      bottom: -50%; left: -10%; width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(244,63,94,0.1) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+    .cash-hero > * { position: relative; z-index: 1; }
+    .cash-hero .top-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 14px;
+    }
+    .cash-hero .label {
+      font-size: 12.5px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: #94a3b8;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cash-hero .label .pulse {
+      width: 10px; height: 10px; background: #10b981;
+      border-radius: 50%; animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+    }
+    .cash-hero .balance-amount {
+      font-size: 48px; font-weight: 900; letter-spacing: -2px;
+      font-family: 'Inter', sans-serif; line-height: 1;
+      margin-bottom: 6px;
+    }
+    .cash-hero .balance-amount.negative { color: #f87171; }
+    .cash-hero .balance-sub {
+      font-size: 13px; color: #94a3b8; font-weight: 600;
+    }
+    .cash-hero .opening-btn {
+      background: rgba(59,130,246,0.25);
+      border: 1px solid rgba(59,130,246,0.5);
+      color: white;
+      padding: 11px 20px; border-radius: 10px;
+      font-weight: 800; font-size: 13.5px;
+      cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.15s;
+    }
+    .cash-hero .opening-btn:hover {
+      background: rgba(59,130,246,0.4);
+      transform: translateY(-1px);
+    }
+    .cash-hero .breakdown {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-top: 20px;
+      padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .cash-hero .breakdown-item { display: flex; align-items: center; gap: 12px; }
+    .cash-hero .breakdown-item .icon-circle {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .cash-hero .breakdown-item.opening .icon-circle { background: rgba(148,163,184,0.25); }
+    .cash-hero .breakdown-item.in .icon-circle { background: rgba(16,185,129,0.25); }
+    .cash-hero .breakdown-item.out .icon-circle { background: rgba(244,63,94,0.25); }
+    .cash-hero .breakdown-item .info h5 {
+      font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px;
+      color: #94a3b8; font-weight: 800; margin-bottom: 3px;
+    }
+    .cash-hero .breakdown-item .info p {
+      font-size: 18px; font-weight: 900; font-family: 'Inter', sans-serif;
+    }
+    .cash-hero .breakdown-item.in .info p { color: #34d399; }
+    .cash-hero .breakdown-item.out .info p { color: #f87171; }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px; margin-bottom: 20px;
+    }
+    .stat-tile {
+      background: white; border-radius: 18px; padding: 18px 20px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+      position: relative; overflow: hidden;
+      transition: all 0.2s;
+    }
+    .stat-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-tile::before {
+      content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+      width: 5px; background: linear-gradient(180deg, #f43f5e, #e11d48);
+    }
+    .stat-tile.green::before { background: linear-gradient(180deg, #10b981, #059669); }
+    .stat-tile.orange::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+    .stat-tile.blue::before { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+    .stat-tile .icon-circle {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+      background: var(--primary-light);
+    }
+    .stat-tile.green .icon-circle { background: var(--success-light); }
+    .stat-tile.orange .icon-circle { background: var(--warning-light); }
+    .stat-tile.blue .icon-circle { background: #dbeafe; }
+    .stat-tile .info { min-width: 0; }
+    .stat-tile .info h4 {
+      font-size: 11px; color: var(--gray); text-transform: uppercase;
+      letter-spacing: 0.6px; font-weight: 800; margin-bottom: 4px;
+    }
+    .stat-tile .info p {
+      font-size: 22px; font-weight: 900; color: var(--dark);
+      font-family: 'Inter', sans-serif; letter-spacing: -0.8px; line-height: 1;
+    }
+    .stat-tile.green .info p { color: var(--success); }
+    .stat-tile.orange .info p { color: var(--warning); }
+    .stat-tile.blue .info p { color: #2563eb; }
+
+    /* TABS */
+    .tabs-bar {
+      display: flex; gap: 4px; background: white;
+      padding: 6px; border-radius: 14px; margin-bottom: 16px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .tabs-bar button {
+      flex: 1; padding: 12px 18px; background: transparent;
+      border: none; border-radius: 10px; cursor: pointer;
+      font-weight: 800; font-size: 13.5px; color: var(--gray);
+      font-family: inherit; transition: all 0.15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .tabs-bar button.active {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: white; box-shadow: 0 4px 12px rgba(244,63,94,0.3);
+    }
+    .tabs-bar button:hover:not(.active) { background: var(--gray-light); color: var(--dark); }
+
+    /* TOOLBAR */
+    .ex-toolbar {
+      background: white; border-radius: 16px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      padding: 14px 18px; margin-bottom: 16px;
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative; flex: 1;
+      min-width: 200px; max-width: 400px;
+    }
+    .search-wrap::before {
+      content: '🔍'; position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 15px; pointer-events: none;
+    }
+    .search-wrap input {
+      width: 100%; padding: 11px 14px 11px 40px;
+      border: 2px solid var(--border); border-radius: 11px;
+      font-size: 14px; font-family: inherit; font-weight: 600;
+      background: #fafbfc; transition: all 0.2s;
+    }
+    .search-wrap input:focus {
+      outline: none; border-color: var(--primary);
+      background: white; box-shadow: 0 0 0 4px rgba(244,63,94,0.1);
+    }
+    .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tool-btn {
+      padding: 10px 18px; border: 2px solid var(--border);
+      background: white; border-radius: 10px;
+      font-size: 13px; font-weight: 800; color: var(--gray);
+      cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .tool-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--primary); color: var(--primary);
+    }
+    .tool-btn.green {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-color: transparent; color: white;
+      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+    .tool-btn.blue {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border-color: transparent; color: white;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    .tool-btn.primary {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      border-color: transparent; color: white;
+      box-shadow: 0 4px 12px rgba(244,63,94,0.35);
+    }
+    .tool-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* FILTERS */
+    .filter-bar {
+      background: white; border-radius: 16px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      padding: 14px 18px; margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .filter-bar .fld { display: flex; flex-direction: column; gap: 5px; }
+    .filter-bar label {
+      font-size: 11px; color: var(--gray); font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px;
+    }
+    .filter-bar input, .filter-bar select {
+      padding: 10px 13px; border: 2px solid var(--border);
+      border-radius: 10px; font-size: 13.5px; font-family: inherit;
+      font-weight: 600; background: #fafbfc; color: var(--dark);
+      transition: all 0.2s; width: 100%;
+      appearance: none;
+    }
+    .filter-bar select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+    .filter-bar input:focus, .filter-bar select:focus {
+      outline: none; border-color: var(--primary);
+      background-color: white; box-shadow: 0 0 0 4px rgba(244,63,94,0.1);
+    }
+
+    /* TABLE */
+    .table-panel {
+      background: white; border-radius: 18px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .table-wrap { overflow-x: auto; }
+    .data-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+      min-width: 900px;
+    }
+    .data-table thead th {
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+      color: var(--dark); padding: 14px 16px;
+      text-align: left; font-weight: 800; font-size: 11.5px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border); white-space: nowrap;
+    }
+    .data-table thead th.right { text-align: right; }
+    .data-table thead th.center { text-align: center; }
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .data-table tbody tr:hover { background: #fff1f2; }
+    .data-table tbody td {
+      padding: 13px 16px; vertical-align: middle; color: var(--dark);
+    }
+    .data-table tbody td.right { text-align: right; }
+    .data-table tbody td.center { text-align: center; }
+
+    .data-table td.date-cell {
+      font-weight: 700; font-size: 13px; color: var(--gray);
+    }
+    .data-table td.date-cell small {
+      display: block; color: #94a3b8; font-size: 11px;
+      font-weight: 600; margin-top: 2px;
+    }
+    .data-table td.acc-cell {
+      font-family: 'Courier New', monospace;
+      font-weight: 800; color: var(--primary-dark); font-size: 12.5px;
+    }
+    .data-table td.name-cell {
+      font-weight: 700; color: var(--dark);
+    }
+    .data-table td.name-cell small {
+      display: block; color: var(--gray); font-weight: 500;
+      font-size: 11.5px; margin-top: 2px;
+    }
+    .data-table td.amount-cell {
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: 15px; color: var(--primary-dark); text-align: right;
+    }
+    .data-table td.method-cell {
+      font-size: 12px; color: var(--gray);
+    }
+    .data-table td.method-cell .badge {
+      background: var(--gray-light); color: var(--gray);
+      padding: 3px 9px; border-radius: 12px;
+      font-weight: 800; text-transform: uppercase;
+      font-size: 10px; letter-spacing: 0.3px;
+    }
+    .data-table td.method-cell .badge.cash {
+      background: var(--success-light); color: #065f46;
+    }
+    .data-table td.actions-cell {
+      white-space: nowrap; text-align: center;
+    }
+    .act-btn {
+      background: transparent; border: none; cursor: pointer;
+      width: 34px; height: 34px; border-radius: 8px;
+      font-size: 15px; margin: 0 2px;
+      transition: all 0.15s;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .act-btn.edit { color: var(--primary-dark); }
+    .act-btn.edit:hover { background: var(--primary-light); }
+    .act-btn.delete { color: var(--danger); }
+    .act-btn.delete:hover { background: var(--danger-light); }
+
+    /* EMPTY */
+    .empty-box {
+      padding: 60px 20px; text-align: center;
+    }
+    .empty-box .icon { font-size: 64px; margin-bottom: 14px; opacity: 0.4; }
+    .empty-box h3 { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .empty-box p { color: var(--gray); font-size: 14px; margin-bottom: 20px; }
+
+    /* TOTALS */
+    .total-row {
+      background: linear-gradient(135deg, #fff1f2, #ffe4e6) !important;
+      font-weight: 900;
+    }
+    .total-row td {
+      padding: 14px 16px !important;
+      font-size: 14px !important;
+    }
+    .total-row .amount-cell { font-size: 17px !important; color: #be123c !important; }
+
+    /* CASH BOOK ROW */
+    .cash-entry-row.in { border-left: 4px solid var(--success); }
+    .cash-entry-row.out { border-left: 4px solid var(--danger); }
+    .cash-entry-row .type-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 10.5px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .cash-entry-row .type-badge.in { background: var(--success-light); color: #065f46; }
+    .cash-entry-row .type-badge.out { background: var(--danger-light); color: #991b1b; }
+
+    /* MODAL */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(15,23,42,0.75); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: white; border-radius: 22px;
+      width: 100%; max-width: 560px; max-height: 92vh;
+      overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: white; padding: 22px 26px;
+      border-radius: 22px 22px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 900; margin: 0; letter-spacing: -0.3px; }
+    .modal-close {
+      background: rgba(255,255,255,0.15); border: none; color: white;
+      width: 34px; height: 34px; border-radius: 10px;
+      font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-weight: 700;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+    .modal-body { padding: 24px 26px; }
+
+    .fld { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .fld.required label::after { content: ' *'; color: var(--danger); }
+    .fld label {
+      font-size: 12px; color: var(--gray); font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px;
+    }
+    .fld input, .fld select, .fld textarea {
+      padding: 12px 14px; border: 2px solid var(--border);
+      border-radius: 11px; font-size: 14px; font-family: inherit;
+      font-weight: 600; background: #fafbfc; transition: all 0.2s;
+      width: 100%; color: var(--dark);
+    }
+    .fld textarea { min-height: 70px; resize: vertical; font-weight: 500; }
+    .fld input:focus, .fld select:focus, .fld textarea:focus {
+      outline: none; border-color: var(--primary);
+      background: white; box-shadow: 0 0 0 4px rgba(244,63,94,0.1);
+    }
+    .fld select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+
+    .amount-input-wrap { position: relative; }
+    .amount-input-wrap::before {
+      content: '৳'; position: absolute;
+      left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 20px; font-weight: 900; color: var(--primary-dark);
+      pointer-events: none;
+    }
+    .amount-input-wrap input {
+      padding: 16px 16px 16px 42px !important;
+      font-size: 22px !important; font-weight: 900 !important;
+      font-family: 'Inter', sans-serif; text-align: right;
+    }
+
+    .balance-preview {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border: 2px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+    .balance-preview .row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 0; font-size: 13px;
+    }
+    .balance-preview .row .lbl { color: var(--gray); font-weight: 700; }
+    .balance-preview .row .val {
+      font-weight: 900; font-family: 'Inter', sans-serif;
+    }
+    .balance-preview .row.current .val { color: var(--success); }
+    .balance-preview .row.after .val { color: var(--primary-dark); font-size: 16px; }
+    .balance-preview .row.after { border-top: 1px dashed var(--border); margin-top: 4px; padding-top: 8px; }
+    .balance-preview .row .val.negative { color: var(--danger); }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding-top: 18px; border-top: 1px solid var(--border); margin-top: 8px;
+    }
+    .btn-cancel {
+      background: var(--gray-light); color: var(--gray);
+      border: none; padding: 12px 22px; border-radius: 11px;
+      font-weight: 800; font-size: 14px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-save {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: white; border: none; padding: 12px 28px;
+      border-radius: 11px; font-weight: 800; font-size: 14px;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 6px 16px rgba(244,63,94,0.3);
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-save:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(244,63,94,0.4);
+    }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: var(--danger-light); color: var(--danger);
+      border: none; padding: 12px 22px; border-radius: 11px;
+      font-weight: 800; font-size: 14px; cursor: pointer;
+      font-family: inherit; margin-right: auto; transition: all 0.15s;
+    }
+    .btn-delete:hover { background: var(--danger); color: white; }
+
+    /* ALERT BANNER */
+    .alert-banner {
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .alert-banner.info {
+      background: #dbeafe; color: #1e40af;
+      border-left: 4px solid #2563eb;
+    }
+    .alert-banner.warn {
+      background: #fef3c7; color: #92400e;
+      border-left: 4px solid #f59e0b;
+    }
+    .alert-banner .icon { font-size: 20px; flex-shrink: 0; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .ex-header { padding: 18px; }
+      .ex-header h1 { font-size: 18px; }
+      .ex-header .icon-box { width: 48px; height: 48px; font-size: 24px; }
+      .ex-wrap { padding: 14px; }
+      .cash-hero { padding: 22px 20px; }
+      .cash-hero .balance-amount { font-size: 34px; }
+      .cash-hero .breakdown { grid-template-columns: 1fr; gap: 10px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-tile { padding: 14px; }
+      .stat-tile .icon-circle { width: 42px; height: 42px; font-size: 18px; }
+      .stat-tile .info p { font-size: 18px; }
+      .ex-toolbar { flex-direction: column; align-items: stretch; }
+      .search-wrap { max-width: none; }
+      .toolbar-actions { justify-content: center; flex-wrap: wrap; }
+      .tool-btn { flex: 1; justify-content: center; }
+      .filter-bar { grid-template-columns: 1fr; }
+      .data-table { font-size: 12px; min-width: 0; }
+      .data-table thead th, .data-table tbody td { padding: 9px 10px; }
+    }
+
+    /* PRINT */
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .ex-header, .ex-toolbar, .filter-bar, .tabs-bar,
+      .cash-hero .opening-btn, .stats-grid { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      .cash-hero { background: white !important; color: #000 !important; box-shadow: none !important; border: 2px solid #000 !important; padding: 12px 16px !important; margin-bottom: 10px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cash-hero::before, .cash-hero::after { display: none !important; }
+      .cash-hero .balance-amount { color: #000 !important; font-size: 24px !important; }
+      .cash-hero .label { color: #000 !important; }
+      .cash-hero .breakdown-item .info h5 { color: #000 !important; }
+      .cash-hero .breakdown-item .info p { color: #000 !important; }
+      .table-panel { box-shadow: none !important; border: 1px solid #000 !important; }
+      .data-table { min-width: 0 !important; font-size: 10px !important; border: 1px solid #000 !important; }
+      .data-table thead th { background: #e5e7eb !important; color: #000 !important; border: 1px solid #000 !important; padding: 5px 6px !important; font-size: 9px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .data-table tbody td { border: 1px solid #000 !important; padding: 4px 6px !important; font-size: 10px !important; }
+      .total-row { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .act-btn { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, logAction, getSchoolProfile } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'expense-management.html', 'খরচ ব্যবস্থাপনা');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+    const school = await getSchoolProfile();
+
+    let expenseAccounts = [];
+    let allExpenses = [];
+    let currentTab = 'expenses';
+    let currentBalance = { opening: 0, total_in: 0, total_out: 0, balance: 0 };
+
+    /* ============================================================
+       INITIAL UI
+       ============================================================ */
+    content.innerHTML = `
+      <div class="ex-header">
+        <div class="left">
+          <div class="icon-box">💸</div>
+          <div>
+            <h1>Expense Management</h1>
+            <p>খরচের হিসাব · নগদ টাকা থেকে অটো বিয়োগ</p>
+          </div>
+        </div>
+        <a class="ex-back" href="dashboard.html">
+          Back <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <div class="ex-wrap">
+
+        <div id="alertArea"></div>
+
+        <!-- Cash Balance Hero -->
+        <div class="cash-hero no-print">
+          <div class="top-row">
+            <div>
+              <div class="label"><span class="pulse"></span> 💵 Current Cash Balance</div>
+              <div class="balance-amount" id="balanceAmount">৳ 0</div>
+              <div class="balance-sub" id="balanceSub">Loading...</div>
+            </div>
+            <button class="opening-btn" id="setOpeningBtn">
+              ⚙️ Opening Balance সেট করুন
+            </button>
+          </div>
+          <div class="breakdown">
+            <div class="breakdown-item opening">
+              <div class="icon-circle">💰</div>
+              <div class="info">
+                <h5>Opening</h5>
+                <p id="openingVal">৳ 0</p>
+              </div>
+            </div>
+            <div class="breakdown-item in">
+              <div class="icon-circle">📥</div>
+              <div class="info">
+                <h5>Received (Fees)</h5>
+                <p id="totalInVal">৳ 0</p>
+              </div>
+            </div>
+            <div class="breakdown-item out">
+              <div class="icon-circle">📤</div>
+              <div class="info">
+                <h5>Expenses</h5>
+                <p id="totalOutVal">৳ 0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-tile blue">
+            <div class="icon-circle">📅</div>
+            <div class="info">
+              <h4>This Month Expense</h4>
+              <p id="statMonth">৳ 0</p>
+            </div>
+          </div>
+          <div class="stat-tile orange">
+            <div class="icon-circle">📆</div>
+            <div class="info">
+              <h4>Today Expense</h4>
+              <p id="statToday">৳ 0</p>
+            </div>
+          </div>
+          <div class="stat-tile">
+            <div class="icon-circle">📊</div>
+            <div class="info">
+              <h4>Total Entries</h4>
+              <p id="statCount">0</p>
+            </div>
+          </div>
+          <div class="stat-tile green">
+            <div class="icon-circle">💚</div>
+            <div class="info">
+              <h4>Cash Balance</h4>
+              <p id="statBalance">৳ 0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-bar">
+          <button class="active" data-tab="expenses">
+            <span>💸</span><span>Expenses</span>
+          </button>
+          <button data-tab="cashbook">
+            <span>📖</span><span>Cash Book</span>
+          </button>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="ex-toolbar no-print">
+          <div class="search-wrap">
+            <input id="searchBox" placeholder="Search by account, paid to, remarks...">
+          </div>
+          <div class="toolbar-actions">
+            <button class="tool-btn primary" id="addBtn">
+              <span>➕</span><span>Add Expense</span>
+            </button>
+            <button class="tool-btn green" id="excelBtn">
+              <span>📥</span><span>Excel</span>
+            </button>
+            <button class="tool-btn blue" id="printBtn">
+              <span>🖨️</span><span>Print</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar no-print">
+          <div class="fld">
+            <label>From Date</label>
+            <input type="date" id="fromDate">
+          </div>
+          <div class="fld">
+            <label>To Date</label>
+            <input type="date" id="toDate">
+          </div>
+          <div class="fld">
+            <label>Expense Account</label>
+            <select id="filterAccount"><option value="">All Accounts</option></select>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-panel">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody">
+                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    /* ============================================================
+       LOAD EXPENSE ACCOUNTS
+       ============================================================ */
+    async function loadExpenseAccounts() {
+      const { data, error } = await supabase
+        .from('fee_types')
+        .select('*')
+        .eq('account_type', 'expense')
+        .order('account_no');
+
+      if (error) {
+        console.error('Account load error:', error);
+        showAlert('warn', '❌ Expense Accounts লোড হয়নি: ' + error.message);
+        return;
+      }
+
+      expenseAccounts = (data || []).filter(a => a.is_active !== false);
+
+      const opts = expenseAccounts.map(a =>
+        `<option value="${a.id}">${esc(a.account_no || '')} - ${esc(a.type_name)}</option>`
+      ).join('');
+
+      document.getElementById('filterAccount').innerHTML =
+        '<option value="">All Accounts</option>' + opts;
+
+      if (!expenseAccounts.length) {
+        showAlert('warn',
+          '⚠️ কোনো Expense Account নেই! <a href="chart-of-accounts.html" style="font-weight:900;text-decoration:underline">Chart of Accounts</a> এ গিয়ে Expense Type-এর Account যোগ করুন।'
+        );
+      }
+    }
+
+    /* ============================================================
+       HELPER — Show alert at top
+       ============================================================ */
+    function showAlert(type, message) {
+      const area = document.getElementById('alertArea');
+      const icons = { info: 'ℹ️', warn: '⚠️' };
+      area.innerHTML = `
+        <div class="alert-banner ${type}">
+          <span class="icon">${icons[type] || 'ℹ️'}</span>
+          <span>${message}</span>
+        </div>
+      `;
+    }
+
+    function clearAlert() {
+      document.getElementById('alertArea').innerHTML = '';
+    }
+
+    /* ============================================================
+       CALCULATE CASH BALANCE — Client-side
+       ============================================================ */
+    async function loadCashBalance() {
+      try {
+        const [openingRes, feesRes, expRes] = await Promise.all([
+          supabase.from('cash_opening_balance').select('*').eq('session_year', CURRENT_YEAR).maybeSingle(),
+          supabase.from('fee_payments').select('paid_amount, payment_date, session_year'),
+          supabase.from('expense_entries').select('amount, payment_date').or('is_deleted.is.null,is_deleted.eq.false'),
+        ]);
+
+        const opening = openingRes.data?.opening_balance ?? 0;
+
+        // Filter fees by session_year (if field exists)
+        const fees = (feesRes.data || []).filter(f => {
+          if (!f.session_year) return true;
+          return +f.session_year === CURRENT_YEAR;
+        });
+
+        // All expenses (already filtered by is_deleted)
+        const expenses = expRes.data || [];
+
+        const total_in = fees.reduce((s, f) => s + (+f.paid_amount || 0), 0);
+        const total_out = expenses.reduce((s, e) => s + (+e.amount || 0), 0);
+        const balance = opening + total_in - total_out;
+
+        // This month
+        const today = new Date();
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const monthStartStr = monthStart.toISOString().slice(0, 10);
+        const todayStr = today.toISOString().slice(0, 10);
+
+        const month_out = expenses
+          .filter(e => e.payment_date >= monthStartStr)
+          .reduce((s, e) => s + (+e.amount || 0), 0);
+
+        const today_out = expenses
+          .filter(e => e.payment_date === todayStr)
+          .reduce((s, e) => s + (+e.amount || 0), 0);
+
+        const expense_count = expenses.length;
+
+        currentBalance = {
+          opening, total_in, total_out, balance,
+          month_out, today_out, expense_count,
+        };
+
+        /* Update Hero */
+        document.getElementById('balanceAmount').textContent =
+          '৳ ' + Math.abs(balance).toLocaleString() + (balance < 0 ? ' (Negative)' : '');
+        document.getElementById('balanceAmount').classList.toggle('negative', balance < 0);
+
+        document.getElementById('balanceSub').textContent =
+          `Opening ৳${opening.toLocaleString()} + Received ৳${total_in.toLocaleString()} - Spent ৳${total_out.toLocaleString()}`;
+
+        document.getElementById('openingVal').textContent = '৳ ' + opening.toLocaleString();
+        document.getElementById('totalInVal').textContent = '৳ ' + total_in.toLocaleString();
+        document.getElementById('totalOutVal').textContent = '৳ ' + total_out.toLocaleString();
+
+        /* Update Stats */
+        document.getElementById('statMonth').textContent = '৳ ' + month_out.toLocaleString();
+        document.getElementById('statToday').textContent = '৳ ' + today_out.toLocaleString();
+        document.getElementById('statCount').textContent = expense_count;
+        document.getElementById('statBalance').textContent = '৳ ' + balance.toLocaleString();
+
+        console.log('✅ Cash Balance loaded:', currentBalance);
+
+      } catch (err) {
+        console.error('Cash balance error:', err);
+        showAlert('warn', '⚠️ Cash Balance লোড হয়নি: ' + err.message);
+      }
+    }
+
+    /* ============================================================
+       LOAD EXPENSES
+       ============================================================ */
+    async function loadExpenses() {
+      const { data, error } = await supabase
+        .from('expense_entries')
+        .select('*')
+        .order('payment_date', { ascending: false })
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        toast('❌ ' + error.message, 'error');
+        return;
+      }
+
+      // Filter by is_deleted = false
+      allExpenses = (data || []).filter(e => e.is_deleted !== true);
+
+      await renderTable();
+    }
+
+    /* ============================================================
+       RENDER TABLE
+       ============================================================ */
+    async function renderTable() {
+      const thead = document.getElementById('tableHead');
+      const tbody = document.getElementById('tableBody');
+
+      const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      const accId = document.getElementById('filterAccount').value;
+
+      if (currentTab === 'expenses') {
+        thead.innerHTML = `
+          <tr>
+            <th style="width:110px">Date</th>
+            <th style="width:100px">Acc No</th>
+            <th>Account Name</th>
+            <th style="width:130px">Paid To</th>
+            <th style="width:90px" class="center">Method</th>
+            <th style="width:120px" class="right">Amount</th>
+            <th style="width:100px" class="center no-print">Actions</th>
+          </tr>
+        `;
+
+        let list = [...allExpenses];
+        if (q) {
+          list = list.filter(e =>
+            (e.expense_account_name || '').toLowerCase().includes(q) ||
+            (e.paid_to || '').toLowerCase().includes(q) ||
+            (e.remarks || '').toLowerCase().includes(q) ||
+            (e.expense_account_no || '').toLowerCase().includes(q)
+          );
+        }
+        if (fromDate) list = list.filter(e => e.payment_date >= fromDate);
+        if (toDate) list = list.filter(e => e.payment_date <= toDate);
+        if (accId) list = list.filter(e => String(e.expense_account_id) === accId);
+
+        if (!list.length) {
+          tbody.innerHTML = `
+            <tr><td colspan="7">
+              <div class="empty-box">
+                <div class="icon">💸</div>
+                <h3>কোনো খরচ নেই</h3>
+                <p>Add Expense বাটনে ক্লিক করে শুরু করুন</p>
+              </div>
+            </td></tr>
+          `;
+          return;
+        }
+
+        const total = list.reduce((s, e) => s + (+e.amount || 0), 0);
+
+        tbody.innerHTML = list.map(e => {
+          const dateObj = new Date(e.payment_date);
+          const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          const dayStr = dateObj.toLocaleDateString('bn-BD', { weekday: 'short' });
+          const method = e.payment_method || 'cash';
+          const methodCls = method === 'cash' ? 'cash' : '';
+
+          return `
+            <tr>
+              <td class="date-cell">
+                ${dateStr}
+                <small>${dayStr}</small>
+              </td>
+              <td class="acc-cell">${esc(e.expense_account_no || '-')}</td>
+              <td class="name-cell">
+                ${esc(e.expense_account_name || '-')}
+                ${e.remarks ? `<small>${esc(e.remarks)}</small>` : ''}
+              </td>
+              <td>${esc(e.paid_to || '-')}</td>
+              <td class="method-cell center">
+                <span class="badge ${methodCls}">${esc(method)}</span>
+              </td>
+              <td class="amount-cell">৳ ${(+e.amount).toLocaleString()}</td>
+              <td class="actions-cell no-print">
+                <button class="act-btn edit" data-action="edit" data-id="${e.id}" title="Edit">✏️</button>
+                <button class="act-btn delete" data-action="delete" data-id="${e.id}" title="Delete">🗑️</button>
+              </td>
+            </tr>
+          `;
+        }).join('') + `
+          <tr class="total-row">
+            <td colspan="5" style="text-align:right">Total (${list.length} entries) :</td>
+            <td class="amount-cell">৳ ${total.toLocaleString()}</td>
+            <td></td>
+          </tr>
+        `;
+      } else {
+        /* Cash Book View */
+        thead.innerHTML = `
+          <tr>
+            <th style="width:110px">Date</th>
+            <th style="width:110px" class="center">Type</th>
+            <th>Description</th>
+            <th style="width:130px" class="right">In (৳)</th>
+            <th style="width:130px" class="right">Out (৳)</th>
+          </tr>
+        `;
+
+        const [feesRes, expensesRes] = await Promise.all([
+          supabase.from('fee_payments').select('*'),
+          supabase.from('expense_entries').select('*').or('is_deleted.is.null,is_deleted.eq.false'),
+        ]);
+
+        const fees = (feesRes.data || []).filter(f => !f.session_year || +f.session_year === CURRENT_YEAR);
+        const exps = expensesRes.data || [];
+
+        const allEntries = [];
+
+        fees.forEach(f => {
+          allEntries.push({
+            date: f.payment_date,
+            type: 'in',
+            amount: +f.paid_amount || 0,
+            description: `Fee: ${f.fee_type_name || ''} — ${f.student_name || ''}${f.receipt_no ? ' (Rcpt: ' + f.receipt_no + ')' : ''}`,
+          });
+        });
+
+        exps.forEach(e => {
+          allEntries.push({
+            date: e.payment_date,
+            type: 'out',
+            amount: +e.amount || 0,
+            description: `${e.expense_account_name || 'Expense'}${e.paid_to ? ' → ' + e.paid_to : ''}${e.remarks ? ' — ' + e.remarks : ''}`,
+          });
+        });
+
+        let filtered = allEntries;
+        if (fromDate) filtered = filtered.filter(e => e.date >= fromDate);
+        if (toDate) filtered = filtered.filter(e => e.date <= toDate);
+        if (q) filtered = filtered.filter(e => (e.description || '').toLowerCase().includes(q));
+
+        filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+        if (!filtered.length) {
+          tbody.innerHTML = `
+            <tr><td colspan="5">
+              <div class="empty-box">
+                <div class="icon">📖</div>
+                <h3>কোনো লেনদেন নেই</h3>
+              </div>
+            </td></tr>
+          `;
+          return;
+        }
+
+        const totalIn = filtered.filter(e => e.type === 'in').reduce((s, e) => s + e.amount, 0);
+        const totalOut = filtered.filter(e => e.type === 'out').reduce((s, e) => s + e.amount, 0);
+
+        tbody.innerHTML = filtered.map(e => {
+          const dateObj = new Date(e.date);
+          const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          return `
+            <tr class="cash-entry-row ${e.type}">
+              <td class="date-cell">${dateStr}</td>
+              <td class="center">
+                <span class="type-badge ${e.type}">
+                  ${e.type === 'in' ? '📥 IN' : '📤 OUT'}
+                </span>
+              </td>
+              <td>${esc(e.description)}</td>
+              <td class="right amount-cell" style="color:var(--success)">
+                ${e.type === 'in' ? '৳ ' + e.amount.toLocaleString() : '—'}
+              </td>
+              <td class="right amount-cell" style="color:var(--danger)">
+                ${e.type === 'out' ? '৳ ' + e.amount.toLocaleString() : '—'}
+              </td>
+            </tr>
+          `;
+        }).join('') + `
+          <tr class="total-row">
+            <td colspan="3" style="text-align:right">Total :</td>
+            <td class="amount-cell" style="color:var(--success)">৳ ${totalIn.toLocaleString()}</td>
+            <td class="amount-cell" style="color:var(--danger)">৳ ${totalOut.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+
+      // Attach edit/delete handlers
+      tbody.querySelectorAll('[data-action]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.action;
+          const e = allExpenses.find(x => String(x.id) === String(id));
+          if (!e) return;
+          if (act === 'edit') openForm(e);
+          else if (act === 'delete') deleteExpense(e);
+        };
+      });
+    }
+
+    /* ============================================================
+       FILTER EVENTS
+       ============================================================ */
+    document.getElementById('searchBox').oninput = () => renderTable();
+    document.getElementById('fromDate').onchange = () => renderTable();
+    document.getElementById('toDate').onchange = () => renderTable();
+    document.getElementById('filterAccount').onchange = () => renderTable();
+
+    /* ============================================================
+       TAB SWITCHING
+       ============================================================ */
+    document.querySelectorAll('.tabs-bar button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tabs-bar button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.tab;
+        renderTable();
+      };
+    });
+
+    /* ============================================================
+       OPENING BALANCE SETTER
+       ============================================================ */
+    document.getElementById('setOpeningBtn').onclick = async () => {
+      const { data } = await supabase
+        .from('cash_opening_balance')
+        .select('*')
+        .eq('session_year', CURRENT_YEAR)
+        .maybeSingle();
+
+      const current = data?.opening_balance ?? 0;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal" style="max-width:440px">
+          <div class="modal-header" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">
+            <h3>⚙️ Set Opening Balance</h3>
+            <button class="modal-close" id="obClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 14px;border-radius:8px;margin-bottom:16px;font-size:12.5px;color:#1e40af;line-height:1.6">
+              💡 সেশন শুরুর সময় নগদ কত টাকা ছিল সেটা এখানে সেট করুন। এটা থেকে fees add হবে আর expenses বিয়োগ হবে।
+            </div>
+            <div class="fld">
+              <label>Opening Balance (৳)</label>
+              <div class="amount-input-wrap">
+                <input type="number" id="obAmount" value="${current}" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="fld">
+              <label>Notes (Optional)</label>
+              <input id="obNotes" value="${esc(data?.notes || '')}" placeholder="যেমন: 2026 session শুরুতে">
+            </div>
+            <div class="modal-footer">
+              <button class="btn-cancel" id="obCancel">Cancel</button>
+              <button class="btn-save" id="obSave" style="background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 6px 16px rgba(59,130,246,0.3)">💾 Save</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      document.getElementById('obClose').onclick = () => modalDiv.remove();
+      document.getElementById('obCancel').onclick = () => modalDiv.remove();
+
+      document.getElementById('obSave').onclick = async () => {
+        const amount = +document.getElementById('obAmount').value || 0;
+        const notes = document.getElementById('obNotes').value.trim();
+
+        const { error } = await supabase
+          .from('cash_opening_balance')
+          .upsert({
+            session_year: CURRENT_YEAR,
+            opening_balance: amount,
+            notes: notes || null,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'session_year' });
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+        await logAction('update', 'cash_opening_balance', CURRENT_YEAR, `Opening balance set: ৳${amount}`);
+        toast('✅ Opening Balance সেভ হয়েছে', 'success');
+        modalDiv.remove();
+        await loadCashBalance();
+      };
+    };
+
+    /* ============================================================
+       ADD / EDIT EXPENSE MODAL
+       ============================================================ */
+    document.getElementById('addBtn').onclick = () => openForm();
+
+    function openForm(expense = null) {
+      const isEdit = !!expense?.id;
+      const today = new Date().toISOString().slice(0, 10);
+
+      if (!expenseAccounts.length) {
+        toast('⚠️ আগে Chart of Accounts-এ Expense Account যোগ করুন', 'error');
+        return;
+      }
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ Edit Expense' : '💸 Add New Expense'}</h3>
+            <button class="modal-close" id="mClose">✕</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld required">
+              <label>Expense Account</label>
+              <select id="f_account">
+                <option value="">-- Select Account --</option>
+                ${expenseAccounts.map(a =>
+                  `<option value="${a.id}" ${expense?.expense_account_id == a.id ? 'selected' : ''}>
+                    ${esc(a.account_no || '')} - ${esc(a.type_name)}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+
+            <div class="fld required">
+              <label>Amount</label>
+              <div class="amount-input-wrap">
+                <input type="number" id="f_amount" value="${expense?.amount || ''}" min="0" step="0.01" placeholder="0">
+              </div>
+            </div>
+
+            <div class="fld required">
+              <label>Payment Date</label>
+              <input type="date" id="f_date" value="${expense?.payment_date || today}">
+            </div>
+
+            <div class="fld">
+              <label>Paid To (Person / Vendor)</label>
+              <input id="f_paidto" value="${esc(expense?.paid_to || '')}" placeholder="e.g. Rahim Store">
+            </div>
+
+            <div class="fld">
+              <label>Payment Method</label>
+              <select id="f_method">
+                <option value="cash" ${(expense?.payment_method || 'cash') === 'cash' ? 'selected' : ''}>💵 Cash</option>
+                <option value="bkash" ${expense?.payment_method === 'bkash' ? 'selected' : ''}>📱 bKash</option>
+                <option value="nagad" ${expense?.payment_method === 'nagad' ? 'selected' : ''}>💳 Nagad</option>
+                <option value="bank" ${expense?.payment_method === 'bank' ? 'selected' : ''}>🏦 Bank</option>
+                <option value="cheque" ${expense?.payment_method === 'cheque' ? 'selected' : ''}>📝 Cheque</option>
+              </select>
+            </div>
+
+            <div class="fld">
+              <label>Remarks (Optional)</label>
+              <textarea id="f_remarks" placeholder="বিস্তারিত...">${esc(expense?.remarks || '')}</textarea>
+            </div>
+
+            <div class="balance-preview" id="balancePreview"></div>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">Cancel</button>
+              <button class="btn-save" id="mSave">${isEdit ? '💾 Update' : '💾 Save Expense'}</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      function updateBalancePreview() {
+        const amount = +document.getElementById('f_amount').value || 0;
+        const b = currentBalance || { balance: 0 };
+        const after = b.balance - amount + (isEdit ? (+expense.amount || 0) : 0);
+
+        document.getElementById('balancePreview').innerHTML = `
+          <div class="row current">
+            <span class="lbl">Current Balance:</span>
+            <span class="val">৳ ${b.balance.toLocaleString()}</span>
+          </div>
+          <div class="row after">
+            <span class="lbl">After this expense:</span>
+            <span class="val ${after < 0 ? 'negative' : ''}">৳ ${after.toLocaleString()}${after < 0 ? ' (Negative!)' : ''}</span>
+          </div>
+        `;
+      }
+
+      document.getElementById('f_amount').oninput = updateBalancePreview;
+      updateBalancePreview();
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      // Delete
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`Delete this expense?\n\n${expense.expense_account_name} — ৳${expense.amount}\n\n⚠️ এটা Cash Balance-এ ফিরে যাবে!`)) return;
+
+          const { error } = await supabase.from('expense_entries')
+            .update({ is_deleted: true, deleted_at: new Date().toISOString() })
+            .eq('id', expense.id);
+
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+          await logAction('delete', 'expense_entries', expense.id,
+            `Expense delete: ${expense.expense_account_name} — ৳${expense.amount}`);
+
+          toast('🗑️ Expense delete হয়েছে — Cash Balance update হয়েছে', 'success');
+          closeModal();
+          await Promise.all([loadCashBalance(), loadExpenses()]);
+        };
+      }
+
+      // Save
+      document.getElementById('mSave').onclick = async () => {
+        const accountId = document.getElementById('f_account').value;
+        const amount = +document.getElementById('f_amount').value;
+        const date = document.getElementById('f_date').value;
+        const paidTo = document.getElementById('f_paidto').value.trim();
+        const method = document.getElementById('f_method').value;
+        const remarks = document.getElementById('f_remarks').value.trim();
+
+        if (!accountId) { toast('Account সিলেক্ট করুন', 'error'); return; }
+        if (!amount || amount <= 0) { toast('সঠিক Amount দিন', 'error'); return; }
+        if (!date) { toast('Date দিন', 'error'); return; }
+
+        const acc = expenseAccounts.find(a => String(a.id) === accountId);
+        if (!acc) { toast('Account পাওয়া যায়নি', 'error'); return; }
+
+        const payload = {
+          session_year: CURRENT_YEAR,
+          expense_account_id: acc.id,
+          expense_account_no: acc.account_no || null,
+          expense_account_name: acc.type_name,
+          amount,
+          payment_date: date,
+          payment_method: method,
+          paid_to: paidTo || null,
+          remarks: remarks || null,
+          entered_by: profile.full_name,
+        };
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true;
+        btn.textContent = '⏳ Saving...';
+
+        let error;
+        if (isEdit) {
+          const r = await supabase.from('expense_entries').update(payload).eq('id', expense.id);
+          error = r.error;
+        } else {
+          const r = await supabase.from('expense_entries').insert(payload);
+          error = r.error;
+        }
+
+        btn.disabled = false;
+        btn.textContent = isEdit ? '💾 Update' : '💾 Save Expense';
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+        await logAction(isEdit ? 'update' : 'create', 'expense_entries', expense?.id || acc.id,
+          `${isEdit ? 'Update' : 'Create'} expense: ${acc.type_name} — ৳${amount}`);
+
+        toast(isEdit ? '✅ Update হয়েছে' : `✅ ৳${amount} খরচ যোগ হয়েছে — Cash Balance update হয়েছে`, 'success');
+        closeModal();
+
+        await Promise.all([loadCashBalance(), loadExpenses()]);
+      };
+    }
+
+    /* ============================================================
+       DELETE EXPENSE
+       ============================================================ */
+    async function deleteExpense(e) {
+      if (!confirm(`Delete this expense?\n\n${e.expense_account_name} — ৳${(+e.amount).toLocaleString()}\n\n⚠️ এটা Cash Balance-এ ফিরে যাবে!`)) return;
+
+      const { error } = await supabase.from('expense_entries')
+        .update({ is_deleted: true, deleted_at: new Date().toISOString() })
+        .eq('id', e.id);
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      await logAction('delete', 'expense_entries', e.id,
+        `Expense delete: ${e.expense_account_name} — ৳${e.amount}`);
+
+      toast('🗑️ Delete হয়েছে — Cash Balance update হয়েছে', 'success');
+      await Promise.all([loadCashBalance(), loadExpenses()]);
+    }
+
+    /* ============================================================
+       EXCEL EXPORT
+       ============================================================ */
+    document.getElementById('excelBtn').onclick = () => {
+      if (!allExpenses.length) { toast('কোনো খরচ নেই', 'error'); return; }
+
+      const wb = XLSX.utils.book_new();
+
+      const rows = [
+        [school.name.toUpperCase()],
+        [school.address],
+        ['Expense Report — ' + CURRENT_YEAR],
+        ['Generated:', new Date().toLocaleString()],
+        [],
+        ['#', 'Date', 'Acc No', 'Account Name', 'Paid To', 'Method', 'Amount', 'Remarks'],
+        ...allExpenses.map((e, i) => [
+          i + 1,
+          e.payment_date,
+          e.expense_account_no || '',
+          e.expense_account_name || '',
+          e.paid_to || '',
+          e.payment_method || 'cash',
+          +e.amount || 0,
+          e.remarks || '',
+        ]),
+        [],
+        ['', '', '', '', '', 'TOTAL', allExpenses.reduce((s, e) => s + (+e.amount || 0), 0), ''],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [
+        { wch: 5 }, { wch: 12 }, { wch: 10 }, { wch: 22 },
+        { wch: 18 }, { wch: 10 }, { wch: 12 }, { wch: 30 },
+      ];
+      XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+
+      const byAcc = {};
+      allExpenses.forEach(e => {
+        const k = e.expense_account_name || 'Unknown';
+        if (!byAcc[k]) byAcc[k] = { count: 0, total: 0 };
+        byAcc[k].count++;
+        byAcc[k].total += +e.amount || 0;
+      });
+      const sumRows = [
+        ['Summary by Account'],
+        [],
+        ['Account', 'Entries', 'Total Amount'],
+        ...Object.entries(byAcc).sort((a, b) => b[1].total - a[1].total)
+          .map(([k, v]) => [k, v.count, v.total]),
+        [],
+        ['TOTAL', allExpenses.length, allExpenses.reduce((s, e) => s + (+e.amount || 0), 0)],
+      ];
+      const ws2 = XLSX.utils.aoa_to_sheet(sumRows);
+      ws2['!cols'] = [{ wch: 30 }, { wch: 12 }, { wch: 15 }];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+      const now = new Date();
+      const fileName = `Expense_Report_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      toast('✅ Excel ডাউনলোড হয়েছে', 'success');
+    };
+
+    /* ============================================================
+       PRINT
+       ============================================================ */
+    document.getElementById('printBtn').onclick = () => {
+      window.print();
+    };
+
+    /* ============================================================
+       INITIAL LOAD
+       ============================================================ */
+    console.log('🚀 Expense Management loading...');
+    await loadExpenseAccounts();
+    await loadCashBalance();
+    await loadExpenses();
+    console.log('✅ All loaded');
+
+  </script>
+</body>
+</html>

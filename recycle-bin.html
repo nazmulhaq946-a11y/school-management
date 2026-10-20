@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recycle Bin · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rb-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #dc2626;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .rb-header .left { display: flex; align-items: center; gap: 14px; }
+    .rb-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #dc2626; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rb-header h1 { color: #dc2626; font-size: 22px; margin: 0; font-weight: 700; }
+    .rb-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .rb-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .rb-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .rb-body {
+      background: white; padding: 22px 26px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .info-banner {
+      background: #fef3c7; border-left: 4px solid #f59e0b;
+      padding: 14px 18px; border-radius: 6px;
+      margin-bottom: 20px; font-size: 13.5px; color: #92400e;
+      line-height: 1.7;
+    }
+    .info-banner b { color: #78350f; }
+
+    .rb-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px;
+      background: #f9fafb; border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 16px;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .rb-toolbar .count {
+      font-size: 14px; font-weight: 700; color: #1f2937;
+    }
+    .rb-toolbar .count .num {
+      color: #dc2626;
+      font-size: 18px;
+      background: #fee2e2;
+      padding: 3px 12px;
+      border-radius: 12px;
+      margin: 0 4px;
+    }
+    .rb-toolbar .btn {
+      padding: 9px 20px;
+      border: none; border-radius: 6px;
+      font-weight: 700; font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-refresh { background: #2563eb; color: white; }
+    .btn-refresh:hover { background: #1d4ed8; }
+    .btn-purge {
+      background: #dc2626; color: white;
+    }
+    .btn-purge:hover { background: #b91c1c; }
+    .btn-purge:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Table */
+    .rb-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+    }
+    .rb-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+    .rb-table thead th {
+      background: #dc2626; color: white;
+      padding: 11px 10px;
+      text-align: left; font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .rb-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+    .rb-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .rb-table tbody tr:hover td { background: #fef2f2; }
+    .rb-table tbody tr.old-row td { background: #fef2f2; }
+
+    .rb-table td.table-name {
+      font-weight: 700; color: #7c3aed;
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+    }
+    .rb-table td.label-cell {
+      font-weight: 700; color: #1f2937;
+    }
+    .rb-table td.label-cell small {
+      display: block;
+      color: #6b7280;
+      font-weight: 500;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .rb-table td.date-cell {
+      color: #4b5563;
+      font-size: 12.5px;
+    }
+    .rb-table td.date-cell .old {
+      display: block;
+      color: #dc2626;
+      font-weight: 700;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .act-btn {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .act-restore {
+      background: #16a34a; color: white;
+    }
+    .act-restore:hover { background: #15803d; }
+    .act-delete {
+      background: #dc2626; color: white;
+    }
+    .act-delete:hover { background: #b91c1c; }
+
+    .empty-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      font-size: 15px;
+    }
+    .empty-msg .icon {
+      font-size: 60px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .loading-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'recycle-bin.html', 'Recycle Bin');
+
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <div class="rb-header">
+        <div class="left">
+          <div class="icon">🗑️</div>
+          <div>
+            <h1>Recycle Bin</h1>
+            <p>Deleted items · Restore or Permanently Delete</p>
+          </div>
+        </div>
+        <button class="rb-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="rb-body">
+        <div class="info-banner">
+          ℹ️ <b>তথ্য:</b> Delete করা সব ডেটা এখানে থাকবে।
+          <br>
+          ✅ <b>Restore</b> — ফিরিয়ে আনবে · ⚠️ <b>Permanently Delete</b> — সত্যিই মুছে ফেলবে (ফেরানো যাবে না)
+          <br>
+          🔥 ৩০ দিনের বেশি পুরনো ডেটা মাসে একবার Purge করুন
+        </div>
+
+        <div class="rb-toolbar">
+          <div class="count">
+            মোট Deleted: <span class="num" id="totalCount">0</span> টি
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-refresh" id="refreshBtn">🔄 Refresh</button>
+            <button class="btn btn-purge" id="purgeBtn">🔥 ৩০+ দিনের পুরনো মুছুন</button>
+          </div>
+        </div>
+
+        <div id="listArea">
+          <div class="loading-msg">⏳ লোড হচ্ছে...</div>
+        </div>
+      </div>
+    `;
+
+    /* ============ Table labels ============ */
+    const TABLE_LABELS = {
+      students: { icon: '🎓', label: 'ছাত্র' },
+      teachers: { icon: '👩‍🏫', label: 'শিক্ষক' },
+      classes: { icon: '🏫', label: 'ক্লাস' },
+      subjects: { icon: '📖', label: 'সাবজেক্ট' },
+      exams: { icon: '📝', label: 'পরীক্ষা' },
+      notices: { icon: '📢', label: 'নোটিশ' },
+      fee_types: { icon: '💰', label: 'ফি টাইপ' },
+      fee_payments: { icon: '💵', label: 'ফি পেমেন্ট' },
+      attendance: { icon: '📋', label: 'হাজিরা' },
+      routines: { icon: '📅', label: 'রুটিন' },
+      exam_results: { icon: '🎯', label: 'পরীক্ষার ফলাফল' },
+      exam_routines: { icon: '📅', label: 'পরীক্ষার রুটিন' },
+      academic_sessions: { icon: '🗓️', label: 'একাডেমিক সেশন' },
+      grade_system: { icon: '🎯', label: 'গ্রেড' },
+      testimonial_info: { icon: '📜', label: 'টেস্টিমনিয়াল' },
+      fee_structure: { icon: '📊', label: 'ফি স্ট্রাকচার' },
+      fee_waivers: { icon: '📉', label: 'ফি ছাড়' },
+    };
+
+    /* ============ Load deleted items ============ */
+    async function loadDeleted() {
+      const listArea = document.getElementById('listArea');
+      const totalCount = document.getElementById('totalCount');
+      listArea.innerHTML = '<div class="loading-msg">⏳ লোড হচ্ছে...</div>';
+
+      const { data, error } = await supabase.rpc('list_deleted_rows');
+
+      if (error) {
+        listArea.innerHTML = `<div class="empty-msg">❌ ${esc(error.message)}</div>`;
+        return;
+      }
+
+      const items = data || [];
+      totalCount.textContent = items.length;
+
+      if (!items.length) {
+        listArea.innerHTML = `
+          <div class="empty-msg">
+            <span class="icon">✨</span>
+            Recycle Bin খালি — সব পরিষ্কার!
+          </div>
+        `;
+        return;
+      }
+
+      const now = Date.now();
+
+      listArea.innerHTML = `
+        <div class="rb-table-wrap">
+          <table class="rb-table">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:130px">Table</th>
+                <th>Item</th>
+                <th style="width:170px">Deleted At</th>
+                <th style="width:170px">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map((it, i) => {
+                const deletedMs = new Date(it.deleted_at).getTime();
+                const daysOld = Math.floor((now - deletedMs) / (1000 * 60 * 60 * 24));
+                const isOld = daysOld > 30;
+                const meta = TABLE_LABELS[it.tbl] || { icon: '📄', label: it.tbl };
+
+                return `
+                  <tr data-tbl="${esc(it.tbl)}" data-id="${it.id}" class="${isOld ? 'old-row' : ''}">
+                    <td>${i + 1}</td>
+                    <td class="table-name">
+                      ${meta.icon} ${esc(it.tbl)}
+                    </td>
+                    <td class="label-cell">
+                      ${esc(it.label || 'Item #' + it.id)}
+                      <small>ID: ${it.id}${it.extra ? ' · ' + esc(it.extra) : ''}</small>
+                    </td>
+                    <td class="date-cell">
+                      ${new Date(it.deleted_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      ${isOld ? `<span class="old">⚠️ ${daysOld} দিন পুরনো</span>` : `<span style="color:#6b7280;font-size:11px">${daysOld} দিন আগে</span>`}
+                    </td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="act-btn act-restore" data-action="restore" data-tbl="${esc(it.tbl)}" data-id="${it.id}">
+                          ♻️ Restore
+                        </button>
+                        <button class="act-btn act-delete" data-action="delete" data-tbl="${esc(it.tbl)}" data-id="${it.id}">
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      // Attach handlers
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.onclick = () => {
+          const action = btn.dataset.action;
+          const tbl = btn.dataset.tbl;
+          const id = btn.dataset.id;
+          if (action === 'restore') restoreItem(tbl, id);
+          else if (action === 'delete') permanentDelete(tbl, id);
+        };
+      });
+    }
+
+    /* ============ Restore item ============ */
+    async function restoreItem(table, id) {
+      if (!confirm(`এই আইটেমটা ফিরিয়ে আনবেন?\n\nTable: ${table}\nID: ${id}`)) return;
+
+      const { data, error } = await supabase.rpc('restore_deleted_row', {
+        p_table: table,
+        p_id: +id,
+      });
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+      toast('♻️ সফলভাবে restore হয়েছে', 'success');
+      loadDeleted();
+    }
+
+    /* ============ Permanent delete ============ */
+    async function permanentDelete(table, id) {
+      if (!confirm(`⚠️ সত্যিই মুছে ফেলবেন?\n\nTable: ${table}\nID: ${id}\n\n❌ এই কাজটি ফেরানো যাবে না!`)) return;
+      if (!confirm('🔥 শেষ নিশ্চিতকরণ: এটা Permanent Delete। চালিয়ে যাবেন?')) return;
+
+      const { data, error } = await supabase.rpc('permanent_delete_row', {
+        p_table: table,
+        p_id: +id,
+      });
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+      toast('🔥 স্থায়ীভাবে মুছে ফেলা হয়েছে', 'success');
+      loadDeleted();
+    }
+
+    /* ============ Purge old items (30+ days) ============ */
+    document.getElementById('purgeBtn').onclick = async () => {
+      const listArea = document.getElementById('listArea');
+      const rows = listArea.querySelectorAll('tr.old-row');
+
+      if (!rows.length) {
+        toast('৩০+ দিনের পুরনো কোনো আইটেম নেই', 'success');
+        return;
+      }
+
+      if (!confirm(`৩০+ দিনের পুরনো ${rows.length}টি আইটেম স্থায়ীভাবে মুছে ফেলবেন?\n\n⚠️ এটা ফেরানো যাবে না!`)) return;
+      if (!confirm('🔥 শেষ নিশ্চিতকরণ: চালিয়ে যাবেন?')) return;
+
+      const btn = document.getElementById('purgeBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ মুছে ফেলা হচ্ছে...';
+
+      let ok = 0, fail = 0;
+      for (const tr of rows) {
+        const tbl = tr.dataset.tbl;
+        const id = tr.dataset.id;
+        const { error } = await supabase.rpc('permanent_delete_row', {
+          p_table: tbl,
+          p_id: +id,
+        });
+        if (error) fail++;
+        else ok++;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🔥 ৩০+ দিনের পুরনো মুছুন';
+
+      toast(`🔥 ${ok}টি মুছে ফেলা হয়েছে · ${fail}টি ব্যর্থ`, ok > 0 ? 'success' : 'error');
+      loadDeleted();
+    };
+
+    /* ============ Refresh ============ */
+    document.getElementById('refreshBtn').onclick = loadDeleted;
+
+    /* ============ Start ============ */
+    loadDeleted();
+  </script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Danger Zone · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.dz-page{padding:0;background:#fef2f2;min-height:100vh}
+.dz-top{
+  background:linear-gradient(135deg,#dc2626 0%,#991b1b 50%,#7f1d1d 100%);
+  padding:24px 28px;border-radius:14px 14px 0 0;color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;
+}
+.dz-top::before{
+  content:'';position:absolute;top:-50%;right:-10%;
+  width:450px;height:450px;
+  background:radial-gradient(circle,rgba(255,255,255,.15),transparent 65%);
+  border-radius:50%;
+}
+.dz-top>*{position:relative;z-index:1}
+.dz-top .tl{display:flex;align-items:center;gap:16px}
+.dz-top .ticon{
+  width:60px;height:60px;background:rgba(255,255,255,.2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:32px;border:1px solid rgba(255,255,255,.3);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}
+  50%{box-shadow:0 0 0 15px rgba(255,255,255,0)}
+}
+.dz-top h1{margin:0;font-size:24px;font-weight:900}
+.dz-top p{margin:4px 0 0;font-size:13px;opacity:.9}
+.dz-back{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:10px 18px;border-radius:10px;
+  font-weight:700;font-size:13px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all .2s;cursor:pointer;font-family:inherit;
+}
+.dz-back:hover{background:rgba(255,255,255,.25)}
+
+.dz-body{
+  background:#fff;border-radius:0 0 14px 14px;
+  padding:28px;box-shadow:0 4px 14px rgba(15,23,42,.08);
+  margin-bottom:20px;
+}
+
+/* Warning Banner */
+.dz-warn{
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+  border:2px solid #dc2626;border-radius:14px;
+  padding:20px 24px;margin-bottom:24px;
+  display:flex;gap:16px;align-items:flex-start;
+}
+.dz-warn .icon{font-size:40px;flex-shrink:0}
+.dz-warn h2{color:#991b1b;font-size:18px;font-weight:900;margin:0 0 8px}
+.dz-warn p{color:#7f1d1d;font-size:13.5px;line-height:1.7;margin:0 0 6px}
+.dz-warn ul{color:#7f1d1d;font-size:13px;line-height:1.8;margin:8px 0 0;padding-left:22px}
+
+/* Section */
+.dz-section{
+  background:#fafbfc;border:1px solid #e5e7eb;
+  border-radius:14px;padding:20px 24px;margin-bottom:18px;
+}
+.dz-section h3{
+  font-size:14px;font-weight:900;color:#1f2937;
+  margin:0 0 16px;padding-bottom:10px;
+  border-bottom:2px dashed #e5e7eb;
+  display:flex;align-items:center;gap:8px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.dz-section h3 .num{
+  width:28px;height:28px;background:#dc2626;color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;
+}
+
+/* Table list */
+.dz-table-list{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:8px;
+}
+.dz-table-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:#fff;
+  border:1.5px solid #e5e7eb;border-radius:10px;
+  cursor:pointer;transition:all .15s;
+  font-weight:700;font-size:13px;color:#374151;
+}
+.dz-table-item:hover{border-color:#dc2626;background:#fef2f2}
+.dz-table-item input{width:17px;height:17px;accent-color:#dc2626;cursor:pointer;flex-shrink:0}
+.dz-table-item.checked{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+.dz-table-item .tbl-icon{font-size:16px}
+
+/* Password field */
+.dz-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.dz-fld label{
+  font-size:12px;color:#6b7280;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.dz-fld input{
+  padding:12px 14px;border:2px solid #e5e7eb;border-radius:10px;
+  font-size:14px;font-family:inherit;font-weight:600;
+  background:#fafbfc;transition:all .2s;
+}
+.dz-fld input:focus{
+  outline:none;border-color:#dc2626;background:#fff;
+  box-shadow:0 0 0 4px rgba(220,38,38,.1);
+}
+.dz-fld input.err{border-color:#dc2626;background:#fef2f2}
+
+/* Checkboxes */
+.dz-check{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;background:#fff;
+  border:2px solid #e5e7eb;border-radius:10px;
+  cursor:pointer;transition:all .15s;margin-bottom:10px;
+}
+.dz-check:hover{border-color:#dc2626}
+.dz-check input{
+  width:20px;height:20px;accent-color:#dc2626;cursor:pointer;
+  margin-top:2px;flex-shrink:0;
+}
+.dz-check .lbl{font-weight:800;font-size:13.5px;color:#1f2937;line-height:1.4}
+.dz-check .sub{font-size:12px;color:#6b7280;font-weight:600;margin-top:2px}
+.dz-check.checked{background:#fef2f2;border-color:#dc2626}
+
+/* Big Delete Button */
+.dz-delete-btn{
+  width:100%;padding:18px 24px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  color:#fff;font-weight:900;font-size:16px;
+  cursor:not-allowed;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 10px 25px rgba(220,38,38,.3);
+  transition:all .2s;opacity:.5;letter-spacing:.5px;
+}
+.dz-delete-btn:not(:disabled){
+  cursor:pointer;opacity:1;
+}
+.dz-delete-btn:not(:disabled):hover{
+  transform:translateY(-2px);
+  box-shadow:0 15px 35px rgba(220,38,38,.45);
+}
+.dz-delete-btn:not(:disabled):active{transform:translateY(0)}
+
+/* Progress log */
+.dz-progress{
+  margin-top:20px;background:#1f2937;color:#e5e7eb;
+  padding:16px 20px;border-radius:12px;
+  font-family:'Courier New',monospace;font-size:12.5px;
+  max-height:300px;overflow-y:auto;
+  display:none;
+}
+.dz-progress.show{display:block}
+.dz-progress .line{padding:2px 0}
+.dz-progress .line.ok{color:#34d399}
+.dz-progress .line.err{color:#f87171}
+.dz-progress .line.info{color:#60a5fa}
+
+/* Alert box */
+.dz-alert{
+  padding:14px 18px;border-radius:10px;
+  margin-bottom:14px;font-size:13.5px;
+  display:flex;gap:10px;line-height:1.6;font-weight:600;
+}
+.dz-alert.danger{background:#fee2e2;border-left:4px solid #dc2626;color:#991b1b}
+.dz-alert.success{background:#d1fae5;border-left:4px solid #16a34a;color:#065f46}
+.dz-alert.info{background:#dbeafe;border-left:4px solid #2563eb;color:#1e40af}
+.dz-alert .ic{font-size:20px;flex-shrink:0}
+
+/* Loading */
+.dz-loading{
+  padding:60px 20px;text-align:center;
+  color:#dc2626;font-weight:700;
+}
+.dz-loading::before{
+  content:'';display:inline-block;width:22px;height:22px;
+  border:3px solid #fee2e2;border-top-color:#dc2626;
+  border-radius:50%;animation:spin .8s linear infinite;
+  margin-right:12px;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:700px){
+  .dz-top{padding:16px 18px}
+  .dz-top h1{font-size:18px}
+  .dz-top .ticon{width:48px;height:48px;font-size:24px}
+  .dz-body{padding:16px}
+  .dz-warn{flex-direction:column;gap:10px;padding:16px}
+  .dz-table-list{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, logAction } from './js/helpers.js';
+
+const profile = await requireLogin(['admin']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'danger-zone.html', '⚠️ Danger Zone');
+
+const content = document.getElementById('content');
+
+/* ============ সব টেবিল ============ */
+const ALL_TABLES = [
+  { name: 'attendance',       icon: '📋', label: 'হাজিরা (Attendance)' },
+  { name: 'exam_results',     icon: '📊', label: 'পরীক্ষার ফলাফল' },
+  { name: 'fee_payments',     icon: '💵', label: 'ফি পেমেন্ট' },
+  { name: 'fee_waivers',      icon: '📉', label: 'ফি ছাড়' },
+  { name: 'expense_entries',  icon: '💸', label: 'খরচ' },
+  { name: 'students',         icon: '🎓', label: 'ছাত্রছাত্রী' },
+  { name: 'teachers',         icon: '👩‍🏫', label: 'শিক্ষক' },
+  { name: 'subjects',         icon: '📖', label: 'সাবজেক্ট' },
+  { name: 'classes',          icon: '🏫', label: 'ক্লাস' },
+  { name: 'exams',            icon: '📝', label: 'পরীক্ষা' },
+  { name: 'exam_routines',    icon: '📅', label: 'পরীক্ষার রুটিন' },
+  { name: 'routines',         icon: '📅', label: 'ক্লাস রুটিন' },
+  { name: 'notices',          icon: '📢', label: 'নোটিশ' },
+  { name: 'fee_types',        icon: '💰', label: 'ফি টাইপ' },
+  { name: 'fee_structure',    icon: '📊', label: 'ফি স্ট্রাকচার' },
+  { name: 'grade_system',     icon: '🎯', label: 'গ্রেড সিস্টেম' },
+  { name: 'academic_sessions',icon: '🗓️', label: 'একাডেমিক সেশন' },
+  { name: 'testimonial_info', icon: '📜', label: 'টেস্টিমোনিয়াল' },
+  { name: 'monthly_workdays', icon: '📆', label: 'মাসিক কার্যদিবস' },
+  { name: 'audit_log',        icon: '📜', label: 'Audit Log' },
+];
+
+let selectedTables = new Set();
+let tableCounts = {};
+
+content.innerHTML = `
+<div class="dz-page">
+  <div class="dz-top">
+    <div class="tl">
+      <div class="ticon">⚠️</div>
+      <div>
+        <h1>Danger Zone</h1>
+        <p>সম্পূর্ণ ডেটা মুছে ফেলার ঝুঁকিপূর্ণ এলাকা</p>
+      </div>
+    </div>
+    <a class="dz-back" href="dashboard.html">← Back to Safe Zone</a>
+  </div>
+
+  <div class="dz-body">
+
+    <div class="dz-warn">
+      <div class="icon">🚨</div>
+      <div>
+        <h2>এই কাজ ফেরানো যাবে না!</h2>
+        <p>নিচের বাটনে ক্লিক করলে আপনার সিস্টেমের <b>সব তথ্য স্থায়ীভাবে মুছে যাবে</b>:</p>
+        <ul>
+          <li>🎓 সব ছাত্রছাত্রীর তথ্য + ছবি</li>
+          <li>👩‍🏫 সব শিক্ষকের তথ্য + ছবি + স্বাক্ষর</li>
+          <li>📊 সব পরীক্ষার নম্বর + গ্রেড</li>
+          <li>📋 সব হাজিরা রেকর্ড</li>
+          <li>💰 সব ফি পেমেন্ট + খরচ</li>
+          <li>📢 সব নোটিশ + রুটিন</li>
+          <li>🏫 ক্লাস, সাবজেক্ট, সেশন</li>
+        </ul>
+        <p style="margin-top:10px"><b>⚠️ আগে অবশ্যই Backup নিন!</b></p>
+      </div>
+    </div>
+
+    <div id="dangerForm">
+      <div class="dz-loading">⏳ টেবিল লোড হচ্ছে...</div>
+    </div>
+
+  </div>
+</div>
+`;
+
+/* ============ টেবিল count লোড ============ */
+async function loadCounts() {
+  const formEl = document.getElementById('dangerForm');
+  formEl.innerHTML = '<div class="dz-loading">⏳ টেবিল লোড হচ্ছে...</div>';
+
+  /* Parallel count */
+  const results = await Promise.all(
+    ALL_TABLES.map(t =>
+      supabase.from(t.name).select('*', { count: 'exact', head: true })
+        .then(r => ({ name: t.name, count: r.count ?? 0, error: r.error }))
+        .catch(() => ({ name: t.name, count: 0, error: 'not_found' }))
+    )
+  );
+
+  tableCounts = {};
+  results.forEach(r => { tableCounts[r.name] = r.count; });
+
+  renderForm();
+}
+
+function renderForm() {
+  const totalRows = Object.values(tableCounts).reduce((s, n) => s + n, 0);
+
+  const formEl = document.getElementById('dangerForm');
+  formEl.innerHTML = `
+    <div class="dz-alert info">
+      <span class="ic">ℹ️</span>
+      <span>এই সিস্টেমে মোট <b>${totalRows.toLocaleString()} টি রেকর্ড</b> আছে ${ALL_TABLES.length} টি টেবিলে।</span>
+    </div>
+
+    <!-- STEP 1: Select Tables -->
+    <div class="dz-section">
+      <h3><span class="num">1</span> কোন টেবিলগুলো মুছবেন?</h3>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="rs-btn rs-btn-pri" id="selAllBtn" style="padding:8px 16px;font-size:12.5px;background:#dc2626;border:none;color:#fff;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:800">✓ Select All</button>
+        <button class="rs-btn rs-btn-sec" id="deselAllBtn" style="padding:8px 16px;font-size:12.5px;background:#f1f5f9;border:none;color:#64748b;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:800">✕ Deselect All</button>
+      </div>
+      <div class="dz-table-list" id="tableList">
+        ${ALL_TABLES.map(t => `
+          <label class="dz-table-item" data-table="${t.name}">
+            <input type="checkbox" class="tblChk" value="${t.name}">
+            <span class="tbl-icon">${t.icon}</span>
+            <span style="flex:1">${esc(t.label)}</span>
+            <span style="font-family:monospace;color:#dc2626;font-weight:900;font-size:12px">${(tableCounts[t.name] || 0).toLocaleString()}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- STEP 2: Confirm with password -->
+    <div class="dz-section">
+      <h3><span class="num">2</span> আপনার পাসওয়ার্ড দিন</h3>
+      <div class="dz-fld">
+        <label>Account Password</label>
+        <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+
+    <!-- STEP 3: Type DELETE -->
+    <div class="dz-section">
+      <h3><span class="num">3</span> "DELETE" লিখুন (ইংরেজি বড় হাতে)</h3>
+      <div class="dz-fld">
+        <label>Type DELETE to confirm</label>
+        <input type="text" id="confirmText" placeholder="DELETE" autocomplete="off" style="text-transform:uppercase;font-family:'Courier New',monospace;letter-spacing:3px;font-weight:900;font-size:18px;text-align:center">
+      </div>
+    </div>
+
+    <!-- STEP 4: Final checkboxes -->
+    <div class="dz-section">
+      <h3><span class="num">4</span> শেষ নিশ্চিতকরণ</h3>
+
+      <label class="dz-check" id="chk1Lbl">
+        <input type="checkbox" id="chk1">
+        <div>
+          <div class="lbl">আমি বুঝেছি এই কাজ ফেরানো যাবে না</div>
+          <div class="sub">Delete করার পর কোনো data recover করা সম্ভব হবে না</div>
+        </div>
+      </label>
+
+      <label class="dz-check" id="chk2Lbl">
+        <input type="checkbox" id="chk2">
+        <div>
+          <div class="lbl">আমি Backup নিয়েছি</div>
+          <div class="sub">Backup page থেকে ডেটা ডাউনলোড করা আছে</div>
+        </div>
+      </label>
+
+      <label class="dz-check" id="chk3Lbl">
+        <input type="checkbox" id="chk3">
+        <div>
+          <div class="lbl">আমি সিস্টেমের মালিক / অনুমোদিত ব্যক্তি</div>
+          <div class="sub">এই কাজ করার ক্ষমতা আমার আছে</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- STEP 5: Delete button -->
+    <button class="dz-delete-btn" id="deleteBtn" disabled>
+      <span>🗑️</span>
+      <span>Permanently Delete All Data</span>
+    </button>
+
+    <!-- Progress log -->
+    <div class="dz-progress" id="progressLog"></div>
+  `;
+
+  /* Bind events */
+  document.querySelectorAll('.tblChk').forEach(cb => {
+    cb.onchange = () => {
+      const item = cb.closest('.dz-table-item');
+      item.classList.toggle('checked', cb.checked);
+      if (cb.checked) selectedTables.add(cb.value);
+      else selectedTables.delete(cb.value);
+      updateButton();
+    };
+  });
+
+  document.getElementById('selAllBtn').onclick = () => {
+    document.querySelectorAll('.tblChk').forEach(cb => {
+      cb.checked = true;
+      cb.closest('.dz-table-item').classList.add('checked');
+      selectedTables.add(cb.value);
+    });
+    updateButton();
+  };
+
+  document.getElementById('deselAllBtn').onclick = () => {
+    document.querySelectorAll('.tblChk').forEach(cb => {
+      cb.checked = false;
+      cb.closest('.dz-table-item').classList.remove('checked');
+    });
+    selectedTables.clear();
+    updateButton();
+  };
+
+  ['chk1','chk2','chk3'].forEach(id => {
+    const chk = document.getElementById(id);
+    chk.onchange = () => {
+      chk.closest('.dz-check').classList.toggle('checked', chk.checked);
+      updateButton();
+    };
+  });
+
+  document.getElementById('confirmPassword').oninput = updateButton;
+  document.getElementById('confirmText').oninput = (e) => {
+    e.target.value = e.target.value.toUpperCase();
+    updateButton();
+  };
+
+  document.getElementById('deleteBtn').onclick = performDelete;
+}
+
+function updateButton() {
+  const pw = document.getElementById('confirmPassword').value;
+  const txt = document.getElementById('confirmText').value.trim().toUpperCase();
+  const c1 = document.getElementById('chk1').checked;
+  const c2 = document.getElementById('chk2').checked;
+  const c3 = document.getElementById('chk3').checked;
+
+  const ready =
+    selectedTables.size > 0 &&
+    pw.length >= 6 &&
+    txt === 'DELETE' &&
+    c1 && c2 && c3;
+
+  document.getElementById('deleteBtn').disabled = !ready;
+}
+
+/* ============================================================
+   🔥 PERFORM DELETE
+   ============================================================ */
+async function performDelete() {
+  const password = document.getElementById('confirmPassword').value;
+  const tablesToDelete = [...selectedTables];
+
+  /* Final confirm popup */
+  const totalRows = tablesToDelete.reduce((s, t) => s + (tableCounts[t] || 0), 0);
+  const finalConfirm = confirm(
+    `🚨 চূড়ান্ত নিশ্চিতকরণ 🚨\n\n` +
+    `${tablesToDelete.length} টি টেবিল থেকে ${totalRows.toLocaleString()} টি রেকর্ড মুছে যাবে!\n\n` +
+    `এই কাজ ফেরানো যাবে না।\n\n` +
+    `সত্যিই Delete করতে চান?`
+  );
+  if (!finalConfirm) return;
+
+  /* Verify password by re-authenticating */
+  const btn = document.getElementById('deleteBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>পাসওয়ার্ড যাচাই হচ্ছে...</span>';
+
+  const log = document.getElementById('progressLog');
+  log.innerHTML = '';
+  log.classList.add('show');
+
+  function logLine(msg, type = 'info') {
+    const div = document.createElement('div');
+    div.className = 'line ' + type;
+    div.textContent = msg;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  try {
+    /* Step 1: Verify password */
+    logLine('🔐 পাসওয়ার্ড যাচাই করা হচ্ছে...', 'info');
+    const { error: authErr } = await supabase.auth.signInWithPassword({
+      email: profile.email,
+      password: password,
+    });
+    if (authErr) {
+      logLine('❌ পাসওয়ার্ড ভুল', 'err');
+      toast('❌ পাসওয়ার্ড ভুল', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<span>🗑️</span><span>Permanently Delete All Data</span>';
+      return;
+    }
+    logLine('✅ পাসওয়ার্ড সঠিক', 'ok');
+
+    /* Step 2: Delete each table */
+    logLine(`\n🗑️ ${tablesToDelete.length} টি টেবিল থেকে ডেটা মুছে ফেলা হচ্ছে...`, 'info');
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const tableName of tablesToDelete) {
+      try {
+        logLine(`  → ${tableName} ডিলিট হচ্ছে...`, 'info');
+
+        /* ✅ Method: delete all rows (use neq to bypass RLS safe-check) */
+        const { error, count } = await supabase
+          .from(tableName)
+          .delete({ count: 'exact' })
+          .neq('id', -1);  /* Delete everything except non-existent id */
+
+        if (error) {
+          logLine(`     ❌ ${tableName}: ${error.message}`, 'err');
+          failCount++;
+          continue;
+        }
+
+        const c = count || 0;
+        logLine(`     ✅ ${tableName}: ${c} rows deleted`, 'ok');
+        successCount++;
+      } catch (err) {
+        logLine(`     ❌ ${tableName}: ${err.message}`, 'err');
+        failCount++;
+      }
+    }
+
+    /* Step 3: Summary */
+    logLine(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━`, 'info');
+    logLine(`✅ Success: ${successCount} tables`, 'ok');
+    if (failCount > 0) logLine(`❌ Failed: ${failCount} tables`, 'err');
+
+    /* Log to audit */
+    try {
+      await logAction('delete', 'ALL', null, `Danger Zone: Wiped ${successCount} tables`);
+    } catch (e) { /* ignore */ }
+
+    /* Show final message */
+    if (failCount === 0) {
+      toast('🔥 সব ডেটা মুছে ফেলা হয়েছে!', 'success');
+      setTimeout(() => {
+        if (confirm('✅ সব ডেটা Delete সম্পন্ন!\n\nএখন Login page-এ ফিরে যাবেন?')) {
+          window.location.href = 'index.html';
+        }
+      }, 1500);
+    } else {
+      toast(`⚠️ ${successCount} সফল, ${failCount} ব্যর্থ`, 'error');
+    }
+
+    btn.innerHTML = '<span>✅</span><span>সম্পন্ন</span>';
+
+    /* Reload counts after 2s */
+    setTimeout(() => {
+      selectedTables.clear();
+      document.querySelectorAll('.tblChk').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.dz-table-item').forEach(el => el.classList.remove('checked'));
+      ['chk1','chk2','chk3'].forEach(id => {
+        document.getElementById(id).checked = false;
+        document.getElementById(id).closest('.dz-check').classList.remove('checked');
+      });
+      document.getElementById('confirmPassword').value = '';
+      document.getElementById('confirmText').value = '';
+      loadCounts();
+    }, 3000);
+
+  } catch (err) {
+    console.error(err);
+    logLine('❌ Fatal error: ' + err.message, 'err');
+    toast('❌ ' + err.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<span>🗑️</span><span>Permanently Delete All Data</span>';
+  }
+}
+
+/* ============ Init ============ */
+await loadCounts();
+</script>
+</body>
+</html>

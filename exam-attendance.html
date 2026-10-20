@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exam Attendance Sheet · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .eas-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .eas-header .left { display: flex; align-items: center; gap: 14px; }
+    .eas-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .eas-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .eas-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .eas-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .eas-back:hover { background: #111827; }
+    .eas-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .eas-body {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 26px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+    .eas-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 950px; margin: 0 auto;
+    }
+    .eas-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .eas-row label {
+      color: #374151; font-weight: 600; font-size: 14px; text-align: right;
+    }
+    .eas-row input, .eas-row select {
+      padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white;
+    }
+    .eas-row input:focus, .eas-row select:focus {
+      outline: none; border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    /* ✅ নতুন সাবজেক্ট সিলেকশন বক্স */
+    .subj-selector-box {
+      grid-column: 1 / -1;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      display: none;
+    }
+    .subj-selector-box.show { display: block; }
+    .subj-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1;
+    }
+    .subj-head h4 { margin: 0; font-size: 14px; color: #1e293b; font-weight: 800; }
+    .subj-actions button {
+      padding: 4px 12px; font-size: 12px; font-weight: 700; border: none;
+      border-radius: 4px; cursor: pointer; background: #e2e8f0; color: #475569;
+    }
+    .subj-actions button:hover { background: #cbd5e1; }
+    
+    .subj-list {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+      max-height: 200px; overflow-y: auto;
+    }
+    .subj-list label {
+      display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+      color: #1e293b; cursor: pointer; background: white; padding: 8px 10px;
+      border: 1px solid #e2e8f0; border-radius: 6px; text-align: left;
+    }
+    .subj-list label:hover { border-color: #94a3b8; background: #f1f5f9; }
+    .subj-list input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: #c0392b; cursor: pointer;
+    }
+
+    .eas-subj-info {
+      grid-column: 1 / -1;
+      background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px;
+      padding: 12px 16px; font-size: 13px; color: #3730a3; font-weight: 600;
+      display: none;
+    }
+    .eas-subj-info.show { display: block; }
+    .eas-subj-info .ok { color: #16a34a; font-size: 16px; margin-right: 4px; }
+    .eas-subj-info .err { color: #dc2626; font-size: 16px; margin-right: 4px; }
+    
+    .eas-btn-row {
+      grid-column: 2 / 3; padding-left: 12px; margin-top: 4px;
+    }
+    .eas-gen-btn {
+      background: #c0392b; color: white; border: none;
+      padding: 11px 36px; border-radius: 4px;
+      font-weight: 700; font-size: 14.5px; cursor: pointer;
+      box-shadow: 0 2px 4px rgba(192,57,43,0.3);
+    }
+    .eas-gen-btn:hover { background: #a93226; }
+    .eas-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ===== SHEET ===== */
+    .sheet-container {
+      background: white; padding: 24px;
+      border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    .sheet-actions {
+      display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;
+    }
+    .sheet-actions button {
+      padding: 11px 28px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .sheet-actions .btn-print { background: #16a34a; color: white; }
+    .sheet-actions .btn-print:hover { background: #15803d; }
+    .sheet-actions .btn-back { background: #6b7280; color: white; }
+    .sheet-actions .btn-back:hover { background: #4b5563; }
+
+    .sheet {
+      max-width: 1050px; margin: 0 auto; padding: 18px;
+      background: white; color: #000;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+    }
+    .sheet-header {
+      text-align: center; margin-bottom: 8px; position: relative;
+    }
+    .sheet-header h1 {
+      font-size: 22px; font-weight: 700; color: #000;
+      margin-bottom: 2px; letter-spacing: 0.3px;
+    }
+    .sheet-header .sub { font-size: 13px; color: #000; line-height: 1.3; }
+    .sheet-room {
+      position: absolute; top: 8px; right: 8px;
+      border: 1px solid #000; padding: 6px 12px;
+      font-size: 13px; font-weight: 700;
+      background: #f8f8f8; text-align: left; min-width: 110px;
+    }
+    .sheet-room .small { font-size: 11px; font-weight: 600; }
+    .sheet-info {
+      display: flex; justify-content: space-between; gap: 12px;
+      margin: 14px 0 10px 0; font-size: 13.5px;
+      font-weight: 700; flex-wrap: wrap;
+    }
+    .sheet-info > div { white-space: nowrap; }
+    .sheet-title {
+      background: #b4c7e7; border: 1px solid #000;
+      text-align: center; padding: 6px;
+      font-size: 14px; font-weight: 700;
+      margin-bottom: 0; letter-spacing: 0.3px;
+    }
+    .sheet-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .sheet-table th, .sheet-table td {
+      border: 1px solid #000; padding: 4px 4px;
+      font-size: 11px; text-align: center;
+      vertical-align: middle; word-wrap: break-word;
+    }
+    .sheet-table th {
+      background: #f3f3f3; font-weight: 700;
+      font-size: 11.5px; line-height: 1.15;
+    }
+    .sheet-table th.col-hash { width: 28px; }
+    .sheet-table th.col-name { width: 165px; }
+    .sheet-table .subject-col { width: 75px; }
+    .sheet-table td.name-cell {
+      text-align: left; font-size: 10.5px;
+      line-height: 1.25; padding: 6px 6px; vertical-align: top;
+    }
+    .sheet-table td.name-cell .sid { font-weight: 700; font-size: 10.5px; }
+    .sheet-table td.name-cell .sname {
+      font-weight: 700; color: #000; font-size: 11px;
+      margin: 2px 0; text-transform: uppercase;
+    }
+    .sheet-table td.name-cell .sroll { font-weight: 700; font-size: 10.5px; }
+    .sheet-table .date-row td {
+      height: 22px; font-weight: 700; font-size: 10.5px;
+      background: #fafafa; padding: 4px 6px; text-align: center;
+    }
+    .sheet-table .date-row td.name-cell { text-align: left; }
+    .sheet-footer {
+      margin-top: 40px; display: flex;
+      justify-content: space-between; font-size: 12px;
+      font-weight: 700; padding: 0 4px;
+    }
+    .sheet-footer > div {
+      border-top: 1px solid #000; padding-top: 4px;
+      min-width: 180px; text-align: center;
+    }
+
+    @media print {
+      @page { size: A4 landscape; margin: 8mm; }
+      body { background: white !important; padding: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      .sheet-container { box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; margin: 0 !important; }
+      .sheet { padding: 0 !important; max-width: 100% !important; }
+      .sheet-table th, .sheet-table td { border-color: #000 !important; }
+      .sheet-title { background: #b4c7e7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sheet-table th { background: #f3f3f3 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sheet-table .date-row td { background: #fafafa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    @media (max-width: 900px) {
+      .eas-form { grid-template-columns: 1fr; }
+      .eas-row { grid-template-columns: 1fr; }
+      .eas-row label { text-align: left; }
+      .eas-btn-row { grid-column: 1 / -1; padding-left: 0; }
+      .sheet-room { position: static; margin: 8px auto 0; display: inline-block; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'exam-attendance.html', 'Exam Attendance Sheet');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+
+    let school = { name: 'SCHOOL NAME', address: '', emis: '', phone: '' };
+    async function loadSchool() {
+      const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+      if (data) school = {
+        name: data.institute_name || 'SCHOOL NAME',
+        address: data.address || '',
+        emis: data.ein_no || '',
+        phone: data.contact || '',
+      };
+    }
+    await loadSchool();
+
+    content.innerHTML = `
+      <div id="searchView">
+        <div class="eas-header">
+          <div class="left">
+            <div class="icon">📄</div>
+            <div>
+              <h1>Report (Students Exam Attendance Report)</h1>
+              <p>Select the criteria and subjects to generate the report</p>
+            </div>
+          </div>
+          <button class="eas-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="eas-body">
+          <div class="eas-form">
+            <div class="eas-row">
+              <label>Session / Year</label>
+              <select id="sessionYear">
+                ${[CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                  `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="eas-row">
+              <label>Class Name</label>
+              <select id="className"><option value="">-- Select Class --</option></select>
+            </div>
+            <div class="eas-row">
+              <label>Group Name</label>
+              <select id="groupName">
+                <option value="">All Groups</option>
+                <option>Science</option><option>Arts</option>
+                <option>Commerce</option><option>General</option>
+              </select>
+            </div>
+            <div class="eas-row">
+              <label>Section</label>
+              <select id="sectionName"><option value="">All Sections</option></select>
+            </div>
+            <div class="eas-row">
+              <label>Exam Term</label>
+              <select id="examTerm"><option value="">লোড হচ্ছে...</option></select>
+            </div>
+            <div class="eas-row">
+              <label>Gender :</label>
+              <select id="gender">
+                <option value="">ALL Students</option>
+                <option value="male">Boys</option>
+                <option value="female">Girls</option>
+              </select>
+            </div>
+            <div class="eas-row">
+              <label>From Roll :</label>
+              <input id="fromRoll" type="number" placeholder="From Roll No.">
+            </div>
+            <div class="eas-row">
+              <label>To Roll :</label>
+              <input id="toRoll" type="number" placeholder="To Roll No.">
+            </div>
+            <div class="eas-row">
+              <label>Exam Room No.</label>
+              <input id="roomNo" placeholder="Room No.">
+            </div>
+
+            <!-- ✅ সাবজেক্ট সিলেকশন বক্স -->
+            <div class="subj-selector-box" id="subjSelectorBox">
+              <div class="subj-head">
+                <h4>📚 সাবজেক্ট সিলেক্ট করুন (Select Subjects)</h4>
+                <div class="subj-actions">
+                  <button type="button" id="btnSelectAll">Select All</button>
+                  <button type="button" id="btnDeselectAll">Deselect All</button>
+                </div>
+              </div>
+              <div class="subj-list" id="subjList"></div>
+            </div>
+
+            <div class="eas-subj-info" id="subjInfo"></div>
+            
+            <div class="eas-btn-row">
+              <button class="eas-gen-btn" id="genBtn">Generate Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultView" style="display:none">
+        <div class="sheet-container">
+          <div class="sheet-actions no-print">
+            <button class="btn-back" id="backBtn">← আবার সার্চ করুন</button>
+            <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF সেভ</button>
+          </div>
+          <div id="sheetArea"></div>
+        </div>
+      </div>
+    `;
+
+    /* ============ ক্লাস + Exam Term লোড ============ */
+    let allClasses = [];
+
+    async function loadClasses() {
+      const { data } = await supabase.from('classes').select('*').order('id');
+      allClasses = data || [];
+      document.getElementById('className').innerHTML =
+        '<option value="">-- Select Class --</option>' +
+        allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+    }
+    await loadClasses();
+
+    async function loadExamTerms() {
+      const { data } = await supabase.from('exams')
+        .select('exam_name, exam_serial').order('exam_serial');
+      const sel = document.getElementById('examTerm');
+      if (data && data.length) {
+        sel.innerHTML = data.map(t =>
+          `<option value="${esc(t.exam_name)}">${esc(t.exam_name)}</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = '<option value="">-- কোনো Exam Name নেই --</option>';
+      }
+    }
+    await loadExamTerms();
+
+    /* ============ Class বদলালে Subject চেক ও লিস্ট আপডেট ============ */
+    document.getElementById('className').onchange = async () => {
+      const cls = allClasses.find(c => c.id == document.getElementById('className').value);
+      document.getElementById('sectionName').innerHTML =
+        '<option value="">All Sections</option>' +
+        ((cls?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+      await loadSubjectCheckboxes();
+    };
+    document.getElementById('examTerm').onchange = loadSubjectCheckboxes;
+    document.getElementById('sessionYear').onchange = loadSubjectCheckboxes;
+
+    // Select All / Deselect All Actions
+    document.getElementById('btnSelectAll').onclick = () => {
+      document.querySelectorAll('.subj-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+    };
+    document.getElementById('btnDeselectAll').onclick = () => {
+      document.querySelectorAll('.subj-list input[type="checkbox"]').forEach(cb => cb.checked = false);
+    };
+
+    window.__allLoadedSubjects = []; // সব সাবজেক্ট এখানে থাকবে
+
+    async function loadSubjectCheckboxes() {
+      const info = document.getElementById('subjInfo');
+      const box = document.getElementById('subjSelectorBox');
+      const listDiv = document.getElementById('subjList');
+      
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const term = document.getElementById('examTerm').value;
+
+      // রিসেট
+      window.__allLoadedSubjects = [];
+      listDiv.innerHTML = '';
+      
+      if (!classId || !term) { 
+        box.classList.remove('show');
+        info.classList.remove('show'); 
+        return; 
+      }
+
+      info.classList.add('show');
+      info.innerHTML = '⏳ Subjects লোড হচ্ছে...';
+
+      // স্মার্ট ফলব্যাক লজিক (আগের মতোই)
+      let { data: exact } = await supabase.from('subjects').select('*')
+        .eq('session_year', session).eq('class_id', classId).eq('exam_term', term).order('id');
+
+      let statusMsg = '';
+
+      if (!exact || !exact.length) {
+        let { data: fallback } = await supabase.from('subjects').select('*')
+          .eq('class_id', classId).eq('exam_term', term).order('id');
+        if (fallback && fallback.length) {
+          exact = fallback;
+          statusMsg = `<span class="err">⚠️</span> এই সেশনে নির্দিষ্ট সাবজেক্ট না থাকায় অন্য সেশন থেকে <b>${fallback.length}টি</b> সাবজেক্ট লোড করা হয়েছে।<br>`;
+        }
+      }
+
+      if (!exact || !exact.length) {
+        let { data: classOnly } = await supabase.from('subjects').select('*')
+          .eq('class_id', classId).order('id');
+        if (classOnly && classOnly.length) {
+          exact = classOnly;
+          statusMsg = `<span class="err">⚠️</span> "${esc(term)}"-এ কোনো সাবজেক্ট নেই। তাই ক্লাসের সাধারণ <b>${classOnly.length}টি</b> সাবজেক্ট লোড করা হয়েছে।<br>`;
+        }
+      }
+
+      const cls = allClasses.find(c => c.id == classId);
+      if (exact && exact.length) {
+        window.__allLoadedSubjects = exact;
+        info.innerHTML = statusMsg + `<span class="ok">✅</span> <b>${esc(cls?.class_name)}</b> এর জন্য <b>${exact.length}টি</b> Subject পাওয়া গেছে। নিচে থেকে প্রিন্ট করতে চান এমন সাবজেক্টে টিক দিন।`;
+        
+        // চেকবক্স তৈরি
+        listDiv.innerHTML = exact.map((s, idx) => `
+          <label>
+            <input type="checkbox" class="subj-chk" value="${s.id}" checked>
+            ${esc(s.subject_name)}
+          </label>
+        `).join('');
+
+        box.classList.add('show'); // বক্স দেখাও
+      } else {
+        box.classList.remove('show');
+        info.innerHTML = `<span class="err">⚠️</span> <b>${esc(cls?.class_name)}</b> এর জন্য কোনো Subject পাওয়া যায়নি। ` +
+          `<a href="subjects.html">Subject যোগ করুন →</a>`;
+      }
+    }
+
+    /* ============ Back ============ */
+    document.getElementById('backBtn').onclick = () => {
+      document.getElementById('resultView').style.display = 'none';
+      document.getElementById('searchView').style.display = 'block';
+    };
+
+    /* ============ Generate ============ */
+    document.getElementById('genBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const section = document.getElementById('sectionName').value;
+      const group = document.getElementById('groupName').value;
+      const exam = document.getElementById('examTerm').value;
+      const gender = document.getElementById('gender').value;
+      const fromRoll = document.getElementById('fromRoll').value;
+      const toRoll = document.getElementById('toRoll').value;
+      const roomNo = document.getElementById('roomNo').value.trim();
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+      if (!exam) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+      // ✅ শুধু সিলেক্ট করা সাবজেক্টগুলো নেওয়া হচ্ছে
+      const checkedIds = Array.from(document.querySelectorAll('.subj-chk:checked')).map(cb => cb.value);
+      const selectedSubjects = window.__allLoadedSubjects.filter(s => checkedIds.includes(String(s.id)));
+
+      if (!selectedSubjects.length) {
+        toast('❌ অন্তত একটি সাবজেক্ট সিলেক্ট করুন!', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('genBtn');
+      btn.disabled = true; btn.textContent = 'তৈরি হচ্ছে...';
+
+      const cls = allClasses.find(c => c.id == classId);
+
+      // ছাত্র লোড
+      let q = supabase.from('students').select('*').eq('class_id', classId);
+      if (section) q = q.eq('section', section);
+      if (group) q = q.eq('group_name', group);
+      if (gender) q = q.eq('gender', gender);
+      q = q.order('roll');
+
+      const { data: students, error } = await q;
+      btn.disabled = false; btn.textContent = 'Generate Report';
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      let list = students || [];
+      if (fromRoll) list = list.filter(s => (s.roll || 0) >= +fromRoll);
+      if (toRoll) list = list.filter(s => (s.roll || 0) <= +toRoll);
+
+      if (!list.length) { toast('এই শর্তে কোনো ছাত্র পাওয়া যায়নি', 'error'); return; }
+
+      const boysCount = list.filter(s => s.gender === 'male').length;
+      const girlsCount = list.filter(s => s.gender === 'female').length;
+
+      document.getElementById('sheetArea').innerHTML = renderSheet({
+        school,
+        session,
+        className: cls?.class_name || '-',
+        section: section || 'ALL',
+        group: group || '*** ALL ***',
+        exam,
+        roomNo,
+        subjects: selectedSubjects, // 👈 এখানে ফিল্টার করা সাবজেক্টগুলো পাঠানো হচ্ছে
+        students: list,
+        boysCount,
+        girlsCount
+      });
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('resultView').style.display = 'block';
+
+      toast(`✅ রিপোর্ট তৈরি (${selectedSubjects.length}টি Subject)`, 'success');
+    };
+
+    /* ============ Sheet Render ============ */
+    function renderSheet(opt) {
+      // যে সাবজেক্টগুলো সিলেক্ট করা হয়েছে শুধু সেগুলোর কলাম তৈরি হবে
+      const subjCols = opt.subjects.map(s => `<th class="subject-col">${esc(s.subject_name)}</th>`).join('');
+
+      const rows = opt.students.map((s, i) => {
+        const cells = opt.subjects.map(() => `<td></td>`).join('');
+        return `
+          <tr>
+            <td>${String(i + 1).padStart(2, '0')}</td>
+            <td class="name-cell">
+              <div class="sid">ID : ${esc(s.student_index || s.student_id)}</div>
+              <div class="sname">${esc(s.name)}</div>
+              <div class="sroll">Roll No.: ${esc(s.roll ?? '-')}</div>
+            </td>
+            ${cells}
+          </tr>
+        `;
+      }).join('');
+
+      const dateCells = opt.subjects.map(() => `<td></td>`).join('');
+
+      const roomInfo = opt.boysCount || opt.girlsCount
+        ? `${opt.boysCount ? 'Boys: ' + opt.boysCount : ''}${opt.boysCount && opt.girlsCount ? ' · ' : ''}${opt.girlsCount ? 'Girls: ' + opt.girlsCount : ''}`
+        : 'Boys & Girls';
+
+      return `
+        <div class="sheet">
+          <div class="sheet-header">
+            <h1>${esc(opt.school.name)}</h1>
+            <div class="sub">${esc(opt.school.address)}</div>
+            ${opt.school.phone ? `<div class="sub">${esc(opt.school.phone)}</div>` : ''}
+            <div class="sheet-room">
+              Room No.: ${esc(opt.roomNo || '-')}<br>
+              <span class="small">${roomInfo}</span>
+            </div>
+          </div>
+
+          <div class="sheet-info">
+            <div>Session : ${opt.session}</div>
+            <div>Class : <b>${esc(opt.className)}</b></div>
+            <div>Group : <b>${esc(opt.group)}</b></div>
+            <div>Section : ${esc(opt.section)}</div>
+          </div>
+
+          <div class="sheet-title">
+            ${esc(opt.exam).toUpperCase()} (Attendance Sheets)
+          </div>
+
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th class="col-hash">#</th>
+                <th class="col-name">Student Name</th>
+                ${subjCols}
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="date-row">
+                <td></td>
+                <td class="name-cell">Exam Date</td>
+                ${dateCells}
+              </tr>
+              ${rows}
+            </tbody>
+          </table>
+
+          <div class="sheet-footer">
+            <div>Class Teacher</div>
+            <div>Exam Controller</div>
+            <div>Head Teacher</div>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

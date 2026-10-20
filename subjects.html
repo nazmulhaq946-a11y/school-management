@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>সাবজেক্ট · School</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --sb-primary:#e11d48;--sb-primary-dark:#be123c;
+  --sb-success:#10b981;--sb-blue:#3b82f6;--sb-amber:#f59e0b;
+  --sb-purple:#7c3aed;--sb-bg:#f8fafc;--sb-border:#e2e8f0;
+  --sb-text:#0f172a;--sb-gray:#64748b;
+}
+*{box-sizing:border-box}
+.sb-page{padding:0;background:var(--sb-bg);min-height:100vh}
+.sb-top{
+  background:linear-gradient(135deg,#e11d48 0%,#be123c 50%,#9f1239 100%);
+  padding:22px 28px;border-radius:12px 12px 0 0;color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;
+}
+.sb-top::before{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%);border-radius:50%}
+.sb-top>*{position:relative;z-index:1}
+.sb-top .tl{display:flex;align-items:center;gap:16px}
+.sb-top .ticon{width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,.3)}
+.sb-top h1{margin:0;font-size:22px;font-weight:900}
+.sb-top p{margin:4px 0 0;font-size:13px;opacity:.9}
+.sb-top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sb-back{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;cursor:pointer;font-family:inherit}
+.sb-back:hover{background:rgba(255,255,255,.25)}
+.sb-body{background:#fff;border-radius:0 0 12px 12px;padding:24px 28px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+.sb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.sstat{background:linear-gradient(135deg,#fff,#fafbfc);border:1px solid var(--sb-border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;transition:all .2s}
+.sstat::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--sb-primary)}
+.sstat.green::before{background:var(--sb-success)}
+.sstat.blue::before{background:var(--sb-blue)}
+.sstat.amber::before{background:var(--sb-amber)}
+.sstat.purple::before{background:var(--sb-purple)}
+.sstat:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.08)}
+.sstat .sic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fee2e2;flex-shrink:0}
+.sstat.green .sic{background:#d1fae5}
+.sstat.blue .sic{background:#dbeafe}
+.sstat.amber .sic{background:#fef3c7}
+.sstat.purple .sic{background:#ede9fe}
+.sstat .sinfo h4{font-size:10.5px;color:var(--sb-gray);text-transform:uppercase;font-weight:800;letter-spacing:.4px;margin:0 0 4px}
+.sstat .sinfo p{font-size:20px;font-weight:900;color:var(--sb-text);margin:0;line-height:1}
+.sb-filters{background:linear-gradient(180deg,#f8fafc,#fff);border:1px solid var(--sb-border);border-radius:14px;padding:16px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto auto;gap:12px;align-items:end}
+.sfld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sfld label{font-size:11px;color:var(--sb-gray);font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding-left:2px}
+.sfld input,.sfld select{padding:10px 12px;border:2px solid var(--sb-border);border-radius:10px;font-size:13.5px;font-family:inherit;font-weight:600;background:#fff;color:var(--sb-text);transition:all .2s;width:100%}
+.sfld input:focus,.sfld select:focus{outline:none;border-color:var(--sb-primary);box-shadow:0 0 0 4px rgba(225,29,72,.1)}
+.sbtn{padding:11px 20px;border:none;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;white-space:nowrap;height:42px}
+.sbtn:disabled{opacity:.6;cursor:not-allowed}
+.sbtn-pri{background:linear-gradient(135deg,var(--sb-primary),var(--sb-primary-dark));color:#fff;box-shadow:0 4px 12px rgba(225,29,72,.3)}
+.sbtn-pri:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(225,29,72,.4)}
+.sbtn-sec{background:#f1f5f9;color:var(--sb-gray)}
+.sbtn-sec:hover{background:#e2e8f0}
+.sbtn-green{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.3)}
+.sbtn-green:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(16,185,129,.4)}
+.sbtn-rose{background:linear-gradient(135deg,#e11d48,#be123c);color:#fff}
+.sb-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sb-toolbar .tcount{font-size:13.5px;font-weight:700;color:var(--sb-gray)}
+.sb-toolbar .tcount b{background:#fee2e2;color:var(--sb-primary-dark);padding:2px 12px;border-radius:10px;font-size:15px;margin:0 4px}
+.sb-toolbar .tactions{display:flex;gap:8px;flex-wrap:wrap}
+.sb-table-wrap{border:1px solid var(--sb-border);border-radius:12px;overflow:hidden;background:#fff}
+.sb-table-scroll{overflow-x:auto;max-height:70vh}
+.sb-table{width:100%;border-collapse:collapse;font-size:13px;min-width:1000px}
+.sb-table thead th{background:linear-gradient(180deg,#fef2f2,#fff1f2);color:var(--sb-primary-dark);font-weight:800;padding:12px 14px;text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;position:sticky;top:0;z-index:3;border-bottom:2px solid #fecdd3}
+.sb-table thead th.center{text-align:center}
+.sb-table thead th.right{text-align:right}
+.sb-table tbody tr{border-bottom:1px solid #f1f5f9;transition:background .15s}
+.sb-table tbody tr:nth-child(even){background:#fafbfc}
+.sb-table tbody tr:hover{background:#fef2f2}
+.sb-table tbody tr.selected{background:#fee2e2 !important}
+.sb-table tbody td{padding:10px 14px;vertical-align:middle;color:var(--sb-text);font-weight:500}
+.sb-table tbody td.center{text-align:center}
+.sb-table tbody td.right{text-align:right}
+.sb-table td.code-cell{font-family:'Courier New',monospace;font-weight:900;color:var(--sb-primary);font-size:12.5px}
+.sb-table td.name-cell{font-weight:800;color:var(--sb-text)}
+.sb-table td.bangla-cell{color:#1e3a8a;font-weight:700}
+.sb-table td.short-cell{color:var(--sb-gray);font-weight:700;font-size:12px}
+.sb-table td.avg-cell{text-align:center;font-weight:900;color:var(--sb-primary);font-family:'Inter',sans-serif}
+.sb-table td.actions-cell{white-space:nowrap;text-align:center}
+.act-btn{padding:5px 10px;border:none;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;margin:0 2px}
+.act-edit{background:#dbeafe;color:#1e40af}
+.act-edit:hover{background:#bfdbfe}
+.act-del{background:#fee2e2;color:#991b1b}
+.act-del:hover{background:#fecaca}
+.sb-table input[type=checkbox]{width:17px;height:17px;accent-color:var(--sb-primary);cursor:pointer}
+.sb-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-weight:600}
+.sb-empty .ic{font-size:72px;display:block;margin-bottom:14px;opacity:.4}
+.sb-empty h3{font-size:18px;color:#374151;font-weight:800;margin:0 0 6px}
+.sb-empty p{font-size:13.5px;margin:0 0 20px;line-height:1.6}
+.sb-empty .big-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border:none;border-radius:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(16,185,129,.35);transition:all .2s}
+.sb-empty .big-btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(16,185,129,.45)}
+.sb-loading{text-align:center;padding:60px 20px;color:var(--sb-primary);font-weight:700}
+.sb-loading::before{content:'';display:inline-block;width:20px;height:20px;border:3px solid #fee2e2;border-top-color:var(--sb-primary);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sm-bg{position:fixed;inset:0;background:rgba(15,23,42,.75);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sm-modal{background:#fff;border-radius:20px;width:100%;max-width:680px;margin:auto;box-shadow:0 30px 60px rgba(0,0,0,.4);animation:modalIn .35s cubic-bezier(.34,1.56,.64,1);max-height:92vh;display:flex;flex-direction:column}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.sm-head{background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;padding:20px 24px;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.sm-head h3{margin:0;font-size:17px;font-weight:900}
+.sm-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:34px;height:34px;border-radius:10px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-weight:700}
+.sm-close:hover{background:rgba(255,255,255,.25);transform:rotate(90deg)}
+.sm-body{padding:22px 24px;overflow-y:auto;flex:1}
+.sm-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sm-fgrid.three{grid-template-columns:1fr 1fr 1fr}
+.sm-fgrid.one{grid-template-columns:1fr}
+.sm-fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sm-fld.full{grid-column:1/-1}
+.sm-fld label{font-size:11.5px;color:var(--sb-gray);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.sm-fld.req label::after{content:' *';color:var(--sb-primary)}
+.sm-fld input,.sm-fld select,.sm-fld textarea{padding:10px 12px;border:2px solid var(--sb-border);border-radius:10px;font-size:13.5px;font-family:inherit;font-weight:600;background:#fafbfc;transition:all .2s;width:100%}
+.sm-fld input:focus,.sm-fld select:focus{outline:none;border-color:var(--sb-primary);background:#fff;box-shadow:0 0 0 4px rgba(225,29,72,.1)}
+.sm-fld .hint{font-size:11px;color:#94a3b8;font-weight:500}
+.sm-section{background:#fafbfc;border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--sb-border)}
+.sm-section h4{font-size:12.5px;color:var(--sb-primary);font-weight:900;text-transform:uppercase;letter-spacing:.5px;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #fecdd3;display:flex;align-items:center;gap:6px}
+.sm-foot{padding:16px 24px;border-top:1px solid var(--sb-border);background:#fafbfc;border-radius:0 0 20px 20px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.sm-btn{padding:11px 22px;border:none;border-radius:10px;font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.sm-btn-pri{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 6px 16px rgba(16,185,129,.3)}
+.sm-btn-pri:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(16,185,129,.4)}
+.sm-btn-pri:disabled{opacity:.6;cursor:not-allowed}
+.sm-btn-can{background:#f1f5f9;color:var(--sb-gray)}
+.sm-btn-can:hover{background:#e2e8f0}
+.sm-btn-del{background:#fee2e2;color:#dc2626;margin-right:auto}
+.sm-btn-del:hover{background:#dc2626;color:#fff}
+.scope-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scope-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#fff;border:2px solid var(--sb-border);border-radius:10px;cursor:pointer;transition:all .15s}
+.scope-opt:hover{border-color:var(--sb-primary);background:#fef2f2}
+.scope-opt.on{border-color:var(--sb-primary);background:#fee2e2}
+.scope-opt input{width:18px;height:18px;accent-color:var(--sb-primary);cursor:pointer;margin-top:2px;flex-shrink:0}
+.scope-opt .so-t{font-weight:800;font-size:13px;color:var(--sb-text);margin-bottom:3px}
+.scope-opt .so-s{font-size:11.5px;color:var(--sb-gray);font-weight:600;line-height:1.4}
+.qk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:8px}
+.qk-item{background:#fff;border:2px solid var(--sb-border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;position:relative}
+.qk-item:hover{border-color:var(--sb-primary);background:#fef2f2}
+.qk-item.on{border-color:var(--sb-primary);background:#fee2e2}
+.qk-item input{display:none}
+.qk-item .qt{font-weight:800;font-size:13px;color:var(--sb-text);margin-bottom:3px}
+.qk-item .qs{font-size:11px;color:var(--sb-gray);font-weight:600}
+.qk-item .qchk{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;border:2px solid var(--sb-border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;background:#fff}
+.qk-item.on .qchk{background:var(--sb-primary);border-color:var(--sb-primary)}
+.qk-toolbar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+@media(max-width:1000px){.sb-filters{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){
+  .sb-top{padding:16px 18px}.sb-top h1{font-size:17px}
+  .sb-top .ticon{width:46px;height:46px;font-size:22px}
+  .sb-body{padding:16px}.sb-filters{grid-template-columns:1fr}
+  .sm-fgrid,.sm-fgrid.three,.scope-opts{grid-template-columns:1fr}
+  .sb-table{font-size:12px;min-width:800px}
+  .sb-table thead th,.sb-table tbody td{padding:9px 10px}
+}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff !important;padding:0 !important}
+  header.top,aside.sidebar,#toast,.no-print,.sb-top,.sb-filters,.sb-toolbar,.sb-stats{display:none !important}
+  main.content{margin:0 !important;padding:0 !important}
+  .sb-body{padding:0 !important;box-shadow:none !important;border-radius:0 !important}
+  .sb-table-wrap{border:none !important;border-radius:0 !important}
+  .sb-table-scroll{max-height:none !important;overflow:visible !important}
+  .sb-table{min-width:0 !important;font-size:10pt}
+  .sb-table thead th{background:#e5e7eb !important;color:#000 !important;border:1px solid #000 !important;position:static !important}
+  .sb-table tbody td{border:1px solid #000 !important;padding:5px 6px !important}
+  .act-btn,input[type=checkbox]{display:none !important}
+  .print-head{display:block !important}
+}
+.print-head{display:none;text-align:center;margin-bottom:16px;border-bottom:3px double #1e1b4b;padding-bottom:12px}
+.print-head h1{font-size:20px;font-weight:800;color:#1e1b4b;margin:0 0 4px}
+.print-head p{font-size:12px;color:#6b7280;margin:2px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, logAction, getSchoolProfile } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'subjects.html', 'একাডেমিক সাবজেক্ট');
+
+const content = document.getElementById('content');
+const school = await getSchoolProfile();
+const CURRENT_YEAR = new Date().getFullYear();
+
+let allSubjects = [];
+let allClasses = [];
+let allExamTerms = [];
+let editingId = null;
+let selectedIds = new Set();
+
+/* ✅ Default: session = '' (All Sessions) — সব subject দেখা যাবে */
+let currentFilters = { session: '', classId:'', term:'', search:'' };
+
+const SUBJECT_TEMPLATES = {
+  primary: [
+    { code:'101', name:'Bangla', bangla:'বাংলা', short:'BAN', subj:100, obj:0, prac:0, assess:0, ct:0 },
+    { code:'107', name:'English', bangla:'ইংরেজি', short:'ENG', subj:100, obj:0, prac:0, assess:0, ct:0 },
+    { code:'109', name:'Mathematics', bangla:'গণিত', short:'MATH', subj:100, obj:0, prac:0, assess:0, ct:0 },
+    { code:'111', name:'Religion', bangla:'ধর্ম', short:'REL', subj:100, obj:0, prac:0, assess:0, ct:0 },
+    { code:'148', name:'Art', bangla:'অংকন', short:'ART', subj:100, obj:0, prac:0, assess:0, ct:0 },
+    { code:'155', name:'GK', bangla:'সাধারণ জ্ঞান', short:'GK', subj:100, obj:0, prac:0, assess:0, ct:0 }
+  ],
+  junior: [
+    { code:'101', name:'Bangla 1st', bangla:'বাংলা ১ম', short:'BAN1', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'102', name:'Bangla 2nd', bangla:'বাংলা ২য়', short:'BAN2', subj:50, obj:0, prac:0, assess:0, ct:0 },
+    { code:'107', name:'English 1st', bangla:'ইংরেজি ১ম', short:'ENG1', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'108', name:'English 2nd', bangla:'ইংরেজি ২য়', short:'ENG2', subj:50, obj:0, prac:0, assess:0, ct:0 },
+    { code:'109', name:'Mathematics', bangla:'গণিত', short:'MATH', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'111', name:'Religion And Moral Education', bangla:'ধর্ম ও নৈতিক শিক্ষা', short:'REL', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'127', name:'General Science', bangla:'সাধারণ বিজ্ঞান', short:'SCI', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'134', name:'Agriculture / Home Science', bangla:'কৃষিশিক্ষা', short:'AGR', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'147', name:'Physical Education', bangla:'শারীরিক শিক্ষা', short:'PE', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'148', name:'Fine Arts', bangla:'চারু ও কারুকলা', short:'ART', subj:50, obj:0, prac:50, assess:0, ct:0 },
+    { code:'150', name:'Bangladesh And Global Studies', bangla:'বাংলাদেশ ও বিশ্বপরিচয়', short:'BGS', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'154', name:'ICT', bangla:'তথ্য ও যোগাযোগ প্রযুক্তি', short:'ICT', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'155', name:'Career Studies', bangla:'কর্মমুখী শিক্ষা', short:'CAR', subj:50, obj:0, prac:0, assess:0, ct:0 }
+  ],
+  secondary: [
+    { code:'101', name:'Bangla 1st', bangla:'বাংলা ১ম', short:'BAN1', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'102', name:'Bangla 2nd', bangla:'বাংলা ২য়', short:'BAN2', subj:50, obj:0, prac:0, assess:0, ct:0 },
+    { code:'107', name:'English 1st', bangla:'ইংরেজি ১ম', short:'ENG1', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'108', name:'English 2nd', bangla:'ইংরেজি ২য়', short:'ENG2', subj:50, obj:0, prac:0, assess:0, ct:0 },
+    { code:'109', name:'General Mathematics', bangla:'সাধারণ গণিত', short:'GMATH', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'110', name:'Geography And Environment', bangla:'ভূগোল ও পরিবেশ', short:'GEO', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'111', name:'Religion And Moral Education', bangla:'ধর্ম ও নৈতিক শিক্ষা', short:'REL', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'126', name:'Higher Mathematics', bangla:'উচ্চতর গণিত', short:'HMATH', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'127', name:'General Science', bangla:'সাধারণ বিজ্ঞান', short:'SCI', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'131', name:'Computer Studies', bangla:'কম্পিউটার শিক্ষা', short:'CS', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'134', name:'Agriculture / Home Science', bangla:'কৃষিশিক্ষা', short:'AGR', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'136', name:'Physics', bangla:'পদার্থ বিজ্ঞান', short:'PHY', subj:50, obj:25, prac:25, assess:0, ct:0 },
+    { code:'137', name:'Chemistry', bangla:'রসায়ন', short:'CHE', subj:50, obj:25, prac:25, assess:0, ct:0 },
+    { code:'138', name:'Biology', bangla:'জীব বিজ্ঞান', short:'BIO', subj:50, obj:25, prac:25, assess:0, ct:0 },
+    { code:'140', name:'Civics And Citizenship', bangla:'পৌরনীতি', short:'CIV', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'143', name:'Business Entrepreneurship', bangla:'ব্যবসায় উদ্যোগ', short:'BENT', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'146', name:'Accounting', bangla:'হিসাববিজ্ঞান', short:'ACC', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'147', name:'Physical Education', bangla:'শারীরিক শিক্ষা', short:'PE', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'150', name:'Bangladesh And Global Studies', bangla:'বাংলাদেশ ও বিশ্বপরিচয়', short:'BGS', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'152', name:'Finance And Banking', bangla:'ফিন্যান্স ও ব্যাংকিং', short:'FIN', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'153', name:'History Of Bangladesh', bangla:'বাংলাদেশের ইতিহাস', short:'HIST', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'154', name:'ICT', bangla:'আইসিটি', short:'ICT', subj:50, obj:50, prac:0, assess:0, ct:0 },
+    { code:'155', name:'Career Studies', bangla:'কর্মমুখী শিক্ষা', short:'CAR', subj:50, obj:0, prac:0, assess:0, ct:0 }
+  ]
+};
+
+const CLASS_PREFIX_MAP = {
+  'play':'PL','nursery':'NU','one':'ON','two':'TW','three':'TH',
+  'four':'FO','five':'FI','six':'SI','seven':'SE','eight':'EI',
+  'nine':'NI','ten':'TE','cadet':'CA'
+};
+
+function analyzeClass(className) {
+  const lower = String(className || '').toLowerCase();
+  let prefix = 'XX';
+  for (const [key, val] of Object.entries(CLASS_PREFIX_MAP)) {
+    if (lower.includes(key)) { prefix = val; break; }
+  }
+  let type = 'junior';
+  if (lower.includes('play') || lower.includes('nursery')) type = 'primary';
+  else if (lower.includes('one') || lower.includes('two')) type = 'primary';
+  else if (lower.includes('three') || lower.includes('four') || lower.includes('five')) type = 'junior';
+  else if (lower.includes('six') || lower.includes('seven') || lower.includes('eight')) type = 'junior';
+  else if (lower.includes('nine') || lower.includes('ten') || lower.includes('ssc')) type = 'secondary';
+  return { prefix, type, list: SUBJECT_TEMPLATES[type] || SUBJECT_TEMPLATES.junior };
+}
+
+/* ============ UI ============ */
+content.innerHTML = `
+<div class="sb-page">
+  <div class="sb-top">
+    <div class="tl">
+      <div class="ticon">📚</div>
+      <div>
+        <h1>Academic Subject</h1>
+        <p>Manage Academic Subject List</p>
+      </div>
+    </div>
+    <div class="sb-top-actions">
+      <button class="sb-back" id="btnAutoSetup" style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4)">⚡ Auto Setup</button>
+      <button class="sb-back" id="btnAddNew">➕ Add New</button>
+      <a class="sb-back" href="dashboard.html">← Back</a>
+    </div>
+  </div>
+
+  <div class="sb-body">
+    <div class="sb-stats" id="statsBox"></div>
+
+    <div class="sb-filters">
+      <div class="sfld">
+        <label>Session</label>
+        <select id="f_session">
+          <option value="">✅ All Sessions</option>
+          ${[CURRENT_YEAR+1, CURRENT_YEAR, CURRENT_YEAR-1, CURRENT_YEAR-2, CURRENT_YEAR-3].map(y =>
+            '<option value="'+y+'">'+y+'</option>'
+          ).join('')}
+        </select>
+      </div>
+      <div class="sfld">
+        <label>Class</label>
+        <select id="f_class"><option value="">All Classes</option></select>
+      </div>
+      <div class="sfld">
+        <label>Exam Term</label>
+        <select id="f_term"><option value="">All Terms</option></select>
+      </div>
+      <div class="sfld">
+        <label>Search</label>
+        <input id="f_search" placeholder="Code / Name / Bangla...">
+      </div>
+      <button class="sbtn sbtn-pri" id="btnSearch">🔍 Search</button>
+      <button class="sbtn sbtn-sec" id="btnReset">🔄 Reset</button>
+    </div>
+
+    <div class="sb-toolbar">
+      <div class="tcount">পাওয়া গেছে <b id="cntNum">0</b> টি subject</div>
+      <div class="tactions">
+        <button class="sbtn sbtn-green" id="btnExcel">📥 Excel</button>
+        <button class="sbtn sbtn-sec" id="btnPrint">🖨️ Print</button>
+        <button class="sbtn sbtn-rose" id="btnBulkDel" disabled>🗑️ Delete Selected (0)</button>
+      </div>
+    </div>
+
+    <div class="sb-table-wrap">
+      <div class="sb-table-scroll">
+        <div class="print-head">
+          <h1>${esc(school.name).toUpperCase()}</h1>
+          <p>${esc(school.address)}</p>
+          <h2 style="margin-top:6px;font-size:14px;color:#4c1d95">Subject List</h2>
+        </div>
+        <table class="sb-table">
+          <thead>
+            <tr>
+              <th style="width:42px"><input type="checkbox" id="chkAll"></th>
+              <th style="width:110px">Code</th>
+              <th>Subject Name</th>
+              <th style="width:180px">In Bangla</th>
+              <th style="width:110px">Short</th>
+              <th style="width:70px" class="center">Session</th>
+              <th style="width:90px" class="center">Class</th>
+              <th style="width:120px" class="center">Term</th>
+              <th style="width:60px" class="right">AVG</th>
+              <th style="width:110px" class="center no-print">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="subjBody">
+            <tr><td colspan="10"><div class="sb-loading">লোড হচ্ছে...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+/* ============ LOAD BASE ============ */
+async function loadBase() {
+  try {
+    const [c, e] = await Promise.all([
+      supabase.from('classes').select('*').order('id'),
+      supabase.from('exams').select('exam_name, exam_serial').order('exam_serial')
+    ]);
+    allClasses = c.data || [];
+    allExamTerms = e.data || [];
+
+    const clsOpts = allClasses.map(x => '<option value="'+x.id+'">'+esc(x.class_name)+'</option>').join('');
+    document.getElementById('f_class').innerHTML = '<option value="">All Classes</option>' + clsOpts;
+
+    const termOpts = allExamTerms.map(x => '<option value="'+esc(x.exam_name)+'">'+esc(x.exam_name)+'</option>').join('');
+    document.getElementById('f_term').innerHTML = '<option value="">All Terms</option>' + termOpts;
+  } catch (err) {
+    console.error('Base load error:', err);
+  }
+}
+await loadBase();
+
+/* ============================================================
+   ✅ LOAD SUBJECTS — Session filter optional
+   ============================================================ */
+async function loadSubjects() {
+  const tbody = document.getElementById('subjBody');
+  tbody.innerHTML = '<tr><td colspan="10"><div class="sb-loading">লোড হচ্ছে...</div></td></tr>';
+
+  try {
+    let q = supabase.from('subjects').select('*').order('class_id').order('subject_code').limit(2000);
+
+    /* ✅ Session: শুধু filter করব যদি user সিলেক্ট করে */
+    if (currentFilters.session !== '' && currentFilters.session !== null && currentFilters.session !== undefined) {
+      q = q.eq('session_year', currentFilters.session);
+    }
+    if (currentFilters.classId) q = q.eq('class_id', currentFilters.classId);
+    if (currentFilters.term) q = q.eq('exam_term', currentFilters.term);
+
+    const { data, error } = await q;
+    if (error) throw error;
+
+    allSubjects = data || [];
+    console.log('Loaded subjects:', allSubjects.length, 'filters:', currentFilters);
+
+    renderStats();
+    renderTable();
+  } catch (err) {
+    console.error('Load subjects error:', err);
+    tbody.innerHTML = '<tr><td colspan="10"><div class="sb-empty"><span class="ic">❌</span><h3>Error</h3><p>'+esc(err.message)+'</p></div></td></tr>';
+  }
+}
+
+/* ============ STATS ============ */
+function renderStats() {
+  const total = allSubjects.length;
+  const classes = new Set(allSubjects.map(s => s.class_id).filter(Boolean)).size;
+  const terms = new Set(allSubjects.map(s => s.exam_term).filter(Boolean)).size;
+  const sessions = new Set(allSubjects.map(s => s.session_year).filter(Boolean)).size;
+
+  document.getElementById('statsBox').innerHTML =
+    '<div class="sstat"><div class="sic">📚</div><div class="sinfo"><h4>Total Subjects</h4><p>'+total+'</p></div></div>' +
+    '<div class="sstat green"><div class="sic">🏫</div><div class="sinfo"><h4>Classes</h4><p>'+classes+'</p></div></div>' +
+    '<div class="sstat blue"><div class="sic">📝</div><div class="sinfo"><h4>Exam Terms</h4><p>'+terms+'</p></div></div>' +
+    '<div class="sstat purple"><div class="sic">📅</div><div class="sinfo"><h4>Sessions</h4><p>'+sessions+'</p></div></div>';
+
+  document.getElementById('cntNum').textContent = total;
+}
+
+/* ============ RENDER TABLE ============ */
+function renderTable() {
+  const tbody = document.getElementById('subjBody');
+  const q = currentFilters.search.toLowerCase().trim();
+
+  let list = allSubjects;
+  if (q) {
+    list = list.filter(s =>
+      (s.subject_code || '').toLowerCase().includes(q) ||
+      (s.subject_name || '').toLowerCase().includes(q) ||
+      (s.subject_name_bangla || '').toLowerCase().includes(q) ||
+      (s.subject_name_short || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (!list.length) {
+    const canAutoSetup = currentFilters.classId && currentFilters.term;
+    tbody.innerHTML = '<tr><td colspan="10"><div class="sb-empty">' +
+      '<span class="ic">' + (canAutoSetup ? '✨' : '📭') + '</span>' +
+      '<h3>' + (canAutoSetup ? 'এই Class-এ কোনো Subject নেই' : 'কোনো subject পাওয়া যায়নি') + '</h3>' +
+      '<p>' + (canAutoSetup
+        ? 'Class <b>' + esc(getClassName(currentFilters.classId)) + '</b> — Term <b>' + esc(currentFilters.term) + '</b><br>নিচের বাটনে ক্লিক করে standard subjects তৈরি করুন।'
+        : 'উপরের filter পরিবর্তন করুন অথবা <b>⚡ Auto Setup</b> দিয়ে নতুন subject তৈরি করুন।'
+      ) + '</p>' +
+      (canAutoSetup
+        ? '<button class="big-btn" id="btnAutoSetupEmpty">⚡ Auto Create All Subjects</button>'
+        : '<button class="big-btn" id="btnAutoSetupEmpty2">⚡ Auto Setup Subjects</button>'
+      ) +
+      '</div></td></tr>';
+
+    const b1 = document.getElementById('btnAutoSetupEmpty');
+    const b2 = document.getElementById('btnAutoSetupEmpty2');
+    if (b1) b1.onclick = () => openAutoSetup();
+    if (b2) b2.onclick = () => openAutoSetup();
+    updateBulkButton();
+    return;
+  }
+
+  let html = '';
+  list.forEach(s => {
+    const cls = allClasses.find(c => c.id == s.class_id);
+    const clsName = cls ? cls.class_name : '-';
+    const checked = selectedIds.has(String(s.id)) ? ' checked' : '';
+    const rowCls = selectedIds.has(String(s.id)) ? ' class="selected"' : '';
+    const termShort = (s.exam_term || '').length > 12
+      ? (s.exam_term || '').substring(0, 12) + '...'
+      : (s.exam_term || '-');
+
+    html += '<tr'+rowCls+' data-id="'+s.id+'">';
+    html += '<td><input type="checkbox" class="row-chk" data-id="'+s.id+'"'+checked+'></td>';
+    html += '<td class="code-cell">'+esc(s.subject_code || '-')+'</td>';
+    html += '<td class="name-cell">'+esc(s.subject_name || '-')+'</td>';
+    html += '<td class="bangla-cell">'+esc(s.subject_name_bangla || '—')+'</td>';
+    html += '<td class="short-cell">'+esc(s.subject_name_short || '—')+'</td>';
+    html += '<td class="center" style="font-size:11.5px;font-weight:700;color:#7c3aed">'+esc(s.session_year || '—')+'</td>';
+    html += '<td class="center">'+esc(clsName)+'</td>';
+    html += '<td class="center" title="'+esc(s.exam_term||'')+'" style="font-size:10.5px;color:#64748b">'+esc(termShort)+'</td>';
+    html += '<td class="right avg-cell">'+((s.avg_div !== null && s.avg_div !== undefined) ? s.avg_div : 0)+'</td>';
+    html += '<td class="actions-cell no-print">';
+    html += '<button class="act-btn act-edit" data-act="edit" data-id="'+s.id+'">✏️</button>';
+    html += '<button class="act-btn act-del" data-act="del" data-id="'+s.id+'">🗑️</button>';
+    html += '</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+
+  tbody.querySelectorAll('.row-chk').forEach(cb => {
+    cb.onchange = () => {
+      const id = String(cb.dataset.id);
+      if (cb.checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+      cb.closest('tr').classList.toggle('selected', cb.checked);
+      updateBulkButton();
+    };
+  });
+
+  tbody.querySelectorAll('[data-act]').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      const s = allSubjects.find(x => String(x.id) === String(id));
+      if (!s) return;
+      if (act === 'edit') openForm(s);
+      else if (act === 'del') deleteSubject(s);
+    };
+  });
+
+  updateBulkButton();
+}
+
+function getClassName(classId) {
+  const c = allClasses.find(x => String(x.id) === String(classId));
+  return c ? c.class_name : '-';
+}
+
+function updateBulkButton() {
+  const btn = document.getElementById('btnBulkDel');
+  const n = selectedIds.size;
+  btn.disabled = n === 0;
+  btn.innerHTML = '🗑️ Delete Selected ('+n+')';
+}
+
+document.getElementById('chkAll').onchange = (e) => {
+  const checked = e.target.checked;
+  document.querySelectorAll('.row-chk').forEach(cb => {
+    cb.checked = checked;
+    const id = String(cb.dataset.id);
+    if (checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+    cb.closest('tr').classList.toggle('selected', checked);
+  });
+  updateBulkButton();
+};
+
+document.getElementById('btnSearch').onclick = () => {
+  const sess = document.getElementById('f_session').value;
+  currentFilters.session = sess === '' ? '' : +sess;
+  currentFilters.classId = document.getElementById('f_class').value;
+  currentFilters.term = document.getElementById('f_term').value;
+  currentFilters.search = document.getElementById('f_search').value.trim();
+  loadSubjects();
+};
+
+document.getElementById('f_search').addEventListener('input', () => {
+  currentFilters.search = document.getElementById('f_search').value;
+  renderTable();
+});
+
+document.getElementById('btnReset').onclick = () => {
+  document.getElementById('f_session').value = '';
+  document.getElementById('f_class').value = '';
+  document.getElementById('f_term').value = '';
+  document.getElementById('f_search').value = '';
+  currentFilters = { session:'', classId:'', term:'', search:'' };
+  selectedIds.clear();
+  document.getElementById('chkAll').checked = false;
+  loadSubjects();
+};
+
+['f_session','f_class','f_term'].forEach(id => {
+  document.getElementById(id).onchange = () => document.getElementById('btnSearch').click();
+});
+
+/* ============ AUTO SETUP ============ */
+document.getElementById('btnAutoSetup').onclick = () => openAutoSetup();
+
+function openAutoSetup() {
+  const preClass = currentFilters.classId || '';
+  const preTerm = currentFilters.term || '';
+  const preSession = (currentFilters.session === '' ? CURRENT_YEAR : currentFilters.session);
+
+  const modal = document.createElement('div');
+  modal.className = 'sm-bg';
+  const clsOpts = allClasses.map(c => '<option value="'+c.id+'"'+(preClass == c.id ? ' selected' : '')+'>'+esc(c.class_name)+'</option>').join('');
+
+  let html = '';
+  html += '<div class="sm-modal">';
+  html += '<div class="sm-head"><h3>⚡ Auto Setup Subjects</h3><button class="sm-close" id="asClose">✕</button></div>';
+  html += '<div class="sm-body">';
+
+  html += '<div class="sm-section"><h4>📌 Step 1: Class সিলেক্ট করুন</h4>';
+  html += '<div class="sm-fgrid">';
+  html += '<div class="sm-fld"><label>Session</label><input id="as_session" type="number" value="'+preSession+'"></div>';
+  html += '<div class="sm-fld"><label>Class</label><select id="as_class"><option value="">-- Select --</option>'+clsOpts+'</select></div>';
+  html += '</div></div>';
+
+  html += '<div class="sm-section"><h4>📚 Step 2: Subjects চেক করুন</h4>';
+  html += '<div class="qk-toolbar">';
+  html += '<button class="sbtn sbtn-sec" id="asAll" style="height:32px;padding:6px 12px;font-size:12px">✓ Select All</button>';
+  html += '<button class="sbtn sbtn-sec" id="asNone" style="height:32px;padding:6px 12px;font-size:12px">✕ Deselect All</button>';
+  html += '</div>';
+  html += '<div class="qk-grid" id="asGrid"><div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:20px;font-size:13px">Class সিলেক্ট করুন...</div></div>';
+  html += '</div>';
+
+  html += '<div class="sm-section"><h4>🎯 Step 3: কোথায় Apply করবেন?</h4>';
+  html += '<div class="scope-opts">';
+  html += '<label class="scope-opt on" data-scope="allterms"><input type="radio" name="scope" value="allterms" checked><div><div class="so-t">সব Exam Term</div><div class="so-s">এই session-এ সব exam term-এ subjects তৈরি হবে</div></div></label>';
+  html += '<label class="scope-opt" data-scope="single"><input type="radio" name="scope" value="single"><div><div class="so-t">নির্দিষ্ট Term</div><div class="so-s">একটি নির্দিষ্ট exam term বাছুন</div></div></label>';
+  html += '<label class="scope-opt" data-scope="allsessions"><input type="radio" name="scope" value="allsessions"><div><div class="so-t">সব Session + সব Term</div><div class="so-s">2024 থেকে 2030 পর্যন্ত সব session-এ</div></div></label>';
+  html += '<label class="scope-opt" data-scope="current"><input type="radio" name="scope" value="current"><div><div class="so-t">শুধু উপরের Session</div><div class="so-s">শুধু Step 1-এ দেওয়া session-এ</div></div></label>';
+  html += '</div>';
+  html += '<div id="termPick" style="display:none;margin-top:12px">';
+  html += '<label style="font-size:11.5px;color:#64748b;font-weight:800;text-transform:uppercase;display:block;margin-bottom:6px">Exam Term বাছুন</label>';
+  html += '<select id="as_term" style="width:100%;padding:10px;border:2px solid var(--sb-border);border-radius:10px;font-size:13.5px;font-weight:600">';
+  html += allExamTerms.map(t => '<option value="'+esc(t.exam_name)+'">'+esc(t.exam_name)+'</option>').join('');
+  html += '</select></div>';
+  html += '</div>';
+
+  html += '</div>';
+  html += '<div class="sm-foot">';
+  html += '<button class="sm-btn sm-btn-can" id="asCancel">বাতিল</button>';
+  html += '<button class="sm-btn sm-btn-pri" id="asSave">⚡ Auto Create Subjects</button>';
+  html += '</div>';
+  html += '</div>';
+
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+
+  function closeModal() { modal.remove(); }
+  document.getElementById('asClose').onclick = closeModal;
+  document.getElementById('asCancel').onclick = closeModal;
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  modal.querySelectorAll('input[name="scope"]').forEach(r => {
+    r.onchange = () => {
+      modal.querySelectorAll('.scope-opt').forEach(o => o.classList.remove('on'));
+      r.closest('.scope-opt').classList.add('on');
+      document.getElementById('termPick').style.display = r.value === 'single' ? 'block' : 'none';
+    };
+  });
+
+  document.getElementById('as_class').onchange = () => {
+    const classId = document.getElementById('as_class').value;
+    const cls = allClasses.find(c => String(c.id) === classId);
+    const clsName = cls ? cls.class_name : '';
+    const { list } = analyzeClass(clsName);
+
+    let gridHtml = '';
+    list.forEach((sub, i) => {
+      gridHtml += '<label class="qk-item on" data-i="'+i+'">';
+      gridHtml += '<input type="checkbox" checked>';
+      gridHtml += '<span class="qchk">✓</span>';
+      gridHtml += '<div class="qt">'+sub.name+'</div>';
+      gridHtml += '<div class="qs">'+(sub.bangla || '')+' — '+sub.code+'</div>';
+      gridHtml += '</label>';
+    });
+    document.getElementById('asGrid').innerHTML = gridHtml;
+
+    document.querySelectorAll('#asGrid .qk-item').forEach(item => {
+      item.onclick = (e) => {
+        e.preventDefault();
+        const cb = item.querySelector('input');
+        cb.checked = !cb.checked;
+        item.classList.toggle('on', cb.checked);
+      };
+    });
+  };
+
+  document.getElementById('asAll').onclick = () => {
+    document.querySelectorAll('#asGrid .qk-item').forEach(item => {
+      item.querySelector('input').checked = true;
+      item.classList.add('on');
+    });
+  };
+  document.getElementById('asNone').onclick = () => {
+    document.querySelectorAll('#asGrid .qk-item').forEach(item => {
+      item.querySelector('input').checked = false;
+      item.classList.remove('on');
+    });
+  };
+
+  if (preClass) document.getElementById('as_class').dispatchEvent(new Event('change'));
+
+  document.getElementById('asSave').onclick = async () => {
+    const session = +document.getElementById('as_session').value || CURRENT_YEAR;
+    const classId = document.getElementById('as_class').value;
+    const scope = modal.querySelector('input[name="scope"]:checked').value;
+
+    if (!classId) { toast('❌ Class দিন', 'error'); return; }
+
+    const cls = allClasses.find(c => String(c.id) === classId);
+    const clsName = cls ? cls.class_name : '';
+    const { prefix, list } = analyzeClass(clsName);
+
+    const selected = [];
+    document.querySelectorAll('#asGrid .qk-item').forEach((item, i) => {
+      if (item.querySelector('input').checked) selected.push(list[i]);
+    });
+
+    if (!selected.length) { toast('❌ কোনো subject সিলেক্ট নেই', 'error'); return; }
+
+    let terms = [];
+    let sessions = [session];
+
+    if (scope === 'current') {
+      /* just current session — need a term too. Get all terms */
+      terms = allExamTerms.map(t => t.exam_name);
+      if (!terms.length) { toast('❌ কোনো Exam Term নেই', 'error'); return; }
+    } else if (scope === 'single') {
+      const t = document.getElementById('as_term').value;
+      if (!t) { toast('❌ Term সিলেক্ট করুন', 'error'); return; }
+      terms = [t];
+    } else if (scope === 'allterms') {
+      terms = allExamTerms.map(t => t.exam_name);
+      if (!terms.length) { toast('❌ কোনো Exam Term নেই', 'error'); return; }
+    } else if (scope === 'allsessions') {
+      terms = allExamTerms.map(t => t.exam_name);
+      sessions = [2024,2025,2026,2027,2028,2029,2030];
+    }
+
+    const records = [];
+    sessions.forEach(sess => {
+      terms.forEach(term => {
+        selected.forEach(sub => {
+          records.push({
+            session_year: sess,
+            class_id: +classId,
+            exam_term: term,
+            subject_code: prefix + '-' + sub.code,
+            subject_name: sub.name,
+            subject_name_bangla: sub.bangla || null,
+            subject_name_short: sub.short || null,
+            subject_type: sub.code === '111' ? 'religion' : 'compulsory',
+            subjective_marks: sub.subj || 0,
+            objective_marks: sub.obj || 0,
+            practical_marks: sub.prac || 0,
+            assessment_marks: sub.assess || 0,
+            ct_mt_marks: sub.ct || 0,
+            total_marks: (sub.subj||0)+(sub.obj||0)+(sub.prac||0)+(sub.assess||0)+(sub.ct||0),
+            avg_div: 0
+          });
+        });
+      });
+    });
+
+    if (records.length > 200) {
+      if (!confirm('⚠️ '+records.length+'টি subject তৈরি হবে। চালিয়ে যাবেন?')) return;
+    }
+
+    const btn = document.getElementById('asSave');
+    btn.disabled = true;
+    btn.textContent = '⏳ তৈরি হচ্ছে... ('+records.length+')';
+
+    try {
+      const CHUNK = 200;
+      let totalInserted = 0;
+
+      for (let i = 0; i < records.length; i += CHUNK) {
+        const chunk = records.slice(i, i + CHUNK);
+        const { error } = await supabase.from('subjects').insert(chunk);
+        if (error) {
+          for (const rec of chunk) {
+            const { error: e2 } = await supabase.from('subjects').insert(rec);
+            if (!e2) totalInserted++;
+          }
+        } else {
+          totalInserted += chunk.length;
+        }
+        btn.textContent = '⏳ '+totalInserted+' / '+records.length;
+      }
+
+      await logAction('create','subjects',null,'Auto setup '+totalInserted+' subjects for '+clsName);
+
+      if (totalInserted === 0) {
+        toast('⚠️ সব subject আগেই আছে', 'error');
+      } else {
+        toast('✅ '+totalInserted+'টি subject তৈরি হয়েছে', 'success');
+      }
+
+      closeModal();
+      loadSubjects();
+    } catch (err) {
+      console.error(err);
+      toast('❌ ' + err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = '⚡ Auto Create Subjects';
+    }
+  };
+}
+
+/* ============ ADD / EDIT FORM ============ */
+document.getElementById('btnAddNew').onclick = () => openForm();
+
+function openForm(s) {
+  editingId = s ? s.id : null;
+  const isEdit = !!editingId;
+
+  const clsOpts = allClasses.map(c => '<option value="'+c.id+'"'+(s && s.class_id == c.id ? ' selected' : '')+'>'+esc(c.class_name)+'</option>').join('');
+  const termOpts = allExamTerms.map(t => '<option value="'+esc(t.exam_name)+'"'+(s && s.exam_term === t.exam_name ? ' selected' : '')+'>'+esc(t.exam_name)+'</option>').join('');
+
+  const modal = document.createElement('div');
+  modal.className = 'sm-bg';
+
+  let html = '';
+  html += '<div class="sm-modal">';
+  html += '<div class="sm-head"><h3>'+(isEdit ? '✏️ Edit Subject' : '➕ New Subject')+'</h3><button class="sm-close" id="smClose">✕</button></div>';
+  html += '<div class="sm-body">';
+
+  html += '<div class="sm-section"><h4>📖 Basic Information</h4>';
+  html += '<div class="sm-fgrid">';
+  html += '<div class="sm-fld req"><label>Session Year</label><input id="m_session" type="number" value="'+((s && s.session_year) || CURRENT_YEAR)+'"></div>';
+  html += '<div class="sm-fld req"><label>Class</label><select id="m_class"><option value="">-- Select --</option>'+clsOpts+'</select></div>';
+  html += '<div class="sm-fld req full"><label>Exam Term</label><select id="m_term"><option value="">-- Select --</option>'+termOpts+'</select></div>';
+  html += '</div></div>';
+
+  html += '<div class="sm-section"><h4>📝 Subject Details</h4>';
+  html += '<div class="sm-fgrid">';
+  html += '<div class="sm-fld req"><label>Subject Code</label><input id="m_code" value="'+esc((s && s.subject_code) || '')+'" placeholder="PL-101"></div>';
+  html += '<div class="sm-fld"><label>Short Name</label><input id="m_short" value="'+esc((s && s.subject_name_short) || '')+'" placeholder="BAN1"></div>';
+  html += '<div class="sm-fld req full"><label>Subject Name (English)</label><input id="m_name" value="'+esc((s && s.subject_name) || '')+'" placeholder="Bangla 1st"></div>';
+  html += '<div class="sm-fld full"><label>In Bangla</label><input id="m_bangla" value="'+esc((s && s.subject_name_bangla) || '')+'" placeholder="বাংলা ১ম"></div>';
+  html += '</div></div>';
+
+  html += '<div class="sm-section"><h4>🎯 Marks Distribution</h4>';
+  html += '<div class="sm-fgrid three">';
+  html += '<div class="sm-fld"><label>Subjective</label><input id="m_subj" type="number" value="'+((s && s.subjective_marks) || 0)+'" min="0"></div>';
+  html += '<div class="sm-fld"><label>Objective</label><input id="m_obj" type="number" value="'+((s && s.objective_marks) || 0)+'" min="0"></div>';
+  html += '<div class="sm-fld"><label>Practical</label><input id="m_prac" type="number" value="'+((s && s.practical_marks) || 0)+'" min="0"></div>';
+  html += '<div class="sm-fld"><label>Assessment</label><input id="m_assess" type="number" value="'+((s && s.assessment_marks) || 0)+'" min="0"></div>';
+  html += '<div class="sm-fld"><label>CT/MT</label><input id="m_ct" type="number" value="'+((s && s.ct_mt_marks) || 0)+'" min="0"></div>';
+  html += '<div class="sm-fld"><label>Total Full</label><input id="m_total" type="number" value="'+((s && s.total_marks) || 100)+'" readonly style="background:#f1f5f9"></div>';
+  html += '</div></div>';
+
+  html += '<div class="sm-section"><h4>⚙️ Extra</h4>';
+  html += '<div class="sm-fgrid">';
+  html += '<div class="sm-fld"><label>Subject Type</label><select id="m_type">';
+  const types = ['compulsory','optional','fourth','religion','both'];
+  const typeLabels = { compulsory:'Compulsory', optional:'Optional', fourth:'4th Subject', religion:'Religion', both:'Both (CQ+MCQ)' };
+  types.forEach(t => {
+    html += '<option value="'+t+'"'+((s && s.subject_type === t) || (!s && t === 'compulsory') ? ' selected' : '')+'>'+typeLabels[t]+'</option>';
+  });
+  html += '</select></div>';
+  html += '<div class="sm-fld"><label>AVG Div</label><input id="m_avg" type="number" value="'+((s && s.avg_div !== null && s.avg_div !== undefined) ? s.avg_div : 0)+'" min="0" step="0.01"></div>';
+  html += '</div></div>';
+
+  html += '</div>';
+  html += '<div class="sm-foot">';
+  if (isEdit) html += '<button class="sm-btn sm-btn-del" id="smDelete">🗑️ Delete</button>';
+  html += '<button class="sm-btn sm-btn-can" id="smCancel">বাতিল</button>';
+  html += '<button class="sm-btn sm-btn-pri" id="smSave">'+(isEdit ? '💾 Update' : '💾 Save')+'</button>';
+  html += '</div>';
+  html += '</div>';
+
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+
+  function calcTotal() {
+    const t = (+document.getElementById('m_subj').value||0) + (+document.getElementById('m_obj').value||0)
+            + (+document.getElementById('m_prac').value||0) + (+document.getElementById('m_assess').value||0)
+            + (+document.getElementById('m_ct').value||0);
+    document.getElementById('m_total').value = t;
+  }
+  ['m_subj','m_obj','m_prac','m_assess','m_ct'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calcTotal);
+  });
+
+  function closeModal() { modal.remove(); }
+  document.getElementById('smClose').onclick = closeModal;
+  document.getElementById('smCancel').onclick = closeModal;
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  if (isEdit) {
+    document.getElementById('smDelete').onclick = () => {
+      if (!confirm('এই subject মুছবেন?')) return;
+      deleteSubject(s);
+      closeModal();
+    };
+  }
+
+  document.getElementById('smSave').onclick = async () => {
+    const code = document.getElementById('m_code').value.trim();
+    const name = document.getElementById('m_name').value.trim();
+    const classId = document.getElementById('m_class').value;
+    const term = document.getElementById('m_term').value;
+    const session = +document.getElementById('m_session').value || CURRENT_YEAR;
+
+    if (!code) { toast('❌ Subject Code দিন', 'error'); return; }
+    if (!name) { toast('❌ Subject Name দিন', 'error'); return; }
+    if (!classId) { toast('❌ Class সিলেক্ট করুন', 'error'); return; }
+    if (!term) { toast('❌ Exam Term সিলেক্ট করুন', 'error'); return; }
+
+    const payload = {
+      session_year: session,
+      class_id: +classId,
+      exam_term: term,
+      subject_code: code,
+      subject_name: name,
+      subject_name_bangla: document.getElementById('m_bangla').value.trim() || null,
+      subject_name_short: document.getElementById('m_short').value.trim() || null,
+      subject_type: document.getElementById('m_type').value,
+      subjective_marks: +document.getElementById('m_subj').value || 0,
+      objective_marks: +document.getElementById('m_obj').value || 0,
+      practical_marks: +document.getElementById('m_prac').value || 0,
+      assessment_marks: +document.getElementById('m_assess').value || 0,
+      ct_mt_marks: +document.getElementById('m_ct').value || 0,
+      total_marks: +document.getElementById('m_total').value || 0,
+      avg_div: +document.getElementById('m_avg').value || 0
+    };
+
+    const btn = document.getElementById('smSave');
+    btn.disabled = true;
+    btn.textContent = '⏳ Saving...';
+
+    try {
+      let error;
+      if (isEdit) {
+        const r = await supabase.from('subjects').update(payload).eq('id', editingId);
+        error = r.error;
+        if (!error) await logAction('update','subjects',editingId,'Update: ' + name);
+      } else {
+        const r = await supabase.from('subjects').insert(payload);
+        error = r.error;
+        if (!error) await logAction('create','subjects',null,'New: ' + name);
+      }
+
+      if (error) {
+        if (error.message.includes('duplicate') || error.message.includes('unique')) {
+          toast('❌ এই Code আগেই আছে', 'error');
+        } else {
+          toast('❌ ' + error.message, 'error');
+        }
+        btn.disabled = false;
+        btn.textContent = isEdit ? '💾 Update' : '💾 Save';
+        return;
+      }
+
+      toast(isEdit ? '✅ Update হয়েছে' : '✅ Subject যোগ হয়েছে', 'success');
+      closeModal();
+      loadSubjects();
+    } catch (err) {
+      toast('❌ ' + err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = isEdit ? '💾 Update' : '💾 Save';
+    }
+  };
+}
+
+async function deleteSubject(s) {
+  if (!confirm('"'+s.subject_name+'" ('+s.subject_code+') মুছবেন?')) return;
+  try {
+    const { error } = await supabase.from('subjects').delete().eq('id', s.id);
+    if (error) throw error;
+    await logAction('delete','subjects',s.id,'Delete: ' + s.subject_name);
+    toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+    loadSubjects();
+  } catch (err) {
+    toast('❌ ' + err.message, 'error');
+  }
+}
+
+document.getElementById('btnBulkDel').onclick = async () => {
+  const n = selectedIds.size;
+  if (n === 0) return;
+  if (!confirm(n+'টি subject মুছবেন?')) return;
+
+  const btn = document.getElementById('btnBulkDel');
+  btn.disabled = true;
+  btn.textContent = '⏳ Deleting...';
+
+  try {
+    const ids = [...selectedIds];
+    const { error } = await supabase.from('subjects').delete().in('id', ids);
+    if (error) throw error;
+    await logAction('delete','subjects',null,'Bulk delete '+n);
+    toast('🗑️ '+n+'টি মুছে ফেলা হয়েছে', 'success');
+    selectedIds.clear();
+    document.getElementById('chkAll').checked = false;
+    loadSubjects();
+  } catch (err) {
+    toast('❌ ' + err.message, 'error');
+    updateBulkButton();
+  }
+};
+
+document.getElementById('btnExcel').onclick = () => {
+  if (!allSubjects.length) { toast('কোনো data নেই', 'error'); return; }
+  const wb = XLSX.utils.book_new();
+  const rows = [
+    ['Subject List'],
+    ['Generated:', new Date().toLocaleString('en-GB')],
+    [],
+    ['#','Code','Subject Name','In Bangla','Short','Session','Class','Term','AVG']
+  ];
+  allSubjects.forEach((s, i) => {
+    const cls = allClasses.find(c => c.id == s.class_id);
+    rows.push([
+      i+1, s.subject_code || '', s.subject_name || '', s.subject_name_bangla || '',
+      s.subject_name_short || '', s.session_year || '', cls ? cls.class_name : '', s.exam_term || '', s.avg_div || 0
+    ]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:5},{wch:12},{wch:30},{wch:25},{wch:12},{wch:10},{wch:14},{wch:20},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Subjects');
+  const now = new Date();
+  XLSX.writeFile(wb, 'Subjects_'+now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+'.xlsx');
+  toast('✅ Excel ডাউনলোড হয়েছে', 'success');
+};
+
+document.getElementById('btnPrint').onclick = () => {
+  if (!allSubjects.length) { toast('কোনো data নেই', 'error'); return; }
+  window.print();
+};
+
+/* ============ INIT ============ */
+loadSubjects();
+</script>
+</body>
+</html>

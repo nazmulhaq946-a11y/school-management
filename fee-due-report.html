@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fee Due Report · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --info: #3b82f6;
+      --info-light: #dbeafe;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --gray-light: #f1f5f9;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 25px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Bengali', -apple-system, sans-serif;
+      background: #f8fafc;
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .dr-header {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+      padding: 22px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .dr-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .dr-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60%; left: -5%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .dr-header > * { position: relative; z-index: 1; }
+
+    .dr-header .left { display: flex; align-items: center; gap: 16px; }
+    .dr-header .icon-box {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .dr-header h1 {
+      font-size: 22px; font-weight: 800;
+      margin: 0; letter-spacing: -0.3px;
+    }
+    .dr-header p {
+      font-size: 13px; margin: 4px 0 0 0;
+      opacity: 0.9; font-weight: 500;
+    }
+
+    .dr-back {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 10px 18px; border-radius: 10px; cursor: pointer;
+      font-weight: 700; font-size: 13.5px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .dr-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .dr-back .arrow {
+      background: white; color: #b91c1c;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+
+    /* ============================================================
+       FILTER BAR
+       ============================================================ */
+    .dr-filters {
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      margin: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr auto;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .fld {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+    .fld label {
+      font-size: 11.5px;
+      color: var(--gray);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 2px;
+    }
+    .fld select,
+    .fld input {
+      padding: 11px 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      color: var(--dark);
+      transition: all 0.2s;
+      width: 100%;
+      appearance: none;
+    }
+    .fld select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+    .fld select:focus,
+    .fld input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+
+    .dr-search-btn {
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(99,102,241,0.3);
+      transition: all 0.2s;
+      height: 44px;
+    }
+    .dr-search-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(99,102,241,0.4);
+    }
+    .dr-search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ============================================================
+       STATS ROW
+       ============================================================ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 0 20px 20px;
+    }
+    .stat-tile {
+      background: white;
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s;
+    }
+    .stat-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .stat-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 4px;
+      background: var(--primary);
+    }
+    .stat-tile.blue::before { background: var(--primary); }
+    .stat-tile.green::before { background: var(--success); }
+    .stat-tile.red::before { background: var(--danger); }
+    .stat-tile.orange::before { background: var(--warning); }
+    .stat-tile.purple::before { background: #8b5cf6; }
+
+    .stat-tile .icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .stat-tile.blue .icon-circle { background: var(--primary-light); }
+    .stat-tile.green .icon-circle { background: var(--success-light); }
+    .stat-tile.red .icon-circle { background: var(--danger-light); }
+    .stat-tile.orange .icon-circle { background: var(--warning-light); }
+    .stat-tile.purple .icon-circle { background: #ede9fe; }
+
+    .stat-tile .info { min-width: 0; }
+    .stat-tile .info h4 {
+      font-size: 11px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .stat-tile .info p {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.5px;
+    }
+    .stat-tile.green .info p { color: var(--success); }
+    .stat-tile.red .info p { color: var(--danger); }
+    .stat-tile.orange .info p { color: var(--warning); }
+    .stat-tile.purple .info p { color: #8b5cf6; }
+
+    /* ============================================================
+       TOOLBAR (View toggles + Actions)
+       ============================================================ */
+    .dr-toolbar {
+      background: white;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 12px 18px;
+      margin: 0 20px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--gray-light);
+      padding: 4px;
+      border-radius: 10px;
+    }
+    .view-tabs button {
+      padding: 8px 18px;
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--gray);
+      font-family: inherit;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .view-tabs button.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .view-tabs button:hover:not(.active) { color: var(--dark); }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tool-btn {
+      padding: 9px 16px;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--gray);
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tool-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .tool-btn.green {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    .tool-btn.green:hover { background: #059669; transform: translateY(-1px); }
+    .tool-btn.blue {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .tool-btn.blue:hover { background: var(--primary-dark); }
+
+    /* ============================================================
+       VIEW AREA
+       ============================================================ */
+    #viewArea {
+      margin: 0 20px 40px;
+    }
+
+    /* ==== Loading ==== */
+    .loading-box {
+      background: white;
+      border-radius: 20px;
+      padding: 80px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--primary-light);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-box p {
+      color: var(--gray);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ==== Empty ==== */
+    .empty-box {
+      background: white;
+      border-radius: 20px;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .empty-box .icon {
+      font-size: 64px;
+      margin-bottom: 14px;
+      opacity: 0.4;
+    }
+    .empty-box h3 {
+      color: var(--dark);
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .empty-box p {
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    /* ==== Class-wise Cards ==== */
+    .class-section {
+      margin-bottom: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .class-section:hover { box-shadow: var(--shadow-md); }
+
+    .class-head {
+      background: linear-gradient(135deg, #f8faff, #ffffff);
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .class-head:hover { background: #f1f5f9; }
+
+    .class-head .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .class-head .chevron {
+      width: 28px; height: 28px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      transition: transform 0.25s;
+    }
+    .class-section.open .chevron { transform: rotate(90deg); }
+
+    .class-head h3 {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+    .class-head .student-count {
+      background: var(--gray-light);
+      color: var(--gray);
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .class-head .right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .class-head .mini-stat {
+      display: flex;
+      flex-direction: column;
+      padding: 4px 14px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      align-items: flex-end;
+      min-width: 90px;
+    }
+    .class-head .mini-stat .lbl {
+      font-size: 10px;
+      color: var(--gray);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .class-head .mini-stat .val {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+    }
+    .class-head .mini-stat.expected .val { color: var(--primary); }
+    .class-head .mini-stat.paid .val { color: var(--success); }
+    .class-head .mini-stat.due .val { color: var(--danger); }
+
+    .class-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .class-section.open .class-body { max-height: 5000px; }
+
+    /* Student Table */
+    .stu-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 800px;
+    }
+    .stu-table thead th {
+      background: linear-gradient(180deg, #f8faff, #f1f5f9);
+      color: var(--dark);
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 800;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    .stu-table thead th.right { text-align: right; }
+    .stu-table thead th.center { text-align: center; }
+
+    .stu-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .stu-table tbody tr:hover { background: #fafbff; }
+    .stu-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .stu-table tbody tr:nth-child(even):hover { background: #fafbff; }
+
+    .stu-table tbody td {
+      padding: 11px 14px;
+      vertical-align: middle;
+      color: var(--dark);
+    }
+    .stu-table tbody td.right { text-align: right; }
+    .stu-table tbody td.center { text-align: center; }
+
+    .stu-table td.sid {
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-size: 12.5px;
+    }
+    .stu-table td.sname {
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .stu-table td.sname small {
+      display: block;
+      color: var(--gray);
+      font-weight: 500;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .stu-table td.money {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 13.5px;
+    }
+    .stu-table td.money.paid { color: var(--success); }
+    .stu-table td.money.due { color: var(--danger); }
+    .stu-table td.money.zero { color: var(--gray); font-weight: 600; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .status-pill.paid { background: var(--success-light); color: #065f46; }
+    .status-pill.due { background: var(--danger-light); color: #991b1b; }
+    .status-pill.partial { background: var(--warning-light); color: #92400e; }
+
+    /* Class footer */
+    .class-footer {
+      background: linear-gradient(135deg, #f8faff, #ffffff);
+      padding: 12px 22px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      border-top: 2px solid var(--border);
+      font-size: 12px;
+    }
+    .class-footer .fs-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .class-footer .fs-item .lbl {
+      color: var(--gray);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 10.5px;
+      letter-spacing: 0.3px;
+    }
+    .class-footer .fs-item .val {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    .class-footer .fs-item .val.green { color: var(--success); }
+    .class-footer .fs-item .val.red { color: var(--danger); }
+    .class-footer .fs-item .val.blue { color: var(--primary); }
+
+    /* Mobile view */
+    @media (max-width: 1100px) {
+      .dr-filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .dr-header { padding: 16px 18px; }
+      .dr-header h1 { font-size: 17px; }
+      .dr-header .icon-box { width: 44px; height: 44px; font-size: 22px; }
+      .dr-filters { grid-template-columns: 1fr; margin: 12px; padding: 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; margin: 0 12px 12px; }
+      .dr-toolbar { flex-direction: column; align-items: stretch; margin: 0 12px 12px; }
+      .view-tabs { width: 100%; }
+      .view-tabs button { flex: 1; }
+      .toolbar-actions { justify-content: center; }
+      #viewArea { margin: 0 12px 30px; }
+      .class-head { padding: 14px 16px; }
+      .class-head h3 { font-size: 15px; }
+      .class-head .right { width: 100%; }
+      .class-head .mini-stat { flex: 1; }
+      .class-footer { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ============================================================
+       PRINT STYLES
+       ============================================================ */
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: white !important; padding: 0 !important; margin: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print,
+      .dr-header, .dr-filters, .stats-row, .dr-toolbar, 
+      .class-footer .no-print { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      
+      .class-section {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+        margin-bottom: 0 !important;
+        border-radius: 0 !important;
+      }
+      .class-section:last-child { page-break-after: auto; }
+
+      .class-head {
+        background: #f3f4f6 !important;
+        border-bottom: 2px solid #000 !important;
+        padding: 8px 12px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .class-head .chevron { display: none !important; }
+      .class-head h3 { font-size: 15px !important; }
+      .class-head .mini-stat {
+        border: 1px solid #000 !important;
+        background: white !important;
+        padding: 2px 8px !important;
+      }
+      .class-head .mini-stat .val { font-size: 12px !important; }
+
+      .class-body { max-height: none !important; overflow: visible !important; }
+
+      .stu-table {
+        font-size: 10px !important;
+        min-width: 0 !important;
+      }
+      .stu-table thead th {
+        background: #e5e7eb !important;
+        color: #000 !important;
+        border: 1px solid #000 !important;
+        padding: 5px 6px !important;
+        font-size: 9px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .stu-table tbody td {
+        border: 1px solid #000 !important;
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+      }
+      .stu-table tbody tr:nth-child(even) { background: #f9fafb !important; }
+      .status-pill { display: none !important; }
+
+      .class-footer {
+        background: #f9fafb !important;
+        border-top: 2px solid #000 !important;
+        padding: 6px 12px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .class-footer .fs-item .val { font-size: 11px !important; }
+
+      /* Print header for each class */
+      .class-section::before {
+        content: attr(data-print-title);
+        display: block;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 800;
+        padding: 8px 0 6px;
+        border-bottom: 1px solid #000;
+        background: white;
+      }
+    }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, getSchoolProfile } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'fee-due-report.html', 'Fee Due Report');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+    const school = await getSchoolProfile();
+
+    let allClasses = [];
+    let allFeeTypes = [];
+    let currentView = 'class';
+    let lastReportData = null;
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div class="dr-header">
+        <div class="left">
+          <div class="icon-box">📊</div>
+          <div>
+            <h1>Fee Due Report</h1>
+            <p>Class-wise Due Collection Report · Excel Export · Print</p>
+          </div>
+        </div>
+        <a class="dr-back" href="dashboard.html">
+          Back <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <!-- Filters -->
+      <div class="dr-filters">
+        <div class="fld">
+          <label>Session</label>
+          <select id="f_session">
+            ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+              `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="fld">
+          <label>Class</label>
+          <select id="f_class"><option value="">All Classes</option></select>
+        </div>
+        <div class="fld">
+          <label>Fee Type</label>
+          <select id="f_feetype"><option value="">All Types</option></select>
+        </div>
+        <div class="fld">
+          <label>Month</label>
+          <select id="f_month"><option value="">All Months</option></select>
+        </div>
+        <div class="fld">
+          <label>Show</label>
+          <select id="f_show">
+            <option value="due">শুধু Due আছে</option>
+            <option value="all">সবাই</option>
+            <option value="paid">শুধু Paid</option>
+          </select>
+        </div>
+        <button class="dr-search-btn" id="genBtn">
+          <span>🔍</span>
+          <span>Generate Report</span>
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow" style="display:none">
+        <div class="stat-tile blue">
+          <div class="icon-circle">👥</div>
+          <div class="info">
+            <h4>Total Students</h4>
+            <p id="statStudents">0</p>
+          </div>
+        </div>
+        <div class="stat-tile purple">
+          <div class="icon-circle">💰</div>
+          <div class="info">
+            <h4>Expected</h4>
+            <p id="statExpected">৳ 0</p>
+          </div>
+        </div>
+        <div class="stat-tile green">
+          <div class="icon-circle">✅</div>
+          <div class="info">
+            <h4>Collected</h4>
+            <p id="statPaid">৳ 0</p>
+          </div>
+        </div>
+        <div class="stat-tile red">
+          <div class="icon-circle">⚠️</div>
+          <div class="info">
+            <h4>Total Due</h4>
+            <p id="statDue">৳ 0</p>
+          </div>
+        </div>
+        <div class="stat-tile orange">
+          <div class="icon-circle">📈</div>
+          <div class="info">
+            <h4>Collection Rate</h4>
+            <p id="statRate">0%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="dr-toolbar" id="toolbar" style="display:none">
+        <div class="view-tabs">
+          <button class="active" data-view="class">
+            <span>📚</span><span>Class-wise</span>
+          </button>
+          <button data-view="flat">
+            <span>📋</span><span>Flat List</span>
+          </button>
+        </div>
+        <div class="toolbar-actions">
+          <button class="tool-btn green" id="excelBtn">
+            <span>📥</span><span>Download Excel</span>
+          </button>
+          <button class="tool-btn blue" id="printBtn">
+            <span>🖨️</span><span>Print Report</span>
+          </button>
+          <button class="tool-btn" id="expandAllBtn">
+            <span>🔽</span><span>Expand All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- View Area -->
+      <div id="viewArea">
+        <div class="empty-box">
+          <div class="icon">🔍</div>
+          <h3>Generate Report</h3>
+          <p>উপরে ফিল্টার সেট করে <b>Generate Report</b> বাটন ক্লিক করুন</p>
+        </div>
+      </div>
+    `;
+
+    /* ============ Load base data ============ */
+    async function loadBase() {
+      const [c, t] = await Promise.all([
+        supabase.from('classes').select('*').order('sort_order').order('id'),
+        supabase.from('fee_types').select('*')
+          .eq('account_type', 'income').eq('is_active', true)
+          .order('account_no'),
+      ]);
+      allClasses = c.data || [];
+      allFeeTypes = t.data || [];
+
+      document.getElementById('f_class').innerHTML =
+        '<option value="">All Classes</option>' +
+        allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+
+      document.getElementById('f_feetype').innerHTML =
+        '<option value="">All Types</option>' +
+        allFeeTypes.map(x => `<option value="${x.id}">${esc(x.type_name)}</option>`).join('');
+
+      // Months
+      const months = [];
+      for (let i = -8; i <= 4; i++) {
+        const d = new Date(CURRENT_YEAR, new Date().getMonth() + i, 1);
+        months.push(d.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+      }
+      const curMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      document.getElementById('f_month').innerHTML =
+        '<option value="">All Months</option>' +
+        months.map(m => `<option value="${m}" ${m === curMonth ? 'selected' : ''}>${esc(m)}</option>`).join('');
+    }
+    await loadBase();
+
+    /* ============ View tabs ============ */
+    document.querySelectorAll('.view-tabs button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.view-tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        if (lastReportData) renderReport(lastReportData);
+      };
+    });
+
+    /* ============ Generate Report ============ */
+    document.getElementById('genBtn').onclick = async () => {
+      const session = +document.getElementById('f_session').value;
+      const classId = document.getElementById('f_class').value;
+      const feetypeId = document.getElementById('f_feetype').value;
+      const month = document.getElementById('f_month').value;
+      const showMode = document.getElementById('f_show').value;
+
+      const viewArea = document.getElementById('viewArea');
+      viewArea.innerHTML = `
+        <div class="loading-box">
+          <div class="loading-spinner"></div>
+          <p>রিপোর্ট তৈরি হচ্ছে...</p>
+        </div>
+      `;
+
+      const btn = document.getElementById('genBtn');
+      btn.disabled = true;
+
+      try {
+        /* 1. Load students */
+        let sQ = supabase.from('students').select('*, classes(class_name)')
+          .or('is_deleted.is.null,is_deleted.eq.false');
+        if (classId) sQ = sQ.eq('class_id', classId);
+        sQ = sQ.order('class_id').order('roll');
+        const { data: students, error: e1 } = await sQ;
+        if (e1) throw e1;
+
+        if (!students || !students.length) {
+          viewArea.innerHTML = `
+            <div class="empty-box">
+              <div class="icon">📭</div>
+              <h3>কোনো ছাত্র নেই</h3>
+              <p>এই ফিল্টারে কোনো ছাত্র পাওয়া যায়নি</p>
+            </div>
+          `;
+          return;
+        }
+
+        /* 2. Load fee structure */
+        let fsQ = supabase.from('fee_structure')
+          .select('*')
+          .eq('session_year', session);
+        if (classId) fsQ = fsQ.eq('class_id', classId);
+        if (feetypeId) fsQ = fsQ.eq('fee_type_id', +feetypeId);
+        const { data: structures, error: e2 } = await fsQ;
+        if (e2) throw e2;
+
+        /* 3. Load payments */
+        const sIndexes = students.map(s => s.student_index).filter(Boolean);
+        let pQ = supabase.from('fee_payments').select('*').eq('session_year', session);
+        if (classId) pQ = pQ.eq('class_id', classId);
+        if (feetypeId) pQ = pQ.eq('fee_type_id', +feetypeId);
+        if (month) pQ = pQ.eq('fee_month', month);
+        if (sIndexes.length) pQ = pQ.in('student_index', sIndexes);
+
+        const { data: payments, error: e3 } = await pQ;
+        if (e3) throw e3;
+
+        /* 4. Build student rows */
+        const useMonth = month || null;
+        const structureList = structures || [];
+        const payList = payments || [];
+
+        const studentRows = [];
+
+        students.forEach(s => {
+          const myPays = payList.filter(p =>
+            p.student_index === s.student_index || p.student_id === (s.student_id || s.student_index)
+          );
+          const myStructs = structureList.filter(st => st.class_id == s.class_id);
+
+          let expectedTotal = 0;
+          let paidTotal = 0;
+          let dueTotal = 0;
+          const details = [];
+          const handledKeys = new Set();
+
+          myStructs.forEach(st => {
+            const ft = allFeeTypes.find(f => f.id === st.fee_type_id) || {};
+            const ftName = ft.type_name || 'Fee';
+            const amount = +st.amount || 0;
+            const isMonthly = !!ft.is_monthly;
+
+            if (isMonthly) {
+              const monthsToCheck = useMonth ? [useMonth] :
+                [...new Set([
+                  ...myPays.filter(p => p.fee_type_id === st.fee_type_id && p.fee_month).map(p => p.fee_month),
+                  new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
+                ])];
+
+              monthsToCheck.forEach(m => {
+                handledKeys.add(st.fee_type_id + '|' + m);
+                const mp = myPays.filter(p => p.fee_type_id === st.fee_type_id && (p.fee_month || '') === m);
+                const paid = mp.reduce((sum, p) => sum + (+p.paid_amount || 0), 0);
+                const due = Math.max(0, amount - paid);
+
+                expectedTotal += amount;
+                paidTotal += paid;
+                dueTotal += due;
+
+                details.push({
+                  type: ftName, month: m, expected: amount, paid, due,
+                  status: due === 0 ? 'paid' : (paid > 0 ? 'partial' : 'due'),
+                });
+              });
+            } else {
+              handledKeys.add(st.fee_type_id + '|-');
+              const mp = myPays.filter(p => p.fee_type_id === st.fee_type_id && !p.fee_month);
+              const paid = mp.reduce((sum, p) => sum + (+p.paid_amount || 0), 0);
+              const due = Math.max(0, amount - paid);
+
+              expectedTotal += amount;
+              paidTotal += paid;
+              dueTotal += due;
+
+              details.push({
+                type: ftName, month: '-', expected: amount, paid, due,
+                status: due === 0 ? 'paid' : (paid > 0 ? 'partial' : 'due'),
+              });
+            }
+          });
+
+          // Extra payments not in structure
+          myPays.forEach(p => {
+            const key = p.fee_type_id + '|' + (p.fee_month || '-');
+            if (handledKeys.has(key)) return;
+            if (!p.fee_month && handledKeys.has(p.fee_type_id + '|-')) return;
+            if (p.fee_month && useMonth && p.fee_month !== useMonth) return;
+
+            const amount = +p.amount || 0;
+            const paid = +p.paid_amount || 0;
+            const due = Math.max(0, amount - paid);
+
+            expectedTotal += amount;
+            paidTotal += paid;
+            dueTotal += due;
+          });
+
+          // Filter
+          if (showMode === 'due' && dueTotal <= 0) return;
+          if (showMode === 'paid' && dueTotal > 0) return;
+
+          studentRows.push({
+            student: s,
+            className: s.classes?.class_name || 'Unknown',
+            classId: s.class_id,
+            expected: expectedTotal,
+            paid: paidTotal,
+            due: dueTotal,
+          });
+        });
+
+        if (!studentRows.length) {
+          viewArea.innerHTML = `
+            <div class="empty-box">
+              <div class="icon">✨</div>
+              <h3>সব পরিষ্কার!</h3>
+              <p>এই ফিল্টারে কোনো Due নেই</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Group by class
+        const byClass = {};
+        studentRows.forEach(r => {
+          if (!byClass[r.classId]) byClass[r.classId] = {
+            classId: r.classId,
+            className: r.className,
+            students: [],
+            expected: 0, paid: 0, due: 0,
+          };
+          byClass[r.classId].students.push(r);
+          byClass[r.classId].expected += r.expected;
+          byClass[r.classId].paid += r.paid;
+          byClass[r.classId].due += r.due;
+        });
+
+        const classGroups = Object.values(byClass).sort((a, b) => {
+          const ca = allClasses.find(c => c.id == a.classId);
+          const cb = allClasses.find(c => c.id == b.classId);
+          return (ca?.sort_order || 999) - (cb?.sort_order || 999);
+        });
+
+        const totals = {
+          students: studentRows.length,
+          expected: studentRows.reduce((s, r) => s + r.expected, 0),
+          paid: studentRows.reduce((s, r) => s + r.paid, 0),
+          due: studentRows.reduce((s, r) => s + r.due, 0),
+        };
+
+        lastReportData = {
+          classGroups,
+          studentRows,
+          totals,
+          filters: {
+            session, month: useMonth,
+            classId, feetypeId,
+          },
+        };
+
+        // Show toolbar & stats
+        document.getElementById('statsRow').style.display = 'grid';
+        document.getElementById('toolbar').style.display = 'flex';
+
+        document.getElementById('statStudents').textContent = totals.students;
+        document.getElementById('statExpected').textContent = '৳ ' + totals.expected.toLocaleString();
+        document.getElementById('statPaid').textContent = '৳ ' + totals.paid.toLocaleString();
+        document.getElementById('statDue').textContent = '৳ ' + totals.due.toLocaleString();
+        const rate = totals.expected > 0 ? ((totals.paid / totals.expected) * 100).toFixed(1) : 0;
+        document.getElementById('statRate').textContent = rate + '%';
+
+        renderReport(lastReportData);
+
+      } catch (err) {
+        console.error(err);
+        viewArea.innerHTML = `
+          <div class="empty-box">
+            <div class="icon">❌</div>
+            <h3>Error</h3>
+            <p>${esc(err.message)}</p>
+          </div>
+        `;
+        toast('❌ ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    /* ============ Render Report ============ */
+    function renderReport(data) {
+      const viewArea = document.getElementById('viewArea');
+
+      if (currentView === 'flat') {
+        renderFlatView(data, viewArea);
+      } else {
+        renderClassView(data, viewArea);
+      }
+    }
+
+    /* ============ Class-wise View ============ */
+    function renderClassView(data, viewArea) {
+      const classGroups = data.classGroups;
+
+      const filterLabel = [
+        data.filters.month || 'All Months',
+        data.filters.classId ? (allClasses.find(c => c.id == data.filters.classId)?.class_name || '') : 'All Classes',
+        data.filters.feetypeId ? (allFeeTypes.find(f => f.id == data.filters.feetypeId)?.type_name || '') : '',
+      ].filter(Boolean).join(' · ');
+
+      viewArea.innerHTML = `
+        <div style="text-align:center;padding:14px 0;color:var(--gray);font-size:12.5px;font-weight:700">
+          📅 Session: ${data.filters.session} &nbsp;|&nbsp; ${esc(filterLabel)}
+        </div>
+
+        ${classGroups.map(group => {
+          const cls = allClasses.find(c => c.id == group.classId);
+          const rate = group.expected > 0 ? ((group.paid / group.expected) * 100).toFixed(1) : 0;
+
+          return `
+            <div class="class-section open" data-class-id="${group.classId}" data-print-title="${esc(cls?.class_name || 'Class')} — Fee Due Report">
+              <div class="class-head">
+                <div class="left">
+                  <div class="chevron">▶</div>
+                  <div>
+                    <h3>${esc(cls?.class_name || 'Class')}</h3>
+                    <span class="student-count">${group.students.length} জন ছাত্র</span>
+                  </div>
+                </div>
+                <div class="right">
+                  <div class="mini-stat expected">
+                    <span class="lbl">Expected</span>
+                    <span class="val">৳ ${group.expected.toLocaleString()}</span>
+                  </div>
+                  <div class="mini-stat paid">
+                    <span class="lbl">Paid</span>
+                    <span class="val">৳ ${group.paid.toLocaleString()}</span>
+                  </div>
+                  <div class="mini-stat due">
+                    <span class="lbl">Due</span>
+                    <span class="val">৳ ${group.due.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="class-body">
+                <div style="overflow-x:auto">
+                  <table class="stu-table">
+                    <thead>
+                      <tr>
+                        <th style="width:45px">#</th>
+                        <th style="width:100px">Student ID</th>
+                        <th>Student Name</th>
+                        <th style="width:60px" class="center">Roll</th>
+                        <th style="width:90px">Section</th>
+                        <th style="width:110px" class="right">Expected</th>
+                        <th style="width:110px" class="right">Paid</th>
+                        <th style="width:110px" class="right">Due</th>
+                        <th style="width:100px" class="center no-print">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${group.students.map((r, i) => `
+                        <tr>
+                          <td>${i + 1}</td>
+                          <td class="sid">${esc(r.student.student_index || r.student.student_id || '-')}</td>
+                          <td class="sname">
+                            ${esc(r.student.name)}
+                            <small>${esc(r.student.father_name || '')}${r.student.guardian_phone ? ' · ' + esc(r.student.guardian_phone) : ''}</small>
+                          </td>
+                          <td class="center">${esc(r.student.roll ?? '-')}</td>
+                          <td>${esc(r.student.section || '-')}</td>
+                          <td class="right money">৳ ${r.expected.toLocaleString()}</td>
+                          <td class="right money paid ${r.paid === 0 ? 'zero' : ''}">৳ ${r.paid.toLocaleString()}</td>
+                          <td class="right money due ${r.due === 0 ? 'zero' : ''}">৳ ${r.due.toLocaleString()}</td>
+                          <td class="center no-print">
+                            ${r.due === 0
+                              ? '<span class="status-pill paid">✓ Paid</span>'
+                              : r.paid > 0
+                                ? '<span class="status-pill partial">◐ Partial</span>'
+                                : '<span class="status-pill due">⚠ Due</span>'}
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="class-footer">
+                  <div class="fs-item">
+                    <span class="lbl">Students</span>
+                    <span class="val">${group.students.length}</span>
+                  </div>
+                  <div class="fs-item">
+                    <span class="lbl">Expected</span>
+                    <span class="val blue">৳ ${group.expected.toLocaleString()}</span>
+                  </div>
+                  <div class="fs-item">
+                    <span class="lbl">Collected</span>
+                    <span class="val green">৳ ${group.paid.toLocaleString()}</span>
+                  </div>
+                  <div class="fs-item">
+                    <span class="lbl">Due · Rate</span>
+                    <span class="val red">৳ ${group.due.toLocaleString()} · ${rate}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      `;
+
+      // Attach collapse/expand
+      document.querySelectorAll('.class-head').forEach(head => {
+        head.onclick = () => {
+          head.closest('.class-section').classList.toggle('open');
+        };
+      });
+    }
+
+    /* ============ Flat View ============ */
+    function renderFlatView(data, viewArea) {
+      const rows = data.studentRows;
+
+      viewArea.innerHTML = `
+        <div class="class-section open">
+          <div class="class-head" style="cursor:default">
+            <div class="left">
+              <div class="chevron" style="background:var(--danger-light);color:#991b1b">📋</div>
+              <div>
+                <h3>All Students — Flat List</h3>
+                <span class="student-count">${rows.length} জন</span>
+              </div>
+            </div>
+            <div class="right">
+              <div class="mini-stat expected">
+                <span class="lbl">Expected</span>
+                <span class="val">৳ ${data.totals.expected.toLocaleString()}</span>
+              </div>
+              <div class="mini-stat paid">
+                <span class="lbl">Paid</span>
+                <span class="val">৳ ${data.totals.paid.toLocaleString()}</span>
+              </div>
+              <div class="mini-stat due">
+                <span class="lbl">Due</span>
+                <span class="val">৳ ${data.totals.due.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="class-body">
+            <div style="overflow-x:auto">
+              <table class="stu-table">
+                <thead>
+                  <tr>
+                    <th style="width:45px">#</th>
+                    <th style="width:100px">Student ID</th>
+                    <th>Student Name</th>
+                    <th style="width:110px">Class</th>
+                    <th style="width:60px" class="center">Roll</th>
+                    <th style="width:90px">Section</th>
+                    <th style="width:110px" class="right">Expected</th>
+                    <th style="width:110px" class="right">Paid</th>
+                    <th style="width:110px" class="right">Due</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.map((r, i) => `
+                    <tr>
+                      <td>${i + 1}</td>
+                      <td class="sid">${esc(r.student.student_index || '-')}</td>
+                      <td class="sname">${esc(r.student.name)}
+                        <small>${esc(r.student.father_name || '')}</small>
+                      </td>
+                      <td>${esc(r.className)}</td>
+                      <td class="center">${esc(r.student.roll ?? '-')}</td>
+                      <td>${esc(r.student.section || '-')}</td>
+                      <td class="right money">৳ ${r.expected.toLocaleString()}</td>
+                      <td class="right money paid">৳ ${r.paid.toLocaleString()}</td>
+                      <td class="right money due">৳ ${r.due.toLocaleString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Excel Download ============ */
+    document.getElementById('excelBtn').onclick = () => {
+      if (!lastReportData) { toast('প্রথমে Report তৈরি করুন', 'error'); return; }
+
+      const data = lastReportData;
+      const wb = XLSX.utils.book_new();
+
+      /* ===== Sheet 1: Summary ===== */
+      const summaryRows = [
+        ['Fee Due Report — Summary'],
+        ['Session:', data.filters.session],
+        ['Month:', data.filters.month || 'All Months'],
+        ['Generated:', new Date().toLocaleString()],
+        [],
+        ['Class', 'Students', 'Expected', 'Paid', 'Due', 'Collection %'],
+        ...data.classGroups.map(g => {
+          const rate = g.expected > 0 ? ((g.paid / g.expected) * 100).toFixed(1) : '0.0';
+          return [g.className, g.students.length, g.expected, g.paid, g.due, rate + '%'];
+        }),
+        [],
+        ['TOTAL', data.totals.students, data.totals.expected, data.totals.paid, data.totals.due,
+          (data.totals.expected > 0 ? ((data.totals.paid / data.totals.expected) * 100).toFixed(1) : 0) + '%'],
+      ];
+      const ws1 = XLSX.utils.aoa_to_sheet(summaryRows);
+      ws1['!cols'] = [
+        { wch: 15 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 12 }
+      ];
+      XLSX.utils.book_append_sheet(wb, ws1, 'Summary');
+
+      /* ===== Sheet 2: Class-wise Detailed ===== */
+      data.classGroups.forEach(g => {
+        const rows = [
+          [`${g.className} — Fee Due Report`],
+          ['Session:', data.filters.session, 'Month:', data.filters.month || 'All'],
+          ['Generated:', new Date().toLocaleString()],
+          [],
+          ['#', 'Student ID', 'Student Name', 'Roll', 'Section', 'Expected', 'Paid', 'Due', 'Status'],
+          ...g.students.map((r, i) => [
+            i + 1,
+            r.student.student_index || r.student.student_id || '',
+            r.student.name,
+            r.student.roll ?? '',
+            r.student.section || '',
+            r.expected,
+            r.paid,
+            r.due,
+            r.due === 0 ? 'Paid' : (r.paid > 0 ? 'Partial' : 'Due'),
+          ]),
+          [],
+          ['Total', '', '', '', '', g.expected, g.paid, g.due, ''],
+        ];
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 5 }, { wch: 12 }, { wch: 25 }, { wch: 8 }, { wch: 10 },
+          { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }
+        ];
+        const safeName = g.className.replace(/[^a-zA-Z0-9\u0980-\u09FF]/g, '_').slice(0, 28);
+        XLSX.utils.book_append_sheet(wb, ws, safeName);
+      });
+
+      /* ===== Sheet 3: All Students Flat ===== */
+      const flatRows = [
+        ['All Students — Fee Due Report'],
+        ['Session:', data.filters.session, 'Month:', data.filters.month || 'All'],
+        ['Generated:', new Date().toLocaleString()],
+        [],
+        ['#', 'Student ID', 'Student Name', 'Class', 'Section', 'Roll', 'Expected', 'Paid', 'Due', 'Status'],
+        ...data.studentRows.map((r, i) => [
+          i + 1,
+          r.student.student_index || '',
+          r.student.name,
+          r.className,
+          r.student.section || '',
+          r.student.roll ?? '',
+          r.expected,
+          r.paid,
+          r.due,
+          r.due === 0 ? 'Paid' : (r.paid > 0 ? 'Partial' : 'Due'),
+        ]),
+      ];
+      const ws3 = XLSX.utils.aoa_to_sheet(flatRows);
+      ws3['!cols'] = [
+        { wch: 5 }, { wch: 12 }, { wch: 25 }, { wch: 12 }, { wch: 10 },
+        { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }
+      ];
+      XLSX.utils.book_append_sheet(wb, ws3, 'All Students');
+
+      // Download
+      const now = new Date();
+      const fileName = `Fee_Due_Report_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+
+      toast('✅ Excel ডাউনলোড হয়েছে', 'success');
+    };
+
+    /* ============ Print ============ */
+    document.getElementById('printBtn').onclick = () => {
+      if (!lastReportData) { toast('প্রথমে Report তৈরি করুন', 'error'); return; }
+      window.print();
+    };
+
+    /* ============ Expand / Collapse All ============ */
+    document.getElementById('expandAllBtn').onclick = (e) => {
+      const btn = e.currentTarget;
+      const sections = document.querySelectorAll('.class-section');
+      const allOpen = [...sections].every(s => s.classList.contains('open'));
+
+      if (allOpen) {
+        sections.forEach(s => s.classList.remove('open'));
+        btn.innerHTML = '<span>🔽</span><span>Expand All</span>';
+      } else {
+        sections.forEach(s => s.classList.add('open'));
+        btn.innerHTML = '<span>🔼</span><span>Collapse All</span>';
+      }
+    };
+
+  </script>
+</body>
+</html>

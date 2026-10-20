@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chart of Accounts · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #e0e7ff;
+      --income: #10b981;
+      --income-light: #d1fae5;
+      --income-dark: #059669;
+      --expense: #ef4444;
+      --expense-light: #fee2e2;
+      --expense-dark: #dc2626;
+      --cash: #f59e0b;
+      --cash-light: #fef3c7;
+      --cash-dark: #d97706;
+      --dark: #0f172a;
+      --dark-2: #1e293b;
+      --gray: #64748b;
+      --gray-light: #f1f5f9;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 25px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Bengali', -apple-system, sans-serif;
+      background: #f8fafc;
+    }
+
+    .coa-header {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #7c3aed 100%);
+      padding: 24px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .coa-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .coa-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60%; left: -5%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .coa-header > * { position: relative; z-index: 1; }
+
+    .coa-header .left { display: flex; align-items: center; gap: 16px; }
+    .coa-header .icon-box {
+      width: 60px; height: 60px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+    }
+    .coa-header h1 {
+      font-size: 24px; font-weight: 900;
+      margin: 0; letter-spacing: -0.5px;
+    }
+    .coa-header p {
+      font-size: 13.5px; margin: 4px 0 0 0;
+      opacity: 0.9; font-weight: 500;
+    }
+
+    .coa-header .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .coa-back {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 11px 20px; border-radius: 12px; cursor: pointer;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .coa-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .coa-back .arrow {
+      background: white; color: #4f46e5;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+
+    .btn-add-new {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 6px 16px rgba(16,185,129,0.4);
+      transition: all 0.2s;
+    }
+    .btn-add-new:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(16,185,129,0.5);
+    }
+
+    .coa-wrap {
+      padding: 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-tile {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .stat-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .stat-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 5px;
+    }
+    .stat-tile.blue::before { background: linear-gradient(180deg, #6366f1, #4f46e5); }
+    .stat-tile.green::before { background: linear-gradient(180deg, #10b981, #059669); }
+    .stat-tile.red::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
+    .stat-tile.orange::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+    .stat-tile.purple::before { background: linear-gradient(180deg, #8b5cf6, #7c3aed); }
+
+    .stat-tile .icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .stat-tile.blue .icon-circle { background: var(--primary-light); }
+    .stat-tile.green .icon-circle { background: var(--income-light); }
+    .stat-tile.red .icon-circle { background: var(--expense-light); }
+    .stat-tile.orange .icon-circle { background: var(--cash-light); }
+    .stat-tile.purple .icon-circle { background: #ede9fe; }
+
+    .stat-tile .info { min-width: 0; }
+    .stat-tile .info h4 {
+      font-size: 11.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .stat-tile .info p {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .stat-tile.green .info p { color: var(--income); }
+    .stat-tile.red .info p { color: var(--expense); }
+    .stat-tile.orange .info p { color: var(--cash); }
+    .stat-tile.purple .info p { color: #8b5cf6; }
+
+    .toolbar {
+      background: white;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .search-box-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+      max-width: 400px;
+    }
+    .search-box-wrap::before {
+      content: '🔍';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .search-box-wrap input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 2px solid var(--border);
+      border-radius: 11px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 8px 16px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--gray);
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .chip.active.all { background: var(--dark); border-color: var(--dark); }
+    .chip.active.income { background: var(--income); border-color: var(--income); }
+    .chip.active.expense { background: var(--expense); border-color: var(--expense); }
+    .chip.active.cash { background: var(--cash); border-color: var(--cash); }
+
+    .chip .count {
+      background: rgba(255,255,255,0.25);
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    .chip:not(.active) .count {
+      background: var(--gray-light);
+      color: var(--gray);
+    }
+
+    .accounts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .account-card {
+      background: white;
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .account-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      transition: height 0.25s;
+    }
+    .account-card.income::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .account-card.expense::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .account-card.cash::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .account-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .account-card:hover::before { height: 6px; }
+
+    .account-card.inactive {
+      opacity: 0.55;
+      background: #f9fafb;
+    }
+
+    .account-card .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .account-card .acc-number {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--gray);
+      background: var(--gray-light);
+      padding: 4px 10px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+    .account-card.income .acc-number { background: var(--income-light); color: #065f46; }
+    .account-card.expense .acc-number { background: var(--expense-light); color: #991b1b; }
+    .account-card.cash .acc-number { background: var(--cash-light); color: #78350f; }
+
+    .account-card .type-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .account-card.income .type-badge {
+      background: var(--income-light); color: #065f46;
+    }
+    .account-card.expense .type-badge {
+      background: var(--expense-light); color: #991b1b;
+    }
+    .account-card.cash .type-badge {
+      background: var(--cash-light); color: #78350f;
+    }
+
+    .account-card .acc-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .account-card .acc-desc {
+      font-size: 12.5px;
+      color: var(--gray);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 0;
+      font-weight: 500;
+    }
+
+    .account-card .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      gap: 10px;
+    }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .status-dot::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .status-dot.active {
+      color: var(--income);
+    }
+    .status-dot.active::before {
+      background: var(--income);
+      box-shadow: 0 0 0 3px var(--income-light);
+    }
+    .status-dot.inactive {
+      color: var(--gray);
+    }
+    .status-dot.inactive::before {
+      background: #cbd5e1;
+    }
+
+    .account-card .monthly-tag {
+      font-size: 10.5px;
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .account-card .edit-btn {
+      background: var(--gray-light);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .account-card .edit-btn:hover {
+      background: var(--primary);
+      transform: rotate(-8deg) scale(1.08);
+    }
+    .account-card .edit-btn:hover::after { content: ''; }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: white;
+      border-radius: 20px;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px dashed var(--border);
+    }
+    .empty-state .icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+    .empty-state h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .empty-state p {
+      color: var(--gray);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .empty-state .btn-add-new {
+      display: inline-flex;
+      margin: 0 auto;
+    }
+
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(15,23,42,0.75);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: white;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      padding: 22px 26px;
+      border-radius: 22px 22px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    .modal-close {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-weight: 700;
+    }
+    .modal-close:hover {
+      background: rgba(255,255,255,0.25);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 24px 26px;
+    }
+
+    .fld {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .fld label {
+      font-size: 12px;
+      color: var(--gray);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 2px;
+    }
+    .fld.required label::after {
+      content: ' *';
+      color: var(--expense);
+    }
+    .fld input,
+    .fld select,
+    .fld textarea {
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 11px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      transition: all 0.2s;
+      width: 100%;
+      color: var(--dark);
+    }
+    .fld textarea {
+      min-height: 70px;
+      resize: vertical;
+      font-weight: 500;
+    }
+    .fld input:focus,
+    .fld select:focus,
+    .fld textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+
+    .type-picker {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .type-tile {
+      padding: 14px 8px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .type-tile .t-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .type-tile .t-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .type-tile:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .type-tile.selected.income {
+      background: var(--income-light);
+      border-color: var(--income);
+    }
+    .type-tile.selected.income .t-label { color: var(--income-dark); }
+    .type-tile.selected.expense {
+      background: var(--expense-light);
+      border-color: var(--expense);
+    }
+    .type-tile.selected.expense .t-label { color: var(--expense-dark); }
+    .type-tile.selected.cash {
+      background: var(--cash-light);
+      border-color: var(--cash);
+    }
+    .type-tile.selected.cash .t-label { color: var(--cash-dark); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-radius: 12px;
+      border: 1px solid #a7f3d0;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px; height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    input:checked + .slider { background: var(--income); }
+    input:checked + .slider:before { transform: translateX(22px); }
+    .toggle-label {
+      font-weight: 800;
+      font-size: 13.5px;
+      color: #065f46;
+    }
+    .toggle-label .hint {
+      display: block;
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 600;
+      margin-top: 1px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .btn-cancel {
+      background: var(--gray-light);
+      color: var(--gray);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-save {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 6px 16px rgba(16,185,129,0.3);
+      transition: all 0.2s;
+    }
+    .btn-save:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(16,185,129,0.4);
+    }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: var(--expense-light);
+      color: var(--expense-dark);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: auto;
+      transition: all 0.15s;
+    }
+    .btn-delete:hover { background: var(--expense); color: white; }
+
+    @media (max-width: 900px) {
+      .coa-header { padding: 18px 18px; }
+      .coa-header h1 { font-size: 18px; }
+      .coa-header .icon-box { width: 48px; height: 48px; font-size: 24px; }
+      .coa-header .header-actions { width: 100%; }
+      .coa-back, .btn-add-new { flex: 1; justify-content: center; }
+      .coa-wrap { padding: 14px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-tile { padding: 14px; }
+      .stat-tile .icon-circle { width: 40px; height: 40px; font-size: 18px; }
+      .stat-tile .info p { font-size: 20px; }
+      .toolbar { padding: 12px; flex-direction: column; align-items: stretch; }
+      .search-box-wrap { max-width: none; }
+      .accounts-grid { grid-template-columns: 1fr; }
+      .type-picker { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+      .type-tile { padding: 10px 4px; }
+      .type-tile .t-icon { font-size: 18px; }
+      .type-tile .t-label { font-size: 10.5px; }
+    }
+
+    @media (max-width: 500px) {
+      .stat-tile { flex-direction: column; text-align: center; gap: 8px; }
+      .chip .count { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, logAction } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'chart-of-accounts.html', 'Chart of Accounts');
+
+    const content = document.getElementById('content');
+
+    let allAccounts = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
+    let editingAccount = null;
+    let selectedType = 'income';
+
+    content.innerHTML = `
+      <div class="coa-header">
+        <div class="left">
+          <div class="icon-box">📊</div>
+          <div>
+            <h1>Chart of Accounts</h1>
+            <p>Manage all accounts · Income · Expense · Cash</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a class="coa-back" href="dashboard.html">
+            Back <span class="arrow">→</span>
+          </a>
+          <button class="btn-add-new" id="addNewBtn">
+            <span>➕</span>
+            <span>Add New</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="coa-wrap">
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-tile blue" data-filter="all">
+            <div class="icon-circle">📋</div>
+            <div class="info">
+              <h4>Total Accounts</h4>
+              <p id="statTotal">0</p>
+            </div>
+          </div>
+          <div class="stat-tile green" data-filter="income">
+            <div class="icon-circle">💰</div>
+            <div class="info">
+              <h4>Income</h4>
+              <p id="statIncome">0</p>
+            </div>
+          </div>
+          <div class="stat-tile red" data-filter="expense">
+            <div class="icon-circle">📉</div>
+            <div class="info">
+              <h4>Expense</h4>
+              <p id="statExpense">0</p>
+            </div>
+          </div>
+          <div class="stat-tile orange" data-filter="cash">
+            <div class="icon-circle">💵</div>
+            <div class="info">
+              <h4>Cash</h4>
+              <p id="statCash">0</p>
+            </div>
+          </div>
+          <div class="stat-tile purple">
+            <div class="icon-circle">📅</div>
+            <div class="info">
+              <h4>Monthly Accounts</h4>
+              <p id="statMonthly">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-box-wrap">
+            <input id="searchBox" placeholder="Search by name or account no...">
+          </div>
+          <div class="filter-chips" id="filterChips">
+            <button class="chip active all" data-filter="all">
+              All <span class="count" id="chipAllCount">0</span>
+            </button>
+            <button class="chip income" data-filter="income">
+              💰 Income <span class="count" id="chipIncomeCount">0</span>
+            </button>
+            <button class="chip expense" data-filter="expense">
+              📉 Expense <span class="count" id="chipExpenseCount">0</span>
+            </button>
+            <button class="chip cash" data-filter="cash">
+              💵 Cash <span class="count" id="chipCashCount">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="accounts-grid" id="accountsGrid">
+          <div class="empty-state">
+            <div class="icon">⏳</div>
+            <h3>Loading...</h3>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    /* ============ Load accounts ============ */
+    async function loadAccounts() {
+      try {
+        const { data, error } = await supabase
+          .from('fee_types')
+          .select('*')
+          .order('account_type', { ascending: true })
+          .order('account_no', { ascending: true });
+
+        if (error) throw error;
+        allAccounts = data || [];
+
+        updateStats();
+        renderAccounts();
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('accountsGrid').innerHTML = `
+          <div class="empty-state">
+            <div class="icon">❌</div>
+            <h3>Error</h3>
+            <p>${esc(err.message)}</p>
+          </div>
+        `;
+      }
+    }
+    await loadAccounts();
+
+    /* ============ Update Stats ============ */
+    function updateStats() {
+      const incomeCount = allAccounts.filter(a => a.account_type === 'income').length;
+      const expenseCount = allAccounts.filter(a => a.account_type === 'expense').length;
+      const cashCount = allAccounts.filter(a => a.account_type === 'cash').length;
+      const monthlyCount = allAccounts.filter(a => a.is_monthly).length;
+
+      document.getElementById('statTotal').textContent = allAccounts.length;
+      document.getElementById('statIncome').textContent = incomeCount;
+      document.getElementById('statExpense').textContent = expenseCount;
+      document.getElementById('statCash').textContent = cashCount;
+      document.getElementById('statMonthly').textContent = monthlyCount;
+
+      document.getElementById('chipAllCount').textContent = allAccounts.length;
+      document.getElementById('chipIncomeCount').textContent = incomeCount;
+      document.getElementById('chipExpenseCount').textContent = expenseCount;
+      document.getElementById('chipCashCount').textContent = cashCount;
+    }
+
+    /* ============ Render Accounts ============ */
+    function renderAccounts() {
+      const grid = document.getElementById('accountsGrid');
+
+      let filtered = allAccounts;
+
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(a => a.account_type === currentFilter);
+      }
+
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase().trim();
+        filtered = filtered.filter(a =>
+          (a.type_name || '').toLowerCase().includes(q) ||
+          (a.account_no || '').toLowerCase().includes(q) ||
+          (a.description || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">${currentSearch ? '🔍' : '📭'}</div>
+            <h3>${currentSearch ? 'কিছু পাওয়া যায়নি' : 'কোনো Account নেই'}</h3>
+            <p>${currentSearch ? 'অন্য কিছু দিয়ে খুঁজুন' : 'Add New বাটনে ক্লিক করে শুরু করুন'}</p>
+            ${!currentSearch ? `<button class="btn-add-new" id="emptyAddBtn"><span>➕</span><span>Add New Account</span></button>` : ''}
+          </div>
+        `;
+        const emptyAdd = document.getElementById('emptyAddBtn');
+        if (emptyAdd) emptyAdd.onclick = () => openForm();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(acc => renderAccountCard(acc)).join('');
+
+      grid.querySelectorAll('.account-card').forEach(card => {
+        const id = card.dataset.id;
+
+        card.onclick = (e) => {
+          if (e.target.closest('.edit-btn')) return;
+          const acc = allAccounts.find(a => String(a.id) === String(id));
+          if (acc) openForm(acc);
+        };
+
+        const editBtn = card.querySelector('.edit-btn');
+        if (editBtn) {
+          editBtn.onclick = (e) => {
+            e.stopPropagation();
+            const acc = allAccounts.find(a => String(a.id) === String(id));
+            if (acc) openForm(acc);
+          };
+        }
+      });
+    }
+
+    /* ============ Render Card ============ */
+    function renderAccountCard(acc) {
+      const type = acc.account_type || 'income';
+      const isActive = acc.is_active !== false;
+      const iconMap = {
+        income: '💰',
+        expense: '📉',
+        cash: '💵',
+      };
+      const icon = iconMap[type] || '📋';
+
+      return `
+        <div class="account-card ${type} ${isActive ? '' : 'inactive'}" data-id="${acc.id}">
+          <div class="card-head">
+            <div class="acc-number">${esc(acc.account_no || '—')}</div>
+            <div class="type-badge">
+              ${icon} ${esc(type.charAt(0).toUpperCase() + type.slice(1))}
+            </div>
+          </div>
+
+          <div class="acc-name">${esc(acc.type_name || '—')}</div>
+
+          ${acc.description ? `<div class="acc-desc">${esc(acc.description)}</div>` : ''}
+
+          <div class="card-footer">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span class="status-dot ${isActive ? 'active' : 'inactive'}">
+                ${isActive ? 'Active' : 'Inactive'}
+              </span>
+              ${acc.is_monthly ? `<span class="monthly-tag">📅 Monthly</span>` : ''}
+            </div>
+            <button class="edit-btn" title="Edit">✏️</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============ Stats tile / Chip filters ============ */
+    document.querySelectorAll('.stat-tile').forEach(tile => {
+      tile.onclick = () => {
+        const filter = tile.dataset.filter;
+        if (filter) setFilter(filter);
+      };
+    });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.onclick = () => setFilter(chip.dataset.filter);
+    });
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      const chip = document.querySelector(`.chip[data-filter="${filter}"]`);
+      if (chip) chip.classList.add('active');
+      renderAccounts();
+    }
+
+    /* ============ Search ============ */
+    document.getElementById('searchBox').oninput = (e) => {
+      currentSearch = e.target.value;
+      renderAccounts();
+    };
+
+    /* ============ Add New ============ */
+    document.getElementById('addNewBtn').onclick = () => openForm();
+
+    /* ============================================================
+       ✅ FIX: Auto-generate Account Number
+
+       আগে: String sort দিয়ে max বের করত → ভুল
+       যেমন: [10001..10026] এ string sort দিলে '10009' max হয় (ভুল)
+
+       এখন: সব account_no এনে parseInt করব → numeric max + 1
+       ============================================================ */
+    async function autoGenerateAccountNo(type) {
+      const el = document.getElementById('f_accno');
+      if (!el) return;
+
+      let prefix = '100';       // Income
+      let startFrom = 10001;
+
+      if (type === 'expense') {
+        prefix = '900';
+        startFrom = 90001;
+      } else if (type === 'cash') {
+        prefix = '1001';
+        startFrom = 1001;
+      }
+
+      // সব account_no আনি যেগুলো prefix দিয়ে শুরু
+      const { data } = await supabase.from('fee_types')
+        .select('account_no')
+        .like('account_no', prefix + '%');
+
+      // Numeric highest বের করি
+      let maxNum = 0;
+
+      (data || []).forEach(row => {
+        const n = parseInt(row.account_no, 10);
+        if (!isNaN(n) && n > maxNum) maxNum = n;
+      });
+
+      let nextNum;
+      if (maxNum > 0) {
+        nextNum = maxNum + 1;
+      } else {
+        nextNum = startFrom;
+      }
+
+      el.value = String(nextNum);
+    }
+
+    /* ============================================================
+       MODAL FORM
+       ============================================================ */
+    function openForm(account = null) {
+      editingAccount = account;
+      selectedType = account?.account_type || 'income';
+
+      const isEdit = !!account?.id;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ Edit Account' : '➕ New Account'}</h3>
+            <button class="modal-close" id="mClose">✕</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld required">
+              <label>Account Type</label>
+              <div class="type-picker" id="typePicker">
+                <button type="button" class="type-tile income ${selectedType === 'income' ? 'selected' : ''}" data-type="income">
+                  <span class="t-icon">💰</span>
+                  <span class="t-label">Income</span>
+                </button>
+                <button type="button" class="type-tile expense ${selectedType === 'expense' ? 'selected' : ''}" data-type="expense">
+                  <span class="t-icon">📉</span>
+                  <span class="t-label">Expense</span>
+                </button>
+                <button type="button" class="type-tile cash ${selectedType === 'cash' ? 'selected' : ''}" data-type="cash">
+                  <span class="t-icon">💵</span>
+                  <span class="t-label">Cash</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="fld required">
+              <label>Account Number</label>
+              <input id="f_accno" value="${esc(account?.account_no || '')}" placeholder="e.g. 10001" inputmode="numeric">
+            </div>
+
+            <div class="fld required">
+              <label>Account Name</label>
+              <input id="f_name" value="${esc(account?.type_name || '')}" placeholder="e.g. টিফিন ফি">
+            </div>
+
+            <div class="fld">
+              <label>Description (Optional)</label>
+              <textarea id="f_desc" placeholder="সংক্ষিপ্ত বিবরণ...">${esc(account?.description || '')}</textarea>
+            </div>
+
+            <label class="toggle-row">
+              <span class="toggle-switch">
+                <input type="checkbox" id="f_monthly" ${account?.is_monthly ? 'checked' : ''}>
+                <span class="slider"></span>
+              </span>
+              <span class="toggle-label">
+                📅 Monthly Account
+                <span class="hint">মাসিক ফি হলে টিক দিন</span>
+              </span>
+            </label>
+
+            <label class="toggle-row" style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-color:#cbd5e1">
+              <span class="toggle-switch">
+                <input type="checkbox" id="f_active" ${account?.is_active !== false ? 'checked' : ''}>
+                <span class="slider"></span>
+              </span>
+              <span class="toggle-label" style="color:var(--dark)">
+                ✅ Active
+                <span class="hint" style="color:var(--gray)">চালু না বন্ধ</span>
+              </span>
+            </label>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">Cancel</button>
+              <button class="btn-save" id="mSave">${isEdit ? '💾 Update' : '💾 Save'}</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      /* ============================================================
+         ✅ FIX: Type পিকার — এখন type change হলে account_no regenerate হবে
+         (আগে regenerate হত না, ফলে number ভুল থাকত)
+         ============================================================ */
+      document.querySelectorAll('.type-tile').forEach(tile => {
+        tile.onclick = async () => {
+          document.querySelectorAll('.type-tile').forEach(t => t.classList.remove('selected'));
+          tile.classList.add('selected');
+          selectedType = tile.dataset.type;
+
+          // ✅ নতুন account-এর জন্য auto-regenerate
+          if (!isEdit) {
+            await autoGenerateAccountNo(selectedType);
+          }
+        };
+      });
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      // ✅ FIX: নতুন Account হলে auto-generate first time
+      if (!isEdit) {
+        autoGenerateAccountNo(selectedType);
+      }
+
+      // Delete
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`Delete "${account.type_name}"?\n\n⚠️ এই কাজ ফেরানো যাবে না!`)) return;
+
+          const { error } = await supabase.from('fee_types').delete().eq('id', account.id);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+          await logAction('delete', 'fee_types', account.id, `Account delete: ${account.type_name}`);
+          toast(`🗑️ "${account.type_name}" delete হয়েছে`, 'success');
+          closeModal();
+          await loadAccounts();
+        };
+      }
+
+      // Save
+      document.getElementById('mSave').onclick = async () => {
+        const accNo = document.getElementById('f_accno').value.trim();
+        const name = document.getElementById('f_name').value.trim();
+        const desc = document.getElementById('f_desc').value.trim();
+        const isMonthly = document.getElementById('f_monthly').checked;
+        const isActive = document.getElementById('f_active').checked;
+
+        if (!accNo) { toast('Account Number দিন', 'error'); return; }
+        if (!name) { toast('Account Name দিন', 'error'); return; }
+
+        const payload = {
+          account_no: accNo,
+          type_name: name,
+          account_type: selectedType,
+          description: desc || null,
+          is_monthly: isMonthly,
+          is_active: isActive,
+        };
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true;
+        btn.textContent = '⏳ Saving...';
+
+        let error;
+        if (isEdit) {
+          const r = await supabase.from('fee_types').update(payload).eq('id', account.id);
+          error = r.error;
+        } else {
+          const r = await supabase.from('fee_types').insert(payload);
+          error = r.error;
+        }
+
+        btn.disabled = false;
+        btn.textContent = isEdit ? '💾 Update' : '💾 Save';
+
+        if (error) {
+          if (error.message.includes('duplicate') || error.message.includes('unique')) {
+            toast('❌ এই Account Number আগেই ব্যবহার করা হয়েছে', 'error');
+          } else {
+            toast('❌ ' + error.message, 'error');
+          }
+          return;
+        }
+
+        await logAction(isEdit ? 'update' : 'create', 'fee_types', account?.id || name,
+          `${isEdit ? 'Update' : 'Create'} account: ${name}`);
+
+        toast(isEdit ? '✅ Update হয়েছে' : '✅ Account তৈরি হয়েছে', 'success');
+        closeModal();
+        await loadAccounts();
+      };
+    }
+
+  </script>
+</body>
+</html>

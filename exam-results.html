@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam Results · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.er-header{
+  background:linear-gradient(180deg,#f5f5f5 0%,#ffffff 100%);
+  border-radius:10px 10px 0 0;padding:18px 24px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:3px solid #c0392b;flex-wrap:wrap;gap:10px;
+}
+.er-header .left{display:flex;align-items:center;gap:14px}
+.er-header .icon{
+  font-size:34px;width:52px;height:52px;
+  background:#c0392b;color:white;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+.er-header h1{color:#c0392b;font-size:22px;margin:0;font-weight:700}
+.er-header p{color:#7f1d1d;margin:2px 0 0;font-size:13px;font-weight:600}
+.er-back{
+  background:#1f2937;color:white;border:none;padding:10px 18px;
+  border-radius:8px;cursor:pointer;font-weight:600;
+  display:flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;
+}
+.er-back .arrow{
+  background:#22c55e;border-radius:50%;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.er-body{
+  background:white;border-radius:0 0 10px 10px;
+  padding:26px 32px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px;
+}
+.er-form{display:grid;grid-template-columns:1fr 1fr;gap:12px 40px;max-width:950px;margin:0 auto}
+.er-row{display:grid;grid-template-columns:140px 1fr;align-items:center;gap:12px}
+.er-row label{color:#374151;font-weight:600;font-size:14px;text-align:right}
+.er-row input,.er-row select{
+  padding:9px 12px;border:1px solid #d1d5db;border-radius:4px;
+  font-size:14px;width:100%;background:white;
+}
+.er-btn-row{grid-column:2 / 3;padding-left:12px;margin-top:4px}
+.er-search-btn{
+  background:#c0392b;color:white;border:none;padding:11px 36px;
+  border-radius:4px;font-weight:700;font-size:14.5px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.er-search-btn:disabled{opacity:.6;cursor:not-allowed}
+.info-banner{
+  background:#d1fae5;border-left:4px solid #16a34a;
+  padding:12px 16px;border-radius:6px;margin-bottom:14px;
+  font-size:13px;color:#065f46;max-width:950px;
+  margin-left:auto;margin-right:auto;
+}
+.warn-banner{
+  background:#fef3c7;border-left:4px solid #f59e0b;
+  padding:14px 18px;border-radius:8px;margin:16px auto;
+  font-size:13.5px;color:#92400e;max-width:950px;
+  line-height:1.6;
+}
+.warn-banner h4{margin:0 0 8px;font-size:15px;color:#78350f}
+.warn-banner .hint-list{
+  margin:8px 0;padding-left:20px;
+}
+.warn-banner .hint-list li{margin:4px 0}
+.warn-banner .fix-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;padding:9px 18px;
+  background:#10b981;color:#fff;border:none;border-radius:8px;
+  font-weight:800;font-size:13px;text-decoration:none;cursor:pointer;
+  font-family:inherit;
+}
+.marks-info{
+  background:#f9fafb;border:1px solid #d1d5db;
+  border-radius:6px;padding:14px 18px;margin-bottom:14px;font-size:14px;
+}
+.marks-info h3{color:#c0392b;font-size:14px;margin-bottom:10px;font-weight:700}
+.marks-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px}
+.marks-info-grid .item{display:flex;padding:3px 0}
+.marks-info-grid .lbl{color:#374151;font-weight:700;min-width:130px}
+.marks-info-grid .val{color:#1f2937;font-weight:600}
+.marks-info-grid .val.green{background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:4px}
+.marks-info-grid .val.purple{background:#ede9fe;color:#6d28d9;padding:2px 10px;border-radius:4px}
+.marks-info-grid .val.orange{background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:4px}
+.marks-info-grid .val.blue{background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:4px}
+.grade-legend{
+  display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;
+  background:#f0fdf4;border:1px solid #d1fae5;border-radius:6px;
+  margin-bottom:14px;font-size:12px;align-items:center;
+}
+.grade-legend b{margin-right:8px;color:#065f46}
+.grade-legend .item{
+  display:inline-flex;gap:6px;align-items:center;
+  padding:3px 10px;background:white;border-radius:4px;
+  font-weight:700;border:1px solid #e5e7eb;
+}
+.grade-legend .item .gp{color:#c0392b}
+.er-table-wrap{overflow-x:auto;border:1px solid #d1d5db;border-radius:6px}
+.er-table{width:100%;border-collapse:collapse;font-size:13px;min-width:1100px}
+.er-table thead th{
+  background:#c0392b;color:white;padding:10px 8px;
+  font-weight:700;font-size:12px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.2);white-space:nowrap;
+}
+.er-table thead th:last-child{border-right:none}
+.er-table tbody td{
+  padding:6px 8px;border-bottom:1px solid #e5e7eb;
+  text-align:center;background:white;
+}
+.er-table tbody tr:nth-child(even) td{background:#f9fafb}
+.er-table tbody tr:hover td{background:#fef2f2}
+.er-table tbody td.name-cell{text-align:left;font-weight:700;color:#1f2937;padding-left:14px}
+.er-table tbody td.index-cell{font-weight:700;color:#1e3a8a;font-family:'Courier New',monospace;font-size:13px}
+.er-table input[type="number"]{
+  width:62px;padding:5px 6px;border:1px solid #d1d5db;border-radius:3px;
+  text-align:center;font-size:13px;font-weight:700;
+}
+.er-table input[type="number"].has-value{background:#d1fae5;border-color:#16a34a;color:#065f46}
+.er-table input[type="number"]:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+.er-table input[type="checkbox"]{width:17px;height:17px;accent-color:#16a34a;cursor:pointer}
+.er-table .total-cell{font-weight:800;color:#1e3a8a;background:#eff6ff !important;font-size:14px}
+.er-table .grade-cell{font-weight:800;font-size:13px}
+.er-table .grade-pass{color:#16a34a}
+.er-table .grade-fail{color:#dc2626}
+.er-table tbody tr.absent-row td{opacity:.7;background:#fef2f2 !important}
+.er-table tbody tr.absent-row .total-cell{background:#fee2e2 !important;color:#991b1b}
+.er-save-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:20px;margin-top:20px;padding:16px 22px;
+  background:#fef2f2;border:2px solid #c0392b;border-radius:8px;flex-wrap:wrap;
+}
+.er-save-bar .warn{color:#c0392b;font-weight:700;font-size:13px}
+.er-save-btn{
+  background:#c0392b;color:white;border:none;padding:13px 44px;
+  border-radius:4px;font-weight:700;font-size:15px;cursor:pointer;
+}
+.er-save-btn:disabled{opacity:.6;cursor:not-allowed}
+.bulk-tools{
+  display:flex;gap:10px;align-items:center;
+  margin-bottom:12px;padding:10px 14px;
+  background:#fffbeb;border:1px dashed #f59e0b;
+  border-radius:6px;font-size:13px;flex-wrap:wrap;
+}
+.bulk-tools b{color:#92400e;margin-right:6px}
+.bulk-btn{
+  background:#16a34a;color:white;border:none;padding:6px 14px;
+  border-radius:4px;font-weight:700;font-size:12.5px;cursor:pointer;
+}
+.bulk-btn.warn{background:#f59e0b}
+.bulk-btn.blue{background:#2563eb}
+@media (max-width:900px){
+  .er-form{grid-template-columns:1fr}
+  .er-row{grid-template-columns:1fr}
+  .er-row label{text-align:left}
+  .er-btn-row{grid-column:1 / -1;padding-left:0}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'exam-results.html', 'Exam Results');
+
+const content = document.getElementById('content');
+const CURRENT_YEAR = new Date().getFullYear();
+
+let classGradeMap = {};
+async function loadGradeSystem() {
+  const { data } = await supabase.from('grade_system').select('*');
+  classGradeMap = {};
+  (data || []).forEach(g => {
+    if (!classGradeMap[g.class_name]) classGradeMap[g.class_name] = [];
+    classGradeMap[g.class_name].push(g);
+  });
+  Object.keys(classGradeMap).forEach(k => {
+    classGradeMap[k].sort((a, b) => b.mark_from - a.mark_from);
+  });
+}
+await loadGradeSystem();
+
+function getGrade(percent, className) {
+  const list = classGradeMap[className] || [];
+  for (const g of list) {
+    if (percent >= +g.mark_from && percent <= +g.mark_to) {
+      return { gp: +g.grading_point, letter: g.grade_name };
+    }
+  }
+  if (percent >= 80) return { gp: 5.00, letter: 'A+' };
+  if (percent >= 70) return { gp: 4.00, letter: 'A' };
+  if (percent >= 60) return { gp: 3.50, letter: 'A-' };
+  if (percent >= 50) return { gp: 3.00, letter: 'B' };
+  if (percent >= 40) return { gp: 2.00, letter: 'C' };
+  if (percent >= 33) return { gp: 1.00, letter: 'D' };
+  return { gp: 0, letter: 'F' };
+}
+
+content.innerHTML = `
+<div id="searchView">
+  <div class="er-header">
+    <div class="left">
+      <div class="icon">📊</div>
+      <div>
+        <h1>Exam Result</h1>
+        <p>Marks Entry · Auto Grade · SSC-compliant</p>
+      </div>
+    </div>
+    <button class="er-back" onclick="window.location.href='dashboard.html'">
+      Back <span class="arrow">←</span>
+    </button>
+  </div>
+
+  <div class="er-body">
+    <div class="info-banner">
+      ✅ <b>Auto Grade:</b> Class-wise grade system · <b>F detection:</b> যেকোনো subject &lt; ৩৩% হলে F · <b>Absent:</b> Present uncheck করলে row লাল
+    </div>
+
+    <div class="er-form">
+      <div class="er-row">
+        <label>Session</label>
+        <select id="sessionYear">
+          ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+            `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div class="er-row">
+        <label>Class</label>
+        <select id="className"><option value="">-- Class --</option></select>
+      </div>
+      <div class="er-row">
+        <label>Section</label>
+        <select id="sectionName"><option value="">All Sections</option></select>
+      </div>
+      <div class="er-row">
+        <label>Exam Term</label>
+        <select id="examTerm"><option value="">লোড হচ্ছে...</option></select>
+      </div>
+      <div class="er-row">
+        <label>Subject</label>
+        <select id="subjectName"><option value="">-- Class ও Term সিলেক্ট করুন --</option></select>
+      </div>
+      <div class="er-btn-row">
+        <button class="er-search-btn" id="searchBtn">📥 Search / Mark Entry</button>
+      </div>
+    </div>
+
+    <div id="helpBox"></div>
+  </div>
+</div>
+
+<div id="marksView" style="display:none"></div>
+`;
+
+let allClasses = [];
+let allExamTerms = [];
+
+async function loadBase() {
+  const [c, e] = await Promise.all([
+    supabase.from('classes').select('*').order('id'),
+    supabase.from('exams').select('exam_name, exam_serial').order('exam_serial'),
+  ]);
+  allClasses = c.data || [];
+  allExamTerms = e.data || [];
+
+  document.getElementById('className').innerHTML =
+    '<option value="">-- Class --</option>' +
+    allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+
+  const termSel = document.getElementById('examTerm');
+  if (allExamTerms.length) {
+    termSel.innerHTML = allExamTerms.map(e =>
+      `<option value="${esc(e.exam_name)}">${esc(e.exam_name)}</option>`
+    ).join('');
+  } else termSel.innerHTML = '<option value="">-- Exam নেই --</option>';
+}
+await loadBase();
+
+document.getElementById('className').onchange = async () => {
+  const cls = allClasses.find(x => x.id == document.getElementById('className').value);
+  document.getElementById('sectionName').innerHTML =
+    '<option value="">All Sections</option>' +
+    ((cls?.sections || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join(''));
+  await loadSubjectsDropdown();
+};
+document.getElementById('examTerm').onchange = loadSubjectsDropdown;
+document.getElementById('sessionYear').onchange = loadSubjectsDropdown;
+
+/* ============================================================
+   ✅ SUBJECT DROPDOWN — Smart + Fallback + Help
+   ============================================================ */
+async function loadSubjectsDropdown() {
+  const session = +document.getElementById('sessionYear').value;
+  const classId = document.getElementById('className').value;
+  const term = document.getElementById('examTerm').value;
+  const sel = document.getElementById('subjectName');
+  const helpBox = document.getElementById('helpBox');
+
+  helpBox.innerHTML = '';
+
+  if (!classId || !term) {
+    sel.innerHTML = '<option value="">-- Class ও Term সিলেক্ট করুন --</option>';
+    return;
+  }
+
+  sel.innerHTML = '<option value="">⏳ Loading...</option>';
+
+  /* STEP 1: Try exact match (session + class + term) */
+  let { data: exact } = await supabase.from('subjects').select('*')
+    .eq('session_year', session)
+    .eq('class_id', classId)
+    .eq('exam_term', term)
+    .order('subject_type')
+    .order('id');
+
+  let matchedBy = 'exact';
+
+  /* STEP 2: If nothing, try WITHOUT session (maybe session mismatch) */
+  if (!exact || !exact.length) {
+    let { data: fallback } = await supabase.from('subjects').select('*')
+      .eq('class_id', classId)
+      .eq('exam_term', term)
+      .order('subject_type')
+      .order('id');
+
+    if (fallback && fallback.length) {
+      exact = fallback;
+      matchedBy = 'no-session';
+      const sessions = [...new Set(fallback.map(s => s.session_year))].join(', ');
+      helpBox.innerHTML = `
+        <div class="warn-banner">
+          <h4>⚠️ Session mismatch</h4>
+          <b>${session}</b> session-এ কোনো subject নেই, কিন্তু <b>${sessions}</b> session-এ <b>${fallback.length}টি</b> subject পাওয়া গেছে।
+          <br>
+          <small>উপরে Session <b>${sessions.split(',')[0].trim()}</b> করুন অথবা subjects.html-এ নতুন subject তৈরি করুন।</small>
+          <br>
+          <a class="fix-btn" href="subjects.html">⚡ Subjects পেজে যান</a>
+        </div>
+      `;
+    } else {
+      /* STEP 3: Try with just class (any term) */
+      let { data: classOnly } = await supabase.from('subjects').select('exam_term, session_year, class_id')
+        .eq('class_id', classId);
+
+      if (classOnly && classOnly.length) {
+        const terms = [...new Set(classOnly.map(s => s.exam_term))].filter(Boolean);
+        const sessions = [...new Set(classOnly.map(s => s.session_year))].filter(Boolean);
+
+        helpBox.innerHTML = `
+          <div class="warn-banner">
+            <h4>⚠️ "${esc(term)}" term-এ কোনো subject নেই</h4>
+            এই class-এ মোট <b>${classOnly.length}টি</b> subject আছে, কিন্তু <b>"${esc(term)}"</b> term-এ নয়।
+            <br>
+            <b>📌 Available Terms:</b>
+            <ul class="hint-list">
+              ${terms.slice(0, 5).map(t => '<li>' + esc(t) + '</li>').join('')}
+            </ul>
+            <b>📌 Available Sessions:</b> ${sessions.join(', ')}
+            <br>
+            <a class="fix-btn" href="subjects.html">⚡ subjects.html-এ "${esc(term)}"-এর Subject তৈরি করুন</a>
+          </div>
+        `;
+      } else {
+        helpBox.innerHTML = `
+          <div class="warn-banner">
+            <h4>📭 এই class-এ একটাও subject নেই</h4>
+            এই class-এর জন্য এখনো কোনো subject তৈরি করা হয়নি।
+            <br>
+            <a class="fix-btn" href="subjects.html">⚡ subjects.html-এ যান → Auto Setup</a>
+          </div>
+        `;
+      }
+    }
+  }
+
+  if (!exact || !exact.length) {
+    sel.innerHTML = '<option value="">-- কোনো Subject নেই --</option>';
+    return;
+  }
+
+  /* Populate dropdown */
+  sel.innerHTML = '<option value="">-- Subject সিলেক্ট করুন --</option>' +
+    exact.map(s => {
+      const tag = s.subject_type === 'fourth' ? ' [4th]'
+                : s.subject_type === 'optional' ? ' [Opt]'
+                : s.subject_type === 'religion' ? ' [Rel]'
+                : '';
+      return `<option value="${s.id}">${esc(s.subject_code || '')} - ${esc(s.subject_name)}${tag}</option>`;
+    }).join('');
+
+  /* If fallback used, hint above dropdown */
+  if (matchedBy === 'no-session' && !helpBox.innerHTML) {
+    toast('ℹ️ Session filter ignore করে subject দেখাচ্ছি', 'success');
+  }
+}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+document.getElementById('searchBtn').onclick = async () => {
+  const session = +document.getElementById('sessionYear').value;
+  const classId = document.getElementById('className').value;
+  const section = document.getElementById('sectionName').value;
+  const term = document.getElementById('examTerm').value;
+  const subjectId = document.getElementById('subjectName').value;
+
+  if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+  if (!term) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+  if (!subjectId) { toast('Subject সিলেক্ট করুন', 'error'); return; }
+
+  const { data: subject } = await supabase.from('subjects').select('*').eq('id', subjectId).single();
+  if (!subject) { toast('Subject পাওয়া যায়নি', 'error'); return; }
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.textContent = '⏳ লোড হচ্ছে...';
+
+  let q = supabase.from('students').select('*').eq('class_id', classId);
+  if (section) q = q.eq('section', section);
+  q = q.order('roll');
+  const { data: students, error } = await q;
+
+  if (error) { toast('❌ ' + error.message, 'error'); btn.disabled = false; btn.textContent = '📥 Search / Mark Entry'; return; }
+  if (!students || !students.length) { toast('কোনো ছাত্র নেই', 'error'); btn.disabled = false; btn.textContent = '📥 Search / Mark Entry'; return; }
+
+  const sIndexes = students.map(s => s.student_index).filter(Boolean);
+  const existingMap = {};
+  if (sIndexes.length) {
+    let eq = supabase.from('exam_results').select('*')
+      .eq('session_year', session)
+      .eq('exam_term', term)
+      .in('student_index', sIndexes);
+
+    if (subject.subject_code) eq = eq.eq('subject_code', subject.subject_code);
+    else eq = eq.is('subject_code', null);
+
+    const { data: existing } = await eq;
+    (existing || []).forEach(e => existingMap[e.student_index] = e);
+  }
+
+  btn.disabled = false; btn.textContent = '📥 Search / Mark Entry';
+
+  const cls = allClasses.find(c => c.id == classId);
+  renderMarks({
+    session, classId, section, term, subject,
+    students, existingMap, className: cls?.class_name || '',
+  });
+
+  document.getElementById('searchView').style.display = 'none';
+  document.getElementById('marksView').style.display = 'block';
+  toast(`✅ ${students.length} জন ছাত্র লোড`, 'success');
+};
+
+/* ============================================================
+   RENDER MARKS ENTRY
+   ============================================================ */
+function renderMarks(ctx) {
+  const s = ctx.subject;
+  const typeMap = {
+    compulsory: { label: 'Compulsory', cls: 'blue' },
+    optional: { label: 'Optional', cls: 'orange' },
+    fourth: { label: '4th Subject', cls: 'purple' },
+    religion: { label: 'Religion', cls: 'green' },
+    both: { label: 'Both (CQ+MCQ)', cls: 'blue' },
+  };
+  const typeInfo = typeMap[s.subject_type] || typeMap.compulsory;
+
+  const cols = [];
+  const cqMax = +s.subjective_marks || 0;
+  const mcqMax = +s.objective_marks || 0;
+  const pracMax = +s.practical_marks || 0;
+  const assessMax = +s.assessment_marks || 0;
+  const ctMax = +s.ct_mt_marks || 0;
+
+  if (cqMax > 0) cols.push({ key: 'subjective_marks', label: 'Written (CQ)', max: cqMax });
+  if (mcqMax > 0) cols.push({ key: 'objective_marks', label: 'MCQ', max: mcqMax });
+  if (pracMax > 0) cols.push({ key: 'practical_marks', label: 'Practical', max: pracMax });
+  if (assessMax > 0) cols.push({ key: 'assessment_marks', label: 'Assessment', max: assessMax });
+  if (ctMax > 0) cols.push({ key: 'ct_mt_marks', label: 'CT/MT', max: ctMax });
+
+  if (!cols.length) cols.push({ key: 'subjective_marks', label: 'Marks', max: +s.total_marks || 100 });
+
+  const totalFull = +s.total_marks || cols.reduce((sum, c) => sum + c.max, 0);
+
+  const clsGradeList = classGradeMap[ctx.className] || [];
+  const legendHtml = clsGradeList.length
+    ? clsGradeList.map(g =>
+        `<span class="item">${esc(g.grade_name)} ${g.mark_from}-${g.mark_to} <span class="gp">GP ${g.grading_point}</span></span>`
+      ).join('')
+    : '<span class="item">Standard grading system</span>';
+
+  document.getElementById('marksView').innerHTML = `
+    <div class="er-header">
+      <div class="left">
+        <div class="icon">📝</div>
+        <div>
+          <h1>Mark Entry</h1>
+          <p>Input obtained marks for each student</p>
+        </div>
+      </div>
+      <button class="er-back" id="backBtn">
+        Back <span class="arrow">←</span>
+      </button>
+    </div>
+
+    <div class="er-body">
+      <div class="marks-info">
+        <h3>📋 Selected Data:</h3>
+        <div class="marks-info-grid">
+          <div class="item"><span class="lbl">Session / Year:</span><span class="val">${ctx.session}</span></div>
+          <div class="item"><span class="lbl">Section:</span><span class="val">${esc(ctx.section || 'All')}</span></div>
+          <div class="item"><span class="lbl">Class:</span><span class="val">${esc(ctx.className)}</span></div>
+          <div class="item"><span class="lbl">Term:</span><span class="val green">${esc(ctx.term)}</span></div>
+          <div class="item"><span class="lbl">Subject:</span><span class="val green">${esc(s.subject_code || '')} - ${esc(s.subject_name)}</span></div>
+          <div class="item"><span class="lbl">Type:</span><span class="val ${typeInfo.cls}">${typeInfo.label}</span></div>
+          <div class="item"><span class="lbl">Total Full Marks:</span><span class="val">${totalFull}</span></div>
+          <div class="item"><span class="lbl">Pass Marks:</span><span class="val">${Math.round(totalFull * 0.33)} (33%)</span></div>
+        </div>
+      </div>
+
+      <div class="grade-legend">
+        <b>🎯 Grading:</b>
+        ${legendHtml}
+      </div>
+
+      <div class="bulk-tools">
+        <b>⚡ Quick Action:</b>
+        <button class="bulk-btn" id="allPresentBtn">সবাই Present</button>
+        <button class="bulk-btn warn" id="allAbsentBtn">সবাই Absent</button>
+        <button class="bulk-btn blue" id="clearAllBtn">সব Marks মুছুন</button>
+      </div>
+
+      <div class="er-table-wrap">
+        <table class="er-table">
+          <thead>
+            <tr>
+              <th style="width:65px">Index</th>
+              <th style="min-width:180px;text-align:left">Student Name</th>
+              <th style="width:60px">Roll</th>
+              <th style="width:80px">Present</th>
+              ${cols.map(c => `<th style="width:100px">${esc(c.label)}<br><small>(${c.max})</small></th>`).join('')}
+              <th style="width:70px">Total</th>
+              <th style="width:70px">Grade</th>
+              <th style="width:55px">GP</th>
+            </tr>
+          </thead>
+          <tbody id="marksTbody">
+            ${ctx.students.map(st => renderRow(st, ctx, cols, totalFull)).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="er-save-bar">
+        <span class="warn">⚠️ Absent হলে Present uncheck করে Save করুন</span>
+        <button class="er-save-btn" id="saveBtn">💾 Save All</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('backBtn').onclick = () => {
+    document.getElementById('marksView').style.display = 'none';
+    document.getElementById('searchView').style.display = 'block';
+  };
+
+  document.getElementById('allPresentBtn').onclick = () => {
+    document.querySelectorAll('.present-chk').forEach(c => {
+      c.checked = true;
+      c.dispatchEvent(new Event('change'));
+    });
+  };
+  document.getElementById('allAbsentBtn').onclick = () => {
+    if (!confirm('সবাইকে Absent করবেন?')) return;
+    document.querySelectorAll('.present-chk').forEach(c => {
+      c.checked = false;
+      c.dispatchEvent(new Event('change'));
+    });
+  };
+  document.getElementById('clearAllBtn').onclick = () => {
+    if (!confirm('সব Marks মুছে যাবে — নিশ্চিত?')) return;
+    document.querySelectorAll('.mark-input').forEach(i => {
+      i.value = 0;
+      i.dispatchEvent(new Event('input'));
+    });
+  };
+
+  attachHandlers(ctx, cols, totalFull);
+  document.getElementById('saveBtn').onclick = () => saveAll(ctx);
+}
+
+function renderRow(st, ctx, cols, totalFull) {
+  const prev = ctx.existingMap[st.student_index] || {};
+  const isAbsent = prev.is_absent === true || prev.present === false;
+  const present = !isAbsent;
+
+  const vals = {};
+  cols.forEach(c => vals[c.key] = +prev[c.key] || 0);
+
+  const total = cols.reduce((sum, c) => sum + (vals[c.key] || 0), 0);
+  const pct = totalFull ? (total / totalFull * 100) : 0;
+
+  let hasF = false;
+  cols.forEach(c => {
+    if (c.max > 0) {
+      const colPct = (vals[c.key] / c.max * 100);
+      if (colPct < 33 && vals[c.key] < c.max) hasF = true;
+    }
+  });
+
+  let grade = present ? getGrade(pct, ctx.className) : { gp: 0, letter: 'F' };
+  if (present && hasF && grade.letter !== 'F') grade = { gp: 0, letter: 'F' };
+  if (!present) grade = { gp: 0, letter: 'F' };
+
+  return `
+    <tr data-sid="${esc(st.student_index || st.student_id)}" data-roll="${st.roll || ''}"
+        class="${present ? '' : 'absent-row'}">
+      <td class="index-cell">${esc(st.student_index || st.student_id)}</td>
+      <td class="name-cell">${esc(st.name)}</td>
+      <td>${st.roll ?? '-'}</td>
+      <td><input type="checkbox" class="present-chk" ${present ? 'checked' : ''}></td>
+      ${cols.map(c => `
+        <td>
+          <input type="number" class="mark-input" data-field="${c.key}"
+            min="0" max="${c.max}" value="${vals[c.key]}"
+            ${present ? '' : 'disabled'}>
+        </td>
+      `).join('')}
+      <td class="total-cell">${total}</td>
+      <td class="grade-cell ${grade.letter === 'F' ? 'grade-fail' : 'grade-pass'}">${grade.letter}</td>
+      <td class="grade-cell ${grade.letter === 'F' ? 'grade-fail' : 'grade-pass'}">${grade.gp.toFixed(2)}</td>
+    </tr>
+  `;
+}
+
+function attachHandlers(ctx, cols, totalFull) {
+  const tbody = document.getElementById('marksTbody');
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const presentChk = tr.querySelector('.present-chk');
+    const inputs = tr.querySelectorAll('.mark-input');
+    const totalCell = tr.querySelector('.total-cell');
+    const gradeCells = tr.querySelectorAll('.grade-cell');
+
+    function recalc() {
+      let sum = 0;
+      let hasF = false;
+
+      inputs.forEach(i => {
+        const max = +i.max || 0;
+        let v = +i.value || 0;
+        if (v > max) { v = max; i.value = v; }
+        if (v < 0) { v = 0; i.value = v; }
+        sum += v;
+
+        if (max > 0 && v < max) {
+          const p = (v / max * 100);
+          if (p < 33) hasF = true;
+        }
+
+        if (v > 0) i.classList.add('has-value');
+        else i.classList.remove('has-value');
+      });
+
+      totalCell.textContent = sum;
+
+      const pct = totalFull ? (sum / totalFull * 100) : 0;
+      let grade = getGrade(pct, ctx.className);
+
+      if (hasF && grade.letter !== 'F') grade = { gp: 0, letter: 'F' };
+
+      gradeCells[0].textContent = grade.letter;
+      gradeCells[1].textContent = grade.gp.toFixed(2);
+      gradeCells.forEach(gc => {
+        gc.classList.toggle('grade-fail', grade.letter === 'F');
+        gc.classList.toggle('grade-pass', grade.letter !== 'F');
+      });
+    }
+
+    inputs.forEach(inp => inp.oninput = recalc);
+
+    presentChk.onchange = () => {
+      const isPresent = presentChk.checked;
+      if (isPresent) {
+        tr.classList.remove('absent-row');
+        inputs.forEach(i => i.disabled = false);
+      } else {
+        tr.classList.add('absent-row');
+        inputs.forEach(i => {
+          i.disabled = true;
+          i.value = 0;
+          i.classList.remove('has-value');
+        });
+      }
+      recalc();
+    };
+  });
+}
+
+async function saveAll(ctx) {
+  const rows = [...document.querySelectorAll('#marksTbody tr')];
+  if (!rows.length) return;
+
+  const records = rows.map(tr => {
+    const present = tr.querySelector('.present-chk').checked;
+    const marks = {};
+    tr.querySelectorAll('.mark-input').forEach(inp => {
+      marks[inp.dataset.field] = present ? (+inp.value || 0) : 0;
+    });
+
+    const allFields = ['subjective_marks','objective_marks','practical_marks','assessment_marks','ct_mt_marks'];
+    allFields.forEach(f => { if (!(f in marks)) marks[f] = 0; });
+
+    const total = allFields.reduce((sum, f) => sum + (marks[f] || 0), 0);
+
+    return {
+      session_year: ctx.session,
+      class_id: ctx.classId,
+      section: ctx.section || null,
+      exam_term: ctx.term,
+      subject_code: ctx.subject.subject_code || null,
+      subject_name: ctx.subject.subject_name,
+      student_index: tr.dataset.sid,
+      roll: tr.dataset.roll ? +tr.dataset.roll : null,
+      present: present,
+      is_absent: !present,
+      ct_mt_marks: marks.ct_mt_marks,
+      subjective_marks: marks.subjective_marks,
+      objective_marks: marks.objective_marks,
+      practical_marks: marks.practical_marks,
+      assessment_marks: marks.assessment_marks,
+      total_marks: present ? total : 0,
+      updated_at: new Date().toISOString(),
+    };
+  });
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ সেভ হচ্ছে...';
+
+  const sIndexes = records.map(r => r.student_index);
+
+  let delQ = supabase.from('exam_results').delete()
+    .eq('session_year', ctx.session)
+    .eq('class_id', ctx.classId)
+    .eq('exam_term', ctx.term)
+    .in('student_index', sIndexes);
+
+  if (ctx.subject.subject_code) {
+    delQ = delQ.eq('subject_code', ctx.subject.subject_code);
+  } else {
+    delQ = delQ.is('subject_code', null);
+  }
+
+  await delQ;
+
+  const { error } = await supabase.from('exam_results').insert(records);
+  btn.disabled = false; btn.textContent = '💾 Save All';
+
+  if (error) { toast('❌ ' + error.message, 'error'); return; }
+  toast(`✅ ${records.length} জনের নম্বর সেভ হয়েছে`, 'success');
+}
+</script>
+</body>
+</html>

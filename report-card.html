@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>রিপোর্ট কার্ড · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .rc-form-panel { background: white; padding: 22px 28px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+  .rc-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; max-width: 700px; margin: 0 auto; }
+  .rc-row { display: grid; grid-template-columns: 140px 1fr; align-items: center; gap: 12px; }
+  .rc-row label { color: #374151; font-weight: 700; font-size: 13.5px; text-align: right; }
+  .rc-row select { padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; background: white; width: 100%; font-family: inherit; }
+  .report-card { background: white; padding: 32px; max-width: 820px; margin: 0 auto; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 4px solid #1e1b4b; }
+  .rc-header { text-align: center; padding-bottom: 15px; margin-bottom: 18px; border-bottom: 3px double #1e1b4b; }
+  .rc-header .head-row { display: grid; grid-template-columns: 80px 1fr auto; gap: 16px; align-items: center; }
+  .rc-header .logo { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid #1e1b4b; background: white; display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto; }
+  .rc-header .logo img { width: 100%; height: 100%; object-fit: cover; }
+  .rc-header .school-text { text-align: center; }
+  .rc-header h1 { color: #1e1b4b; font-size: 26px; margin: 0; font-weight: 900; font-family: 'Arial Black', sans-serif; letter-spacing: 0.3px; text-transform: uppercase; }
+  .rc-header p { color: #374151; font-size: 13.5px; margin: 3px 0 0 0; }
+  .rc-header .emis-info { text-align: right; font-size: 12px; }
+  .rc-header .emis-info .lbl { color: #6b7280; }
+  .rc-header .emis-info .no { font-weight: 800; font-size: 14px; color: #000; }
+  .rc-title { background: #ede9fe; color: #4c1d95; text-align: center; padding: 8px; border-radius: 6px; font-weight: 800; margin: 12px 0; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; }
+  .rc-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px; margin-bottom: 16px; font-size: 14px; }
+  .rc-info div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted #d1d5db; }
+  .rc-info div span:first-child { color: #6b7280; font-weight: 700; }
+  .rc-info div span:last-child { color: #1f2937; font-weight: 700; }
+  .rc-table { width: 100%; margin-bottom: 16px; border-collapse: collapse; }
+  .rc-table th, .rc-table td { border: 1px solid #1e1b4b; padding: 9px 12px; text-align: left; font-size: 13.5px; }
+  .rc-table th { background: #ede9fe; font-weight: 800; color: #4c1d95; text-align: center; }
+  .rc-table tbody tr:nth-child(even) td { background: #fafafa; }
+  .rc-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .rc-summary > div { background: #f9fafb; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #e5e7eb; }
+  .rc-summary h4 { font-size: 10.5px; color: #6b7280; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px; }
+  .rc-summary p { font-size: 22px; font-weight: 900; color: #1e1b4b; }
+  .rc-summary .grade-box { background: #ede9fe; border-color: #c4b5fd; }
+  .rc-summary .grade-box p { font-size: 28px; color: #7c3aed; }
+  .rc-summary .grade-box.pass p { color: #16a34a; }
+  .rc-summary .grade-box.fail p { color: #dc2626; }
+  .rc-signature { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-top: 70px; text-align: center; }
+  .rc-signature > div { border-top: 1.5px solid #1e1b4b; padding-top: 6px; font-size: 12px; color: #374151; font-weight: 700; }
+  .empty-msg { text-align: center; padding: 40px 20px; color: #9ca3af; font-style: italic; font-size: 14px; }
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background: white !important; padding: 0 !important; margin: 0 !important; }
+    header.top, aside.sidebar, #toast, .no-print { display: none !important; }
+    main.content { margin-left: 0 !important; padding: 0 !important; }
+    .rc-form-panel { display: none !important; }
+    .report-card { box-shadow: none !important; padding: 0 !important; border-width: 3px !important; }
+    .rc-table th, .rc-table td { border-color: #1e1b4b !important; }
+    .rc-summary > div, .rc-title, .rc-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  @media (max-width: 700px) {
+    .rc-form { grid-template-columns: 1fr; }
+    .rc-row { grid-template-columns: 1fr; }
+    .rc-row label { text-align: left; }
+    .rc-info { grid-template-columns: 1fr; }
+    .rc-summary { grid-template-columns: repeat(2, 1fr); }
+    .rc-signature { grid-template-columns: 1fr; gap: 30px; }
+    .rc-header .head-row { grid-template-columns: 60px 1fr; }
+    .rc-header .emis-info { grid-column: 1 / -1; text-align: center; margin-top: 10px; }
+    .rc-header h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, getSchoolProfile } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher','student','guardian']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'report-card.html', 'রিপোর্ট কার্ড');
+
+const content = document.getElementById('content');
+const isStaff = profile.role === 'admin' || profile.role === 'teacher';
+const school = await getSchoolProfile();
+const CURRENT_YEAR = new Date().getFullYear();
+
+/* ============ Grade System ============ */
+let classGradeMap = {};
+async function loadGradeSystem() {
+  const { data } = await supabase.from('grade_system').select('*');
+  classGradeMap = {};
+  (data || []).forEach(g => {
+    if (!classGradeMap[g.class_name]) classGradeMap[g.class_name] = [];
+    classGradeMap[g.class_name].push(g);
+  });
+  Object.keys(classGradeMap).forEach(k => {
+    classGradeMap[k].sort((a, b) => b.mark_from - a.mark_from);
+  });
+}
+await loadGradeSystem();
+
+function getGrade(percent, className) {
+  const list = classGradeMap[className] || [];
+  for (const g of list) {
+    if (percent >= +g.mark_from && percent <= +g.mark_to) return { gp: +g.grading_point, letter: g.grade_name };
+  }
+  if (percent >= 80) return { gp: 5.00, letter: 'A+' };
+  if (percent >= 70) return { gp: 4.00, letter: 'A' };
+  if (percent >= 60) return { gp: 3.50, letter: 'A-' };
+  if (percent >= 50) return { gp: 3.00, letter: 'B' };
+  if (percent >= 40) return { gp: 2.00, letter: 'C' };
+  if (percent >= 33) return { gp: 1.00, letter: 'D' };
+  return { gp: 0, letter: 'F' };
+}
+function gpaToLetter(gpa) {
+  if (gpa >= 5.00) return 'A+';
+  if (gpa >= 4.00) return 'A';
+  if (gpa >= 3.50) return 'A-';
+  if (gpa >= 3.00) return 'B';
+  if (gpa >= 2.00) return 'C';
+  if (gpa >= 1.00) return 'D';
+  return 'F';
+}
+
+/* ============ UI ============ */
+content.innerHTML = `
+  <h2 class="no-print" style="margin-bottom:18px;color:#1e1b4b">🖨️ প্রগ্রেস রিপোর্ট কার্ড</h2>
+
+  <div class="rc-form-panel no-print">
+    <div class="rc-form">
+      ${isStaff ? `
+        <div class="rc-row">
+          <label>ক্লাস</label>
+          <select id="rcClass"><option value="">-- লোড হচ্ছে --</option></select>
+        </div>
+        <div class="rc-row">
+          <label>ছাত্র</label>
+          <select id="rcStudent"><option value="">-- আগে ক্লাস সিলেক্ট --</option></select>
+        </div>
+      ` : ''}
+      <div class="rc-row">
+        <label>Exam Term</label>
+        <select id="rcExam"><option value="">লোড হচ্ছে...</option></select>
+      </div>
+      <div style="grid-column:1/-1;text-align:center;margin-top:10px">
+        <button class="btn-primary" id="showBtn" style="padding:12px 40px;border:none;border-radius:6px;font-weight:700;cursor:pointer;color:white;background:#7c3aed;font-family:inherit">📄 রিপোর্ট কার্ড দেখুন</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rcArea"></div>
+`;
+
+/* ============ Load Exam Terms ============ */
+async function loadExamTerms() {
+  const { data } = await supabase.from('exams').select('exam_name').order('exam_serial');
+  const sel = document.getElementById('rcExam');
+  if (data && data.length) {
+    sel.innerHTML = '<option value="">-- Exam Term --</option>' +
+      data.map(e => `<option value="${esc(e.exam_name)}">${esc(e.exam_name)}</option>`).join('');
+  } else {
+    sel.innerHTML = '<option value="">-- কোনো Exam নেই --</option>';
+  }
+}
+await loadExamTerms();
+
+/* ============ Load Classes/Students (Staff) ============ */
+if (isStaff) {
+  const { data: classes } = await supabase.from('classes').select('*').order('id');
+  const clsSel = document.getElementById('rcClass');
+  clsSel.innerHTML = '<option value="">-- ক্লাস --</option>' +
+    (classes || []).map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+
+  clsSel.onchange = async () => {
+    const classId = clsSel.value;
+    const stuSel = document.getElementById('rcStudent');
+    if (!classId) {
+      stuSel.innerHTML = '<option value="">-- আগে ক্লাস সিলেক্ট --</option>';
+      return;
+    }
+    stuSel.innerHTML = '<option value="">লোড হচ্ছে...</option>';
+    const { data: students } = await supabase.from('students')
+      .select('*').or('is_deleted.is.null,is_deleted.eq.false')
+      .eq('class_id', classId).order('roll');
+    stuSel.innerHTML = '<option value="">-- ছাত্র সিলেক্ট --</option>' +
+      (students || []).map(s => `<option value="${esc(s.student_id)}">${esc(s.name)} (${esc(s.student_index || '')})</option>`).join('');
+  };
+}
+
+/* ============ Show Button ============ */
+document.getElementById('showBtn').onclick = () => {
+  const term = document.getElementById('rcExam').value;
+  if (!term) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+  let studentId;
+  if (isStaff) {
+    studentId = document.getElementById('rcStudent').value;
+    if (!studentId) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+  } else {
+    studentId = profile.linked_id;
+    if (!studentId) { toast('Student ID সংযুক্ত নেই', 'error'); return; }
+  }
+  showReportCard(studentId, term);
+};
+
+/* ============ Auto-load for student ============ */
+if (!isStaff && profile.linked_id) {
+  setTimeout(() => {
+    const sel = document.getElementById('rcExam');
+    if (sel.options.length > 1) {
+      sel.selectedIndex = 1;
+      document.getElementById('showBtn').click();
+    }
+  }, 400);
+}
+
+/* ============ Show Report Card ============ */
+async function showReportCard(studentId, examTerm) {
+  const area = document.getElementById('rcArea');
+  area.innerHTML = '<div class="empty-msg">লোড হচ্ছে...</div>';
+
+  try {
+    const { data: student, error: e1 } = await supabase.from('students')
+      .select('*, classes(class_name)')
+      .eq('student_id', studentId)
+      .single();
+    if (e1 || !student) throw new Error('ছাত্র পাওয়া যায়নি');
+
+    const className = student.classes?.class_name || '';
+    const sessionYear = student.session_year || CURRENT_YEAR;
+    const studentIndex = student.student_index;
+
+    /* Subjects */
+    let { data: subjects } = await supabase.from('subjects')
+      .select('*').eq('class_id', student.class_id)
+      .eq('exam_term', examTerm).eq('session_year', sessionYear)
+      .order('id');
+    if (!subjects || !subjects.length) {
+      const { data: fb } = await supabase.from('subjects')
+        .select('*').eq('class_id', student.class_id).eq('exam_term', examTerm).order('id');
+      subjects = fb || [];
+    }
+
+    /* Results */
+    const { data: results } = await supabase.from('exam_results')
+      .select('*').eq('student_index', studentIndex).eq('exam_term', examTerm);
+
+    const resultMap = {};
+    (results || []).forEach(r => { resultMap[r.subject_code || r.subject_name] = r; });
+
+    /* Fallback: build from results if no subjects */
+    if ((!subjects || !subjects.length) && results && results.length) {
+      subjects = results.map(r => ({
+        subject_name: r.subject_name,
+        subject_code: r.subject_code,
+        total_marks: (+r.subjective_marks || 0) + (+r.objective_marks || 0) + (+r.practical_marks || 0) + (+r.assessment_marks || 0) + (+r.ct_mt_marks || 0) || 100,
+      }));
+    }
+
+    if (!subjects || !subjects.length) {
+      area.innerHTML = '<div class="empty-msg">এই পরীক্ষার কোনো ফলাফল এখনো প্রকাশ হয়নি</div>';
+      return;
+    }
+
+    /* Compute */
+    let totalObt = 0, totalFull = 0, totalGP = 0, count = 0, hasAnyF = false;
+    const rows = subjects.map(sub => {
+      const r = resultMap[sub.subject_code || sub.subject_name] || {};
+      const isAbsent = r.present === false;
+      const obt = isAbsent ? 0 : (
+        (+r.subjective_marks || 0) + (+r.objective_marks || 0) +
+        (+r.practical_marks || 0) + (+r.assessment_marks || 0) +
+        (+r.ct_mt_marks || 0)
+      );
+      const full = +sub.total_marks || 100;
+      const pct = full ? (obt / full * 100) : 0;
+      let g = isAbsent || pct < 33 ? { gp: 0, letter: 'F' } : getGrade(pct, className);
+      if (g.letter === 'F') hasAnyF = true;
+      totalObt += obt; totalFull += full; totalGP += g.gp; count++;
+      return { name: sub.subject_name, full, obt, pct, gp: g.gp, letter: g.letter, isAbsent };
+    });
+
+    let gpa = count ? (totalGP / count) : 0;
+    if (hasAnyF) gpa = 0;
+    const finalLetter = hasAnyF ? 'F' : gpaToLetter(gpa);
+    const isPass = finalLetter !== 'F';
+    const gradeColor = isPass ? '#16a34a' : '#dc2626';
+
+    const todayStr = new Date().toLocaleDateString('bn-BD', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const comment = hasAnyF
+      ? 'আরো মনোযোগ দিতে হবে। পরবর্তী পরীক্ষায় ভালো করার জন্য পরিশ্রম করুন।'
+      : finalLetter === 'A+' ? 'অসাধারণ ফলাফল! এই ধারাবাহিকতা বজায় রাখুন।'
+      : finalLetter.startsWith('A') ? 'খুব ভালো করেছে। আরো উন্নতির চেষ্টা করুন।'
+      : 'ভালো করেছে। পরিশ্রম চালিয়ে যান।';
+
+    const logoHtml = school.logo ? `<img src="${school.logo}" alt="">` : '🏫';
+
+    area.innerHTML = `
+      <div style="text-align:center;margin-bottom:20px" class="no-print">
+        <button onclick="window.print()" style="padding:11px 30px;border:none;border-radius:6px;font-weight:700;color:white;background:#16a34a;cursor:pointer;font-size:14px;font-family:inherit">🖨️ প্রিন্ট / PDF সেভ করুন</button>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-header">
+          <div class="head-row">
+            <div class="logo">${logoHtml}</div>
+            <div class="school-text">
+              <h1>${esc(school.name).toUpperCase()}</h1>
+              <p>${esc(school.address)}</p>
+            </div>
+            <div class="emis-info">
+              <div class="lbl">EMIS:</div>
+              <div class="no">${esc(school.emis || '-')}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rc-title">📝 ${esc(examTerm)} · ${sessionYear}</div>
+
+        <div class="rc-info">
+          <div><span>ছাত্রের নাম</span><span>${esc(student.name)}</span></div>
+          <div><span>Student ID</span><span>${esc(student.student_index || '-')}</span></div>
+          <div><span>ক্লাস</span><span>${esc(className)}</span></div>
+          <div><span>সেকশন</span><span>${esc(student.section || '-')}</span></div>
+          <div><span>রোল</span><span>${esc(student.roll ?? '-')}</span></div>
+          <div><span>তারিখ</span><span>${todayStr}</span></div>
+        </div>
+
+        <table class="rc-table">
+          <thead>
+            <tr>
+              <th style="width:55px">ক্রম</th>
+              <th style="text-align:left">বিষয়</th>
+              <th style="width:110px;text-align:center">পূর্ণ নম্বর</th>
+              <th style="width:110px;text-align:center">প্রাপ্ত নম্বর</th>
+              <th style="width:70px;text-align:center">গ্রেড</th>
+              <th style="width:60px;text-align:center">GP</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((r, i) => `
+              <tr style="${r.isAbsent ? 'background:#fef2f2' : ''}">
+                <td style="text-align:center">${i + 1}</td>
+                <td>${esc(r.name)}${r.isAbsent ? ' <small style="color:#dc2626">(অনুপস্থিত)</small>' : ''}</td>
+                <td style="text-align:center">${r.full}</td>
+                <td style="text-align:center"><b>${r.obt}</b></td>
+                <td style="text-align:center;font-weight:700;color:${r.letter === 'F' ? '#dc2626' : '#16a34a'}">${r.letter}</td>
+                <td style="text-align:center">${r.gp.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="rc-summary">
+          <div><h4>মোট নম্বর</h4><p>${totalObt} / ${totalFull}</p></div>
+          <div><h4>বিষয় সংখ্যা</h4><p>${count}</p></div>
+          <div><h4>GPA</h4><p>${gpa.toFixed(2)}</p></div>
+          <div class="grade-box ${isPass ? 'pass' : 'fail'}"><h4>গ্রেড</h4><p style="color:${gradeColor}">${finalLetter}</p></div>
+        </div>
+
+        <div style="padding:12px;background:#f9fafb;border-radius:8px;font-size:13px;color:#4b5563;border:1px solid #e5e7eb">
+          <b>মন্তব্য:</b> ${esc(comment)}
+        </div>
+
+        <div class="rc-signature">
+          <div>শ্রেণি শিক্ষক</div>
+          <div>অভিভাবক</div>
+          <div>${esc(school.principal || 'প্রধান শিক্ষক')}</div>
+        </div>
+      </div>
+    `;
+
+  } catch (err) {
+    console.error(err);
+    area.innerHTML = `<div class="empty-msg">❌ ${esc(err.message)}</div>`;
+    toast('❌ ' + err.message, 'error');
+  }
+}
+</script>
+</body>
+</html>

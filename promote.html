@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promote Student · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .pr-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .pr-header .left { display: flex; align-items: center; gap: 14px; }
+    .pr-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pr-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .pr-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .pr-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .pr-back:hover { background: #111827; }
+    .pr-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    .pr-body {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 26px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .pr-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px 50px; max-width: 1100px; margin: 0 auto;
+    }
+    .pr-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      align-items: start; gap: 12px;
+    }
+    .pr-row label {
+      color: #374151; font-weight: 700; font-size: 14px;
+      text-align: right; padding-top: 8px;
+    }
+    .pr-row input, .pr-row select {
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white;
+    }
+    .pr-row input:focus, .pr-row select:focus {
+      outline: none; border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    .ms-box {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 4px;
+      padding: 8px 12px;
+      max-height: 130px;
+      overflow-y: auto;
+      min-height: 60px;
+    }
+    .ms-box .all-row {
+      color: #c0392b;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 3px 0;
+      border-bottom: 1px dashed #c7d2fe;
+      margin-bottom: 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ms-box label {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 600; color: #374151; font-size: 13.5px;
+      padding: 3px 0; cursor: pointer; text-align: left;
+    }
+    .ms-box input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: #c0392b; cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dues-row {
+      display: flex; align-items: center; gap: 12px;
+      padding-top: 8px;
+    }
+    .dues-link {
+      color: #1e3a8a;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-style: italic;
+    }
+    .dues-link:hover { color: #c0392b; text-decoration: underline; }
+    .dues-row input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: #c0392b; cursor: pointer;
+    }
+
+    .pr-divider {
+      grid-column: 1 / -1;
+      border-top: 2px dashed #9ca3af;
+      margin: 6px 0 4px 0;
+    }
+
+    .avg-btn {
+      background: #16a34a; color: white; border: none;
+      padding: 8px 18px; border-radius: 4px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+    .avg-btn:hover { background: #15803d; }
+
+    .pr-btn-row {
+      grid-column: 2 / 3;
+      padding-left: 12px;
+      margin-top: 8px;
+    }
+    .pr-post-btn {
+      background: #c0392b; color: white; border: none;
+      padding: 12px 32px; border-radius: 4px;
+      font-weight: 700; font-size: 14.5px; cursor: pointer;
+      box-shadow: 0 2px 6px rgba(192,57,43,0.3);
+      min-width: 220px;
+    }
+    .pr-post-btn:hover { background: #a93226; }
+    .pr-post-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .promo-preview {
+      background: white; border-radius: 10px;
+      padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    .promo-preview h3 {
+      color: #c0392b; font-size: 17px;
+      padding-bottom: 8px; border-bottom: 2px solid #c0392b;
+      margin-bottom: 16px;
+    }
+
+    .target-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px; align-items: center;
+      margin-bottom: 14px;
+    }
+    .target-row label {
+      color: #374151; font-weight: 700; font-size: 14px;
+      text-align: right;
+    }
+    .target-row select {
+      padding: 9px 12px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 14px; max-width: 320px;
+    }
+
+    .stu-promo-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; margin-top: 12px;
+    }
+    .stu-promo-table thead th {
+      background: #c0392b; color: white;
+      padding: 9px 10px; text-align: left;
+      font-size: 12.5px; font-weight: 700;
+    }
+    .stu-promo-table tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .stu-promo-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .stu-promo-table tbody tr:hover td { background: #fef2f2; }
+
+    .stu-promo-table input[type="checkbox"] {
+      width: 17px; height: 17px; accent-color: #16a34a;
+    }
+
+    .promo-actions {
+      display: flex; gap: 14px; margin-top: 20px;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .promo-actions button {
+      padding: 12px 36px; border-radius: 6px;
+      font-weight: 700; font-size: 14.5px;
+      cursor: pointer; border: none;
+    }
+    .btn-confirm { background: #16a34a; color: white; }
+    .btn-confirm:hover { background: #15803d; }
+    .btn-cancel { background: #6b7280; color: white; }
+    .btn-cancel:hover { background: #4b5563; }
+
+    .promo-note {
+      padding: 12px 16px;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+      color: #92400e;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .pr-form { grid-template-columns: 1fr; }
+      .pr-row, .target-row { grid-template-columns: 1fr; }
+      .pr-row label, .target-row label { text-align: left; padding-top: 0; }
+      .pr-btn-row { grid-column: 1 / -1; padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'promote.html', 'শিক্ষার্থী প্রমোশন');
+
+    const content = document.getElementById('content');
+    const CURRENT_YEAR = new Date().getFullYear();
+
+    content.innerHTML = `
+      <div class="pr-header">
+        <div class="left">
+          <div class="icon">🎓</div>
+          <div>
+            <h1>Promote Student</h1>
+            <p>Select from which class your students are promoting</p>
+          </div>
+        </div>
+        <button class="pr-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="pr-body">
+        <div class="pr-form">
+          <div class="pr-row">
+            <label>Session / Year</label>
+            <select id="sessionYear">
+              ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+                `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="pr-row">
+            <label>Class Name</label>
+            <select id="className"><option value="">[Select Class]</option></select>
+          </div>
+
+          <div class="pr-row">
+            <label>Group Name</label>
+            <div class="ms-box" id="groupBox">
+              <label class="all-row">
+                <input type="checkbox" id="grpAll" checked>
+                <span>Select ALL</span>
+              </label>
+              <label><input type="checkbox" class="grpChk" value="N/A" checked> N/A</label>
+              <label><input type="checkbox" class="grpChk" value="Science" checked> Science</label>
+              <label><input type="checkbox" class="grpChk" value="Humanities" checked> Humanities</label>
+              <label><input type="checkbox" class="grpChk" value="Business Studies" checked> Business Studies</label>
+            </div>
+          </div>
+          <div class="pr-row">
+            <label>Section Name</label>
+            <div class="ms-box" id="sectionBox">
+              <label class="all-row">
+                <input type="checkbox" id="secAll" checked>
+                <span>Select ALL</span>
+              </label>
+              <div id="sectionList">
+                <label><input type="checkbox" class="secChk" value="N/A" checked> N/A</label>
+                <label><input type="checkbox" class="secChk" value="A" checked> A</label>
+                <label><input type="checkbox" class="secChk" value="B" checked> B</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="pr-row">
+            <label>Student Type</label>
+            <select id="studentType">
+              <option value="active">Active Students</option>
+              <option value="inactive">Inactive Students</option>
+              <option value="">All Students</option>
+            </select>
+          </div>
+          <div class="pr-row">
+            <label>Student Dues</label>
+            <div class="dues-row">
+              <input type="checkbox" id="duesChk">
+              <a class="dues-link" id="importDues">Import Dues to next session</a>
+            </div>
+          </div>
+
+          <div class="pr-divider"></div>
+
+          <div class="pr-row">
+            <label>Exam Term</label>
+            <select id="examTerm">
+              <option value="">লোড হচ্ছে...</option>
+            </select>
+          </div>
+          <div class="pr-row">
+            <label>Failed Upto</label>
+            <select id="failedUpto">
+              <option value="">*** N/A ***</option>
+              <option value="33">33% (F)</option>
+              <option value="40">40% (D)</option>
+              <option value="50">50% (C)</option>
+              <option value="60">60% (B)</option>
+            </select>
+          </div>
+
+          <div class="pr-row">
+            <label>Show AVG Exam Term</label>
+            <button class="avg-btn" id="avgBtn">▶ Show AVG Exam Term</button>
+          </div>
+          <div></div>
+
+          <div class="pr-row">
+            <label>Report Type</label>
+            <select id="reportType">
+              <option value="">*** Default ***</option>
+              <option value="avg">Average Marks</option>
+              <option value="total">Total Marks</option>
+              <option value="grade">Grade-wise</option>
+            </select>
+          </div>
+          <div class="pr-row">
+            <label>Sort by</label>
+            <select id="sortBy">
+              <option value="">*** N/A ***</option>
+              <option value="roll">Roll No.</option>
+              <option value="name">Name</option>
+              <option value="index">Student Index</option>
+              <option value="marks">Total Marks</option>
+            </select>
+          </div>
+
+          <div class="pr-btn-row">
+            <button class="pr-post-btn" id="postBtn">Post & go to next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="previewView" style="display:none"></div>
+    `;
+
+    /* ============================================================
+       ✅ FIX: ক্লাস + Exam Term দুটোই DB থেকে লোড হবে
+       ============================================================ */
+    let allClasses = [];
+    let allExamTerms = [];
+
+    async function loadClasses() {
+      const { data } = await supabase.from('classes').select('*').order('id');
+      allClasses = data || [];
+      document.getElementById('className').innerHTML =
+        '<option value="">[Select Class]</option>' +
+        allClasses.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+    }
+    await loadClasses();
+
+    /* ✅ FIX: Exam Term এখন DB থেকে লোড হবে (আগে হার্ডকোড ছিল) */
+    async function loadExamTerms() {
+      const { data, error } = await supabase
+        .from('exams')
+        .select('exam_name, exam_serial')
+        .order('exam_serial');
+
+      const sel = document.getElementById('examTerm');
+
+      if (error) {
+        sel.innerHTML = '<option value="">❌ লোড হয়নি</option>';
+        console.error(error);
+        return;
+      }
+
+      if (!data || !data.length) {
+        sel.innerHTML = '<option value="">-- কোনো Exam নেই --</option>';
+        return;
+      }
+
+      sel.innerHTML = '<option value="">*** N/A ***</option>' +
+        data.map(t =>
+          `<option value="${esc(t.exam_name)}">${esc(t.exam_name)}</option>`
+        ).join('');
+    }
+    await loadExamTerms();
+
+    /* ============================================================
+       ক্লাস বদলালে সেকশন লোড
+       ============================================================ */
+    document.getElementById('className').onchange = () => {
+      const cls = allClasses.find(c => c.id == document.getElementById('className').value);
+      const sections = cls?.sections?.length ? cls.sections : ['N/A','A','B'];
+      document.getElementById('sectionList').innerHTML =
+        sections.map(s =>
+          `<label><input type="checkbox" class="secChk" value="${esc(s)}" checked> ${esc(s)}</label>`
+        ).join('');
+      attachSecEvents();
+      document.getElementById('secAll').checked = true;
+    };
+
+    /* ============================================================
+       Group Select All
+       ============================================================ */
+    function attachGrpEvents() {
+      const all = document.getElementById('grpAll');
+      const chks = document.querySelectorAll('.grpChk');
+      all.onchange = () => chks.forEach(c => c.checked = all.checked);
+      chks.forEach(c => c.onchange = () => {
+        all.checked = [...chks].every(x => x.checked);
+      });
+    }
+    attachGrpEvents();
+
+    /* ============================================================
+       Section Select All
+       ============================================================ */
+    function attachSecEvents() {
+      const all = document.getElementById('secAll');
+      const chks = document.querySelectorAll('.secChk');
+      all.onchange = () => chks.forEach(c => c.checked = all.checked);
+      chks.forEach(c => c.onchange = () => {
+        all.checked = [...chks].every(x => x.checked);
+      });
+    }
+    attachSecEvents();
+
+    /* ============================================================
+       Import Dues link
+       ============================================================ */
+    document.getElementById('importDues').onclick = (e) => {
+      e.preventDefault();
+      document.getElementById('duesChk').checked = true;
+      toast('✅ Dues import অপশন চালু হয়েছে', 'success');
+    };
+
+    /* ============================================================
+       ✅ FIX: Show AVG Exam Term — এখন সঠিক query
+       আগে ভুল কলাম ব্যবহার হচ্ছিল (exams টেবিলে session_year/exam_term নেই)
+       ============================================================ */
+    document.getElementById('avgBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const term = document.getElementById('examTerm').value;
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+      if (!term) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+      // ✅ exam_results থেকে count নেব — ওখানেই নম্বর আছে
+      const { count, error } = await supabase.from('exam_results')
+        .select('*', { count: 'exact', head: true })
+        .eq('session_year', session)
+        .eq('class_id', classId)
+        .eq('exam_term', term);
+
+      if (error) {
+        toast('❌ ' + error.message, 'error');
+        return;
+      }
+
+      // সব subject-এর তালিকা দেখাব
+      const { data: subjects } = await supabase.from('subjects')
+        .select('subject_name, subject_code')
+        .eq('session_year', session)
+        .eq('class_id', classId)
+        .eq('exam_term', term);
+
+      const subjCount = (subjects || []).length;
+      const cls = allClasses.find(c => c.id == classId);
+
+      toast(
+        `📊 ${cls?.class_name || ''} · ${term} · Session ${session} · ` +
+        `${subjCount}টি Subject · ${count || 0}টি নম্বর Entry পাওয়া গেছে`,
+        'success'
+      );
+    };
+
+    /* ============================================================
+       Post & go to next
+       ============================================================ */
+    document.getElementById('postBtn').onclick = async () => {
+      const session = +document.getElementById('sessionYear').value;
+      const classId = document.getElementById('className').value;
+      const studentType = document.getElementById('studentType').value;
+      const duesImport = document.getElementById('duesChk').checked;
+
+      if (!classId) { toast('Class সিলেক্ট করুন', 'error'); return; }
+
+      const groups = [...document.querySelectorAll('.grpChk:checked')].map(c => c.value);
+      const sections = [...document.querySelectorAll('.secChk:checked')].map(c => c.value);
+
+      if (!groups.length) { toast('অন্তত একটা Group সিলেক্ট করুন', 'error'); return; }
+      if (!sections.length) { toast('অন্তত একটা Section সিলেক্ট করুন', 'error'); return; }
+
+      const btn = document.getElementById('postBtn');
+      btn.disabled = true; btn.textContent = 'লোড হচ্ছে...';
+
+      let q = supabase.from('students').select('*').eq('class_id', classId);
+      if (studentType) q = q.eq('student_type', studentType);
+      q = q.in('section', sections.filter(s => s !== 'N/A'));
+      q = q.order('roll');
+
+      const { data: students, error } = await q;
+      btn.disabled = false; btn.textContent = 'Post & go to next';
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      let list = students || [];
+      if (!groups.includes('N/A')) {
+        list = list.filter(s => groups.includes(s.group_name));
+      }
+
+      if (!list.length) { toast('এই শর্তে কোনো ছাত্র পাওয়া যায়নি', 'error'); return; }
+
+      renderPromotionPreview({ session, classId, list, duesImport });
+    };
+
+    /* ============================================================
+       Render Promotion Preview
+       ============================================================ */
+    function renderPromotionPreview(ctx) {
+      const cls = allClasses.find(c => c.id == ctx.classId);
+      const nextClasses = allClasses.filter(c => c.id != ctx.classId);
+
+      document.getElementById('previewView').innerHTML = `
+        <div class="promo-preview">
+          <h3>🎯 প্রমোশন নিশ্চিত করুন</h3>
+
+          <div class="promo-note">
+            <b>⚠️ সাবধান:</b> নিচে "Confirm Promote" চাপলে <b>${ctx.list.length} জন ছাত্র</b>
+            ${esc(cls?.class_name || '')} থেকে নতুন ক্লাসে চলে যাবে এবং
+            Session <b>${ctx.session}</b> থেকে <b>${ctx.session + 1}</b> হয়ে যাবে।
+            ${ctx.duesImport ? '<br>💰 <b>Dues ও পরবর্তী Session-এ চলে যাবে।</b>' : ''}
+          </div>
+
+          <div class="target-row">
+            <label>নতুন Class</label>
+            <select id="targetClass">
+              <option value="">-- Select Target Class --</option>
+              ${nextClasses.map(c =>
+                `<option value="${c.id}">${esc(c.class_name)}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <div class="target-row">
+            <label>নতুন Section</label>
+            <select id="targetSection">
+              <option value="">-- Same Section রাখুন --</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+            </select>
+          </div>
+
+          <div class="target-row">
+            <label>নতুন Session</label>
+            <input id="targetSession" type="number" value="${ctx.session + 1}"
+              style="padding:9px 12px;border:1px solid #d1d5db;border-radius:4px;max-width:180px">
+          </div>
+
+          <table class="stu-promo-table">
+            <thead>
+              <tr>
+                <th style="width:40px">
+                  <input type="checkbox" id="promoAll" checked style="accent-color:#16a34a">
+                </th>
+                <th>Student Index</th>
+                <th>নাম</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Roll</th>
+                <th>Group</th>
+              </tr>
+            </thead>
+            <tbody id="promoBody">
+              ${ctx.list.map(s => `
+                <tr data-sid="${s.id}" data-oldclass="${esc(s.class_id)}" data-oldsec="${esc(s.section || '')}" data-oldsession="${s.session_year || ctx.session}">
+                  <td><input type="checkbox" class="promoChk" checked style="accent-color:#16a34a"></td>
+                  <td><b>${esc(s.student_index || s.student_id)}</b></td>
+                  <td>${esc(s.name)}</td>
+                  <td>${esc(cls?.class_name || '-')}</td>
+                  <td>${esc(s.section || '-')}</td>
+                  <td>${esc(s.roll ?? '-')}</td>
+                  <td>${esc(s.group_name || '-')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="promo-actions">
+            <button class="btn-cancel" id="promoCancel">← বাতিল</button>
+            <button class="btn-confirm" id="promoConfirm">✅ Confirm Promote</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('previewView').style.display = 'block';
+      document.querySelector('.pr-body').style.display = 'none';
+
+      document.getElementById('promoAll').onchange = (e) => {
+        document.querySelectorAll('.promoChk').forEach(c => c.checked = e.target.checked);
+      };
+
+      document.getElementById('promoCancel').onclick = () => {
+        document.getElementById('previewView').style.display = 'none';
+        document.querySelector('.pr-body').style.display = 'block';
+      };
+
+      document.getElementById('promoConfirm').onclick = async () => {
+        const targetClass = document.getElementById('targetClass').value;
+        const targetSection = document.getElementById('targetSection').value;
+        const targetSession = +document.getElementById('targetSession').value;
+
+        if (!targetClass) { toast('নতুন Class সিলেক্ট করুন', 'error'); return; }
+
+        const rows = [...document.querySelectorAll('#promoBody tr')]
+          .filter(tr => tr.querySelector('.promoChk').checked);
+
+        if (!rows.length) { toast('কোনো ছাত্র সিলেক্ট নেই', 'error'); return; }
+
+        const btn = document.getElementById('promoConfirm');
+        btn.disabled = true; btn.textContent = 'প্রমোট হচ্ছে...';
+
+        const historyRecords = [];
+        let done = 0;
+
+        for (const tr of rows) {
+          const sid = tr.dataset.sid;
+          const oldClass = tr.dataset.oldclass;
+          const oldSec = tr.dataset.oldsec;
+          const oldSession = +tr.dataset.oldsession;
+
+          const update = {
+            class_id: targetClass,
+            session_year: targetSession,
+          };
+          if (targetSection) update.section = targetSection;
+          update.roll = null;
+
+          const { error } = await supabase.from('students').update(update).eq('id', sid);
+          if (error) { toast('❌ ' + error.message, 'error'); continue; }
+
+          historyRecords.push({
+            student_id: tr.dataset.sid,
+            from_session: oldSession,
+            from_class_id: oldClass,
+            from_section: oldSec,
+            to_session: targetSession,
+            to_class_id: targetClass,
+            to_section: targetSection || oldSec,
+            promoted_by: profile.full_name,
+          });
+          done++;
+        }
+
+        if (historyRecords.length) {
+          await supabase.from('promotion_history').insert(historyRecords);
+        }
+
+        btn.disabled = false; btn.textContent = '✅ Confirm Promote';
+
+        toast(`✅ ${done} জন ছাত্র প্রমোট হয়েছে!`, 'success');
+
+        setTimeout(() => {
+          document.getElementById('previewView').style.display = 'none';
+          document.querySelector('.pr-body').style.display = 'block';
+          document.getElementById('postBtn').disabled = false;
+          document.getElementById('postBtn').textContent = 'Post & go to next';
+        }, 1200);
+      };
+    }
+  </script>
+</body>
+</html>

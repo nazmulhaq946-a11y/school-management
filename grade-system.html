@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grade System · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .gs-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .gs-header .left { display: flex; align-items: center; gap: 14px; }
+    .gs-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gs-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .gs-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .gs-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .gs-back:hover { background: #111827; }
+    .gs-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* Topbar */
+    .gs-topbar {
+      background: #d1d5db;
+      padding: 10px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; flex-wrap: wrap;
+      border-bottom: 1px solid #9ca3af;
+    }
+    .gs-topbar .filters {
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap;
+    }
+    .gs-topbar select,
+    .gs-topbar input {
+      padding: 7px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 13.5px;
+      background: white;
+      min-width: 150px;
+    }
+    .gs-add-new {
+      background: #e74c3c; color: white;
+      border: none; padding: 8px 22px;
+      border-radius: 20px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 2px 5px rgba(231,76,60,0.3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .gs-add-new:hover { background: #c0392b; }
+
+    /* Table */
+    .gs-body {
+      background: white;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .gs-table-wrap { overflow-x: auto; max-height: 75vh; }
+    .gs-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+    }
+    .gs-table thead th {
+      background: #c0392b;
+      color: white;
+      padding: 11px 10px;
+      font-weight: 700;
+      font-size: 12.5px;
+      text-align: left;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      letter-spacing: 0.3px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .gs-table thead th:last-child { border-right: none; }
+
+    .gs-table tbody td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #f3f4f6;
+      font-size: 13px;
+    }
+    .gs-table tbody td:last-child { border-right: none; }
+    .gs-table tbody tr:nth-child(odd) td { background: #ffffff; }
+    .gs-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .gs-table tbody tr:hover td { background: #fef2f2; }
+
+    .gs-table td.class-cell {
+      font-weight: 800;
+      color: #c0392b;
+      font-size: 14px;
+    }
+    .gs-table td.grade-cell {
+      font-weight: 800;
+      color: #1e3a8a;
+      font-size: 14px;
+      text-align: center;
+    }
+    .gs-table td.num-cell {
+      text-align: center;
+      font-weight: 600;
+      color: #374151;
+      font-family: 'Courier New', monospace;
+      font-size: 13.5px;
+    }
+    .gs-table td.total-cell {
+      text-align: center;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      padding: 4px 8px;
+      color: #c0392b;
+      transition: transform 0.15s;
+    }
+    .edit-btn:hover { transform: scale(1.25); }
+
+    .empty-row {
+      text-align: center !important;
+      padding: 40px !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+
+    /* Stats bar */
+    .gs-stats {
+      background: #fef3c7;
+      border-bottom: 1px solid #f59e0b;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #78350f;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .gs-stats .stat {
+      background: white;
+      padding: 3px 10px;
+      border-radius: 6px;
+      border: 1px solid #f59e0b;
+    }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      background: #c0392b; color: white;
+      padding: 16px 22px;
+      border-radius: 12px 12px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; margin: 0; }
+    .modal-close {
+      background: transparent; border: none; color: white;
+      font-size: 26px; cursor: pointer; line-height: 1;
+    }
+    .modal-body { padding: 22px; }
+
+    .fld {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 14px;
+    }
+    .fld label {
+      font-size: 12.5px; color: #374151; font-weight: 700;
+    }
+    .fld input, .fld select {
+      padding: 9px 12px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 14px; font-family: inherit;
+      background: white;
+    }
+    .fld input:focus, .fld select:focus {
+      outline: none; border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+    .fld-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 8px;
+    }
+    .btn-cancel {
+      background: #6b7280; color: white; border: none;
+      padding: 10px 22px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-cancel:hover { background: #4b5563; }
+    .btn-save {
+      background: #16a34a; color: white; border: none;
+      padding: 10px 28px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-save:hover { background: #15803d; }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: #dc2626; color: white; border: none;
+      padding: 10px 22px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+      margin-right: auto;
+    }
+    .btn-delete:hover { background: #b91c1c; }
+
+    @media (max-width: 900px) {
+      .gs-topbar { flex-direction: column; align-items: stretch; }
+      .gs-table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'grade-system.html', 'Grade System');
+
+    const content = document.getElementById('content');
+
+    /* ============ Class Name List (ছবি অনুযায়ী) ============ */
+    const CLASS_NAMES = [
+      'Play', 'Nursery', 'One', 'Two', 'Three', 'Four', 'Five',
+      'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Cadet'
+    ];
+
+    const GRADE_NAMES = ['A+', 'A', 'A-', 'B', 'C', 'D', 'F'];
+
+    content.innerHTML = `
+      <div class="gs-header">
+        <div class="left">
+          <div class="icon">🎯</div>
+          <div>
+            <h1>Grade System</h1>
+            <p>Manage your grading of exams.</p>
+          </div>
+        </div>
+        <button class="gs-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="gs-topbar">
+        <div class="filters">
+          <input id="searchBox" placeholder="🔍 Class বা Grade দিয়ে খুঁজুন...">
+          <select id="classFilter">
+            <option value="">সব Class</option>
+            ${CLASS_NAMES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}
+          </select>
+          <select id="gradeFilter">
+            <option value="">সব Grade</option>
+            ${GRADE_NAMES.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('')}
+          </select>
+        </div>
+        <button class="gs-add-new" id="addNewBtn">➕ Add New</button>
+      </div>
+
+      <div class="gs-stats" id="statsBar"></div>
+
+      <div class="gs-body">
+        <div class="gs-table-wrap">
+          <table class="gs-table">
+            <thead>
+              <tr>
+                <th style="width:110px">Class Name</th>
+                <th style="width:110px;text-align:center">Grade Name</th>
+                <th style="width:110px;text-align:center">Mark From</th>
+                <th style="width:110px;text-align:center">Mark To</th>
+                <th style="width:120px;text-align:center">Grading Point</th>
+                <th style="width:110px;text-align:center">Total Mark</th>
+                <th style="width:90px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    /* ============================================
+       Load Grades
+       ============================================ */
+    let allGrades = [];
+
+    async function loadGrades() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-row">লোড হচ্ছে...</td></tr>';
+
+      const { data, error } = await supabase.from('grade_system')
+        .select('*')
+        .order('class_name', { ascending: true })
+        .order('mark_from', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-row">❌ ${error.message}</td></tr>`;
+        return;
+      }
+
+      allGrades = data || [];
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const q = document.getElementById('searchBox').value.trim().toLowerCase();
+      const classF = document.getElementById('classFilter').value;
+      const gradeF = document.getElementById('gradeFilter').value;
+
+      let list = allGrades;
+      if (q) list = list.filter(g =>
+        (g.class_name || '').toLowerCase().includes(q) ||
+        (g.grade_name || '').toLowerCase().includes(q)
+      );
+      if (classF) list = list.filter(g => g.class_name === classF);
+      if (gradeF) list = list.filter(g => g.grade_name === gradeF);
+
+      /* Stats */
+      const totalRows = list.length;
+      const uniqueClasses = new Set(list.map(g => g.class_name)).size;
+      document.getElementById('statsBar').innerHTML = `
+        <span class="stat">মোট ${totalRows}টি Entry</span>
+        <span class="stat">${uniqueClasses}টি Class</span>
+        ${classF ? `<span class="stat">Filter: ${esc(classF)}</span>` : ''}
+      `;
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-row">কোনো Grade পাওয়া যায়নি। <b>+ Add New</b> ক্লিক করুন।</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(g => `
+        <tr>
+          <td class="class-cell">${esc(g.class_name)}</td>
+          <td class="grade-cell">${esc(g.grade_name)}</td>
+          <td class="num-cell">${g.mark_from}</td>
+          <td class="num-cell">${g.mark_to}</td>
+          <td class="num-cell">${g.grading_point}</td>
+          <td class="total-cell">${g.total_mark}</td>
+          <td>
+            <button class="edit-btn" data-edit="${g.id}" title="Edit">✏️</button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => {
+          const g = allGrades.find(x => String(x.id) === b.dataset.edit);
+          if (g) openGradeForm(g);
+        };
+      });
+    }
+
+    /* ============================================
+       Filters
+       ============================================ */
+    document.getElementById('searchBox').oninput = renderTable;
+    document.getElementById('classFilter').onchange = renderTable;
+    document.getElementById('gradeFilter').onchange = renderTable;
+
+    /* ============================================
+       Modal Form
+       ============================================ */
+    function openGradeForm(grade = null) {
+      const isEdit = !!grade?.id;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ Grade Edit করুন' : '➕ নতুন Grade যোগ করুন'}</h3>
+            <button class="modal-close" id="mClose">×</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld-row">
+              <div class="fld">
+                <label>Class Name *</label>
+                <select id="f_class">
+                  <option value="">-- Class --</option>
+                  ${CLASS_NAMES.map(c => `<option value="${esc(c)}" ${grade?.class_name===c?'selected':''}>${esc(c)}</option>`).join('')}
+                </select>
+              </div>
+              <div class="fld">
+                <label>Grade Name *</label>
+                <select id="f_grade">
+                  <option value="">-- Grade --</option>
+                  ${GRADE_NAMES.map(g => `<option value="${esc(g)}" ${grade?.grade_name===g?'selected':''}>${esc(g)}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            <div class="fld-row">
+              <div class="fld">
+                <label>Mark From *</label>
+                <input id="f_from" type="number" step="0.01" value="${grade?.mark_from ?? ''}" placeholder="যেমন: 80">
+              </div>
+              <div class="fld">
+                <label>Mark To *</label>
+                <input id="f_to" type="number" step="0.01" value="${grade?.mark_to ?? ''}" placeholder="যেমন: 100">
+              </div>
+            </div>
+
+            <div class="fld-row">
+              <div class="fld">
+                <label>Grading Point *</label>
+                <input id="f_point" type="number" step="0.01" value="${grade?.grading_point ?? ''}" placeholder="যেমন: 5">
+              </div>
+              <div class="fld">
+                <label>Total Mark *</label>
+                <input id="f_total" type="number" step="0.01" value="${grade?.total_mark ?? 100}" placeholder="100">
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">বাতিল</button>
+              <button class="btn-save" id="mSave">💾 সেভ করুন</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      // Delete
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`"${grade.class_name} - ${grade.grade_name}" মুছবেন?`)) return;
+          const { error } = await supabase.from('grade_system').delete().eq('id', grade.id);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+          toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+          closeModal();
+          loadGrades();
+        };
+      }
+
+      // Save
+      document.getElementById('mSave').onclick = async () => {
+        const cls = document.getElementById('f_class').value;
+        const grd = document.getElementById('f_grade').value;
+        const from = +document.getElementById('f_from').value;
+        const to = +document.getElementById('f_to').value;
+        const point = +document.getElementById('f_point').value;
+        const total = +document.getElementById('f_total').value || 100;
+
+        if (!cls) { toast('Class সিলেক্ট করুন', 'error'); return; }
+        if (!grd) { toast('Grade সিলেক্ট করুন', 'error'); return; }
+        if (isNaN(from) || from < 0) { toast('Mark From দিন', 'error'); return; }
+        if (isNaN(to) || to < 0) { toast('Mark To দিন', 'error'); return; }
+        if (from > to) { toast('Mark From, Mark To এর চেয়ে বড় হতে পারবে না', 'error'); return; }
+        if (isNaN(point)) { toast('Grading Point দিন', 'error'); return; }
+
+        const payload = {
+          class_name: cls,
+          grade_name: grd,
+          mark_from: from,
+          mark_to: to,
+          grading_point: point,
+          total_mark: total,
+        };
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
+
+        let error;
+        if (isEdit) {
+          ({ error } = await supabase.from('grade_system').update(payload).eq('id', grade.id));
+        } else {
+          ({ error } = await supabase.from('grade_system').insert(payload));
+        }
+
+        btn.disabled = false; btn.textContent = '💾 সেভ করুন';
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast(isEdit ? '✅ আপডেট হয়েছে' : '✅ Grade যোগ হয়েছে', 'success');
+        closeModal();
+        loadGrades();
+      };
+    }
+
+    /* ============================================
+       Add New
+       ============================================ */
+    document.getElementById('addNewBtn').onclick = () => openGradeForm();
+
+    /* ============================================
+       Init
+       ============================================ */
+    await loadGrades();
+  </script>
+</body>
+</html>

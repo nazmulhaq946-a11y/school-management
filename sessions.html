@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Session Name · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .ss-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ss-header .left { display: flex; align-items: center; gap: 14px; }
+    .ss-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ss-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .ss-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .ss-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .ss-back:hover { background: #111827; }
+    .ss-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* Topbar */
+    .ss-topbar {
+      background: #d1d5db;
+      padding: 10px 16px;
+      display: flex; justify-content: flex-end;
+      border-bottom: 1px solid #9ca3af;
+    }
+    .ss-add-new {
+      background: #e74c3c; color: white;
+      border: none; padding: 8px 22px;
+      border-radius: 20px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 2px 5px rgba(231,76,60,0.3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ss-add-new:hover { background: #c0392b; }
+
+    /* Table */
+    .ss-body {
+      background: white;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .ss-table-wrap { overflow-x: auto; }
+    .ss-table {
+      width: 100%; border-collapse: collapse; font-size: 14px;
+    }
+    .ss-table thead th {
+      background: #c0392b;
+      color: white;
+      padding: 11px 10px;
+      font-weight: 700;
+      font-size: 13.5px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      letter-spacing: 0.3px;
+    }
+    .ss-table thead th:last-child { border-right: none; }
+
+    .ss-table tbody td {
+      padding: 11px 10px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid #e5e7eb;
+      border-right: 1px solid #f3f4f6;
+      font-size: 13.5px;
+    }
+    .ss-table tbody td:last-child { border-right: none; }
+    .ss-table tbody tr:nth-child(odd) td { background: #ffffff; }
+    .ss-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .ss-table tbody tr:hover td { background: #fef2f2; }
+
+    .ss-table td.year-cell {
+      font-weight: 800;
+      color: #1e3a8a;
+      font-size: 14.5px;
+      font-family: 'Courier New', monospace;
+    }
+    .ss-table td.name-cell {
+      font-weight: 700;
+      color: #1f2937;
+      font-size: 14.5px;
+    }
+    .ss-table td.months-cell {
+      color: #374151;
+      font-weight: 600;
+    }
+    .ss-table td.status-cell {
+      font-weight: 700;
+      color: #374151;
+    }
+    .ss-table td.status-cell.running {
+      color: #16a34a;
+      font-size: 14px;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 8px;
+      color: #c0392b;
+      transition: transform 0.15s;
+    }
+    .edit-btn:hover { transform: scale(1.25); }
+
+    .empty-row {
+      text-align: center !important;
+      padding: 40px !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+
+    /* Running badge */
+    .running-badge {
+      display: inline-block;
+      background: #d1fae5;
+      color: #065f46;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      border: 1px solid #16a34a;
+    }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      background: #c0392b; color: white;
+      padding: 16px 22px;
+      border-radius: 12px 12px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; margin: 0; }
+    .modal-close {
+      background: transparent; border: none; color: white;
+      font-size: 26px; cursor: pointer; line-height: 1;
+    }
+    .modal-body { padding: 22px; }
+
+    .fld {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 14px;
+    }
+    .fld label {
+      font-size: 12.5px; color: #374151; font-weight: 700;
+    }
+    .fld input, .fld select {
+      padding: 9px 12px; border: 1px solid #d1d5db;
+      border-radius: 4px; font-size: 14px; font-family: inherit;
+      background: white;
+    }
+    .fld input:focus, .fld select:focus {
+      outline: none; border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    .toggle-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 12px;
+      background: #f0fdf4;
+      border-radius: 6px;
+      border: 1px solid #d1fae5;
+      margin-bottom: 14px;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 46px; height: 24px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 24px;
+      transition: 0.3s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .slider { background: #16a34a; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    .toggle-label {
+      font-weight: 700; font-size: 13.5px; color: #374151;
+    }
+    .toggle-hint {
+      font-size: 11px; color: #6b7280;
+      display: block; margin-top: 2px;
+    }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 8px;
+    }
+    .btn-cancel {
+      background: #6b7280; color: white; border: none;
+      padding: 10px 22px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-cancel:hover { background: #4b5563; }
+    .btn-save {
+      background: #16a34a; color: white; border: none;
+      padding: 10px 28px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-save:hover { background: #15803d; }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-delete {
+      background: #dc2626; color: white; border: none;
+      padding: 10px 22px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+      margin-right: auto;
+    }
+    .btn-delete:hover { background: #b91c1c; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'sessions.html', 'Session Name');
+
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <div class="ss-header">
+        <div class="left">
+          <div class="icon">📅</div>
+          <div>
+            <h1>Session Name</h1>
+            <p>Manage All the academic session</p>
+          </div>
+        </div>
+        <button class="ss-back" onclick="window.location.href='dashboard.html'">
+          Back <span class="arrow">←</span>
+        </button>
+      </div>
+
+      <div class="ss-topbar">
+        <button class="ss-add-new" id="addNewBtn">➕ Add New</button>
+      </div>
+
+      <div class="ss-body">
+        <div class="ss-table-wrap">
+          <table class="ss-table">
+            <thead>
+              <tr>
+                <th style="width:130px">Session Year</th>
+                <th style="width:180px">Session Name</th>
+                <th style="width:140px">Total Months</th>
+                <th>Session Status</th>
+                <th style="width:100px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="5" class="empty-row">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    /* ============================================
+       Load Sessions
+       ============================================ */
+    async function loadSessions() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-row">লোড হচ্ছে...</td></tr>';
+
+      const { data, error } = await supabase.from('academic_sessions')
+        .select('*')
+        .order('session_year', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-row">❌ ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-row">কোনো Session নেই। <b>+ Add New</b> ক্লিক করুন।</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(s => `
+        <tr>
+          <td class="year-cell">${esc(s.session_year)}</td>
+          <td class="name-cell">${esc(s.session_name)}</td>
+          <td class="months-cell">${esc(s.total_months)} Months</td>
+          <td class="status-cell ${s.is_running ? 'running' : ''}">
+            ${s.is_running ? '<span class="running-badge">● Running Session</span>' : ''}
+          </td>
+          <td>
+            <button class="edit-btn" data-edit="${s.id}" title="Edit">✏️</button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => {
+          const s = data.find(x => String(x.id) === b.dataset.edit);
+          if (s) openSessionForm(s);
+        };
+      });
+    }
+
+    /* ============================================
+       Modal Form
+       ============================================ */
+    function openSessionForm(session = null) {
+      const isEdit = !!session?.id;
+      const currentYear = new Date().getFullYear();
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${isEdit ? '✏️ Session Edit করুন' : '➕ নতুন Session যোগ করুন'}</h3>
+            <button class="modal-close" id="mClose">×</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld">
+              <label>Session Year *</label>
+              <input id="f_year" type="number" value="${session?.session_year || currentYear}" placeholder="যেমন: 2026">
+            </div>
+
+            <div class="fld">
+              <label>Session Name *</label>
+              <input id="f_name" value="${esc(session?.session_name || '')}" placeholder="যেমন: 2026">
+            </div>
+
+            <div class="fld">
+              <label>Total Months *</label>
+              <input id="f_months" type="number" value="${session?.total_months || 12}" placeholder="12">
+            </div>
+
+            <div class="toggle-row">
+              <label class="toggle-switch">
+                <input type="checkbox" id="f_running" ${session?.is_running ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+              <div>
+                <span class="toggle-label">✅ Running Session</span>
+                <span class="toggle-hint">চালু থাকলে এটা বর্তমান সেশন হিসেবে দেখাবে</span>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              ${isEdit ? `<button class="btn-delete" id="mDelete">🗑️ Delete</button>` : ''}
+              <button class="btn-cancel" id="mCancel">বাতিল</button>
+              <button class="btn-save" id="mSave">💾 সেভ করুন</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      // Auto-fill name when year typed (only for new)
+      if (!isEdit) {
+        document.getElementById('f_year').oninput = (e) => {
+          document.getElementById('f_name').value = e.target.value;
+        };
+      }
+
+      // Delete
+      if (isEdit) {
+        document.getElementById('mDelete').onclick = async () => {
+          if (!confirm(`Session "${session.session_name}" মুছবেন?`)) return;
+          const { error } = await supabase.from('academic_sessions').delete().eq('id', session.id);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+          toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+          closeModal();
+          loadSessions();
+        };
+      }
+
+      // Save
+      document.getElementById('mSave').onclick = async () => {
+        const year = +document.getElementById('f_year').value;
+        const name = document.getElementById('f_name').value.trim();
+        const months = +document.getElementById('f_months').value || 12;
+        const isRunning = document.getElementById('f_running').checked;
+
+        if (!year) { toast('Session Year দিন', 'error'); return; }
+        if (!name) { toast('Session Name দিন', 'error'); return; }
+
+        const btn = document.getElementById('mSave');
+        btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
+
+        // Running হলে বাকি সব false করি
+        if (isRunning) {
+          await supabase.from('academic_sessions').update({ is_running: false }).neq('id', session?.id || 0);
+        }
+
+        const payload = {
+          session_year: year,
+          session_name: name,
+          total_months: months,
+          is_running: isRunning,
+        };
+
+        let error;
+        if (isEdit) {
+          ({ error } = await supabase.from('academic_sessions').update(payload).eq('id', session.id));
+        } else {
+          ({ error } = await supabase.from('academic_sessions').insert(payload));
+        }
+
+        btn.disabled = false; btn.textContent = '💾 সেভ করুন';
+
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast(isEdit ? '✅ আপডেট হয়েছে' : '✅ Session যোগ হয়েছে', 'success');
+        closeModal();
+        loadSessions();
+      };
+    }
+
+    /* ============================================
+       Add New
+       ============================================ */
+    document.getElementById('addNewBtn').onclick = () => openSessionForm();
+
+    /* ============================================
+       Init
+       ============================================ */
+    await loadSessions();
+  </script>
+</body>
+</html>

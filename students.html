@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ছাত্রছাত্রী · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .st-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 16px 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #7c3aed;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .st-header .left { display: flex; align-items: center; gap: 12px; }
+    .st-header .icon {
+      font-size: 30px; width: 48px; height: 48px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .st-header h1 { color: #7c3aed; font-size: 20px; margin: 0; font-weight: 700; }
+    .st-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 12.5px; font-weight: 600; }
+    .st-back {
+      background: #1f2937; color: white; border: none;
+      padding: 9px 16px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 13.5px;
+      text-decoration: none;
+    }
+    .st-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .st-body {
+      background: white; padding: 20px 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+      border-radius: 0 0 10px 10px;
+    }
+    .st-section-title {
+      color: #7c3aed; font-size: 15px;
+      font-weight: 800; letter-spacing: 0.4px;
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 2px solid #ede9fe;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .st-section-title .count {
+      background: #ede9fe; color: #6d28d9;
+      padding: 3px 12px; border-radius: 12px;
+      font-size: 12.5px; font-weight: 800;
+    }
+    .st-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .st-form .fld {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .st-form label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .st-form input,
+    .st-form select,
+    .st-form textarea {
+      padding: 10px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .st-form input:focus,
+    .st-form select:focus,
+    .st-form textarea:focus {
+      outline: none;
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+    }
+    .st-form input.error,
+    .st-form select.error {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+    .st-form .fld.required label::after {
+      content: ' *';
+      color: #dc2626;
+    }
+    .st-form textarea { min-height: 60px; resize: vertical; }
+
+    .st-btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px dashed #e5e7eb;
+      margin-top: 6px;
+    }
+    .st-btn {
+      padding: 11px 24px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.1s, background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .st-btn:active { transform: scale(0.97); }
+    .st-btn-primary { background: #16a34a; color: white; }
+    .st-btn-primary:hover { background: #15803d; }
+    .st-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .st-btn-secondary { background: #e5e7eb; color: #374151; }
+    .st-btn-secondary:hover { background: #d1d5db; }
+    .st-btn-danger { background: #dc2626; color: white; }
+    .st-btn-danger:hover { background: #b91c1c; }
+    .st-btn-warn { background: #f59e0b; color: white; }
+    .st-btn-warn:hover { background: #d97706; }
+
+    /* Search & Filter */
+    .st-search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .st-search input,
+    .st-search select {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+    }
+    .st-search input:focus,
+    .st-search select:focus {
+      outline: none;
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+    }
+
+    /* Table */
+    .st-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+    }
+    .st-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 900px;
+    }
+    .st-table thead th {
+      background: #7c3aed;
+      color: white;
+      padding: 11px 10px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    .st-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+    .st-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .st-table tbody tr:hover td { background: #faf5ff; }
+    .st-table td.id-cell {
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      color: #6d28d9;
+      font-size: 13px;
+    }
+    .st-table td.name-cell {
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .st-table td.name-cell small {
+      display: block;
+      color: #6b7280;
+      font-weight: 500;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .st-table td.contact-cell {
+      color: #4b5563;
+      font-size: 12.5px;
+    }
+    .st-table td.roll-cell {
+      text-align: center;
+      font-weight: 700;
+      color: #374151;
+    }
+    .st-table td.class-cell {
+      font-weight: 700;
+      color: #2563eb;
+      font-size: 13px;
+    }
+    .st-table td.class-cell small {
+      display: block;
+      color: #6b7280;
+      font-weight: 600;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .st-actions {
+      display: flex;
+      gap: 5px;
+      flex-wrap: nowrap;
+    }
+    .st-act-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+    }
+    .st-act-btn:active { transform: scale(0.92); }
+    .st-act-edit { background: #dbeafe; color: #1e40af; }
+    .st-act-edit:hover { background: #bfdbfe; }
+    .st-act-delete { background: #fee2e2; color: #991b1b; }
+    .st-act-delete:hover { background: #fecaca; }
+    .st-act-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+    .st-act-view { background: #f3e8ff; color: #6d28d9; }
+    .st-act-view:hover { background: #e9d5ff; }
+
+    .st-empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      font-size: 14px;
+    }
+    .st-empty .icon {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .st-loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #7c3aed;
+      font-weight: 700;
+    }
+    .st-loading::before {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #ede9fe;
+      border-top-color: #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Banners */
+    .st-banner {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.6;
+    }
+    .st-banner.info { background: #dbeafe; border-left: 4px solid #2563eb; color: #1e40af; }
+    .st-banner.warn { background: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+    .st-banner .ic { font-size: 18px; flex-shrink: 0; }
+    .st-banner a { color: inherit; font-weight: 700; }
+
+    /* Stats mini */
+    .st-mini-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .st-mini-stat {
+      background: #faf5ff;
+      border-left: 3px solid #7c3aed;
+      padding: 10px 14px;
+      border-radius: 6px;
+    }
+    .st-mini-stat h4 {
+      font-size: 10.5px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+      font-weight: 700;
+    }
+    .st-mini-stat p {
+      font-size: 20px;
+      font-weight: 800;
+      color: #4c1d95;
+    }
+
+    @media (max-width: 768px) {
+      .st-body { padding: 14px; }
+      .st-form { grid-template-columns: 1fr; }
+      .st-header { padding: 12px 14px; }
+      .st-header h1 { font-size: 17px; }
+      .st-search { flex-direction: column; }
+      .st-search input, .st-search select {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+      .st-btn { padding: 12px 20px; flex: 1; justify-content: center; }
+      .st-btn-row { flex-direction: column; }
+      .st-mini-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, logAction, validate, showValidationErrors } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'students.html', 'ছাত্রছাত্রী ব্যবস্থাপনা');
+
+    const content = document.getElementById('content');
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div class="st-header">
+        <div class="left">
+          <div class="icon">👨‍🎓</div>
+          <div>
+            <h1>ছাত্রছাত্রী ব্যবস্থাপনা</h1>
+            <p>Students Management System</p>
+          </div>
+        </div>
+        <a class="st-back" href="dashboard.html">
+          Back <span class="arrow">←</span>
+        </a>
+      </div>
+
+      <div class="st-body">
+        <div class="st-banner info" id="loadBanner">
+          <span class="ic">⏳</span>
+          <span>ছাত্রদের তথ্য লোড হচ্ছে...</span>
+        </div>
+
+        <!-- Stats -->
+        <div class="st-mini-stats" id="miniStats"></div>
+
+        <!-- Add / Edit Form -->
+        <div id="formPanel">
+          <div class="st-section-title" id="formTitle">
+            <span>➕ নতুন ছাত্র যোগ করুন</span>
+            <button class="st-btn st-btn-secondary" id="clearBtn" style="display:none;padding:6px 14px;font-size:12px">✕ বাতিল</button>
+          </div>
+
+          <div class="st-form">
+            <div class="fld required">
+              <label>পূর্ণ নাম</label>
+              <input id="f_name" placeholder="যেমন: রহিম উদ্দিন">
+            </div>
+            <div class="fld required">
+              <label>Student ID / Index</label>
+              <input id="f_index" placeholder="যেমন: 230475" style="text-transform:uppercase">
+            </div>
+            <div class="fld required">
+              <label>ক্লাস</label>
+              <select id="f_class">
+                <option value="">-- ক্লাস সিলেক্ট করুন --</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>সেকশন</label>
+              <select id="f_section">
+                <option value="">-- সেকশন --</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>রোল নম্বর</label>
+              <input id="f_roll" type="number" placeholder="যেমন: 1">
+            </div>
+            <div class="fld">
+              <label>Session Year</label>
+              <input id="f_session" type="number" placeholder="2026">
+            </div>
+            <div class="fld">
+              <label>Group</label>
+              <select id="f_group">
+                <option value="">-- None --</option>
+                <option value="N/A">N/A</option>
+                <option value="Science">Science</option>
+                <option value="Business Studies">Business Studies</option>
+                <option value="Humanities">Humanities</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>Student Type</label>
+              <select id="f_type">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label>অভিভাবকের নাম</label>
+              <input id="f_guardian" placeholder="পিতার নাম">
+            </div>
+            <div class="fld">
+              <label>মোবাইল নম্বর</label>
+              <input id="f_phone" placeholder="01XXXXXXXXX" inputmode="numeric" maxlength="11">
+            </div>
+            <div class="fld">
+              <label>ছাত্রের ইমেইল</label>
+              <input id="f_email" type="email" placeholder="student@example.com">
+            </div>
+            <div class="fld">
+              <label>রক্তের গ্রুপ</label>
+              <select id="f_blood">
+                <option value="">-- --</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>O+</option><option>O-</option>
+                <option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="st-btn-row">
+            <button class="st-btn st-btn-secondary" id="resetFormBtn">🔄 রিসেট</button>
+            <button class="st-btn st-btn-primary" id="saveBtn">💾 সেভ করুন</button>
+          </div>
+        </div>
+
+        <!-- List Section -->
+        <div style="margin-top:24px">
+          <div class="st-section-title">
+            <span>📋 ছাত্রছাত্রীর তালিকা</span>
+            <span class="count" id="listCount">0</span>
+          </div>
+
+          <div class="st-search">
+            <input id="searchBox" placeholder="🔍 নাম / ID / ফোন দিয়ে খুঁজুন...">
+            <select id="filterClass">
+              <option value="">সব ক্লাস</option>
+            </select>
+            <select id="filterType">
+              <option value="">সব ধরন</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div class="st-table-wrap">
+            <table class="st-table">
+              <thead>
+                <tr>
+                  <th style="width:45px">#</th>
+                  <th style="width:100px">ID</th>
+                  <th>নাম</th>
+                  <th style="width:110px">ক্লাস</th>
+                  <th style="width:80px">রোল</th>
+                  <th style="width:130px">মোবাইল</th>
+                  <th style="width:130px">অভিভাবক</th>
+                  <th style="width:140px">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+                <tr><td colspan="8" class="st-loading">লোড হচ্ছে...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+
+    /* ============ State ============ */
+    let allStudents = [];
+    let allClasses = [];
+    let editingId = null; // null = add mode, id = edit mode
+
+    /* ============ Load Classes ============ */
+    async function loadClasses() {
+      try {
+        const { data, error } = await supabase
+          .from('classes')
+          .select('*')
+          .order('sort_order', { ascending: true })
+          .order('id', { ascending: true });
+
+        if (error) throw error;
+        allClasses = data || [];
+
+        // Populate class dropdowns
+        const opts = allClasses.map(c =>
+          `<option value="${c.id}">${esc(c.class_name)}</option>`
+        ).join('');
+
+        document.getElementById('f_class').innerHTML =
+          '<option value="">-- ক্লাস সিলেক্ট করুন --</option>' + opts;
+
+        document.getElementById('filterClass').innerHTML =
+          '<option value="">সব ক্লাস</option>' + opts;
+
+      } catch (err) {
+        console.error('Class load error:', err);
+        toast('⚠️ ক্লাস লোড হয়নি', 'error');
+      }
+    }
+    await loadClasses();
+
+    /* ============ Class change → Section dropdown ============ */
+    document.getElementById('f_class').onchange = () => {
+      const classId = document.getElementById('f_class').value;
+      const cls = allClasses.find(c => String(c.id) === classId);
+      const sections = cls?.sections || [];
+      document.getElementById('f_section').innerHTML =
+        '<option value="">-- সেকশন --</option>' +
+        sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    };
+
+    /* ============ Load Students ============ */
+    async function loadStudents() {
+      const tbody = document.getElementById('tbody');
+      const banner = document.getElementById('loadBanner');
+
+      tbody.innerHTML = '<tr><td colspan="8" class="st-loading">লোড হচ্ছে...</td></tr>';
+
+      try {
+        let { data, error } = await supabase
+          .from('students')
+          .select('*, classes(class_name)')
+          .or('is_deleted.is.null,is_deleted.eq.false')
+          .order('id', { ascending: false })
+          .limit(1000);
+
+        if (error) throw error;
+
+        allStudents = data || [];
+
+        // Update banner
+        if (allStudents.length > 0) {
+          banner.style.display = 'none';
+        } else {
+          banner.className = 'st-banner warn';
+          banner.innerHTML = `
+            <span class="ic">📭</span>
+            <span>এখনো কোনো ছাত্র যোগ করা হয়নি। উপরে ফর্ম পূরণ করে <b>সেভ করুন</b> বাটন ক্লিক করুন।</span>
+          `;
+        }
+
+        renderTable();
+        renderMiniStats();
+
+      } catch (err) {
+        console.error('Load students error:', err);
+        banner.className = 'st-banner warn';
+        banner.innerHTML = `<span class="ic">❌</span><span>${esc(err.message)}</span>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="st-empty">❌ ${esc(err.message)}</td></tr>`;
+      }
+    }
+
+    /* ============ Mini Stats ============ */
+    function renderMiniStats() {
+      const total = allStudents.length;
+      const active = allStudents.filter(s => s.student_type !== 'inactive').length;
+      const inactive = total - active;
+      const byClass = {};
+      allStudents.forEach(s => {
+        const cn = s.classes?.class_name || 'Unknown';
+        byClass[cn] = (byClass[cn] || 0) + 1;
+      });
+
+      document.getElementById('miniStats').innerHTML = `
+        <div class="st-mini-stat">
+          <h4>মোট ছাত্র</h4>
+          <p>${total}</p>
+        </div>
+        <div class="st-mini-stat" style="border-left-color:#16a34a">
+          <h4>Active</h4>
+          <p style="color:#16a34a">${active}</p>
+        </div>
+        <div class="st-mini-stat" style="border-left-color:#dc2626">
+          <h4>Inactive</h4>
+          <p style="color:#dc2626">${inactive}</p>
+        </div>
+        <div class="st-mini-stat" style="border-left-color:#2563eb">
+          <h4>ক্লাস সংখ্যা</h4>
+          <p style="color:#2563eb">${Object.keys(byClass).length}</p>
+        </div>
+      `;
+    }
+
+    /* ============ Render Table ============ */
+    function renderTable() {
+      const tbody = document.getElementById('tbody');
+      const q = document.getElementById('searchBox').value.trim().toLowerCase();
+      const classF = document.getElementById('filterClass').value;
+      const typeF = document.getElementById('filterType').value;
+
+      let list = allStudents;
+
+      if (q) {
+        list = list.filter(s =>
+          (s.name || '').toLowerCase().includes(q) ||
+          (s.student_index || s.student_id || '').toLowerCase().includes(q) ||
+          (s.guardian_phone || '').includes(q) ||
+          (s.father_name || '').toLowerCase().includes(q)
+        );
+      }
+      if (classF) list = list.filter(s => String(s.class_id) === classF);
+      if (typeF) list = list.filter(s => (s.student_type || 'active') === typeF);
+
+      document.getElementById('listCount').textContent = list.length + ' জন';
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="st-empty">
+          <span class="icon">🔍</span>
+          কোনো ছাত্র পাওয়া যায়নি
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((s, i) => `
+        <tr data-id="${s.id}">
+          <td>${i + 1}</td>
+          <td class="id-cell">${esc(s.student_index || s.student_id || '-')}</td>
+          <td class="name-cell">
+            ${esc(s.name)}
+            ${s.student_type === 'inactive' ? '<small style="color:#dc2626">● Inactive</small>' : ''}
+          </td>
+          <td class="class-cell">
+            ${esc(s.classes?.class_name || '-')}
+            ${s.section ? `<small>Sec: ${esc(s.section)}</small>` : ''}
+          </td>
+          <td class="roll-cell">${esc(s.roll ?? '-')}</td>
+          <td class="contact-cell">${esc(s.guardian_phone || '-')}</td>
+          <td class="contact-cell">${esc(s.father_name || s.guardian_name || '-')}</td>
+          <td>
+            <div class="st-actions">
+              <button class="st-act-btn st-act-edit" data-act="edit" data-id="${s.id}" title="এডিট">✏️</button>
+              <button class="st-act-btn st-act-delete" data-act="delete" data-id="${s.id}" title="মুছুন">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      // Attach handlers
+      tbody.querySelectorAll('[data-act]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.act;
+          if (act === 'edit') startEdit(id);
+          else if (act === 'delete') deleteStudent(id, btn);
+        };
+      });
+    }
+
+    /* ============ Search / Filter events ============ */
+    document.getElementById('searchBox').oninput = renderTable;
+    document.getElementById('filterClass').onchange = renderTable;
+    document.getElementById('filterType').onchange = renderTable;
+
+    /* ============ Start Edit ============ */
+    function startEdit(id) {
+      const s = allStudents.find(x => String(x.id) === String(id));
+      if (!s) return;
+
+      editingId = s.id;
+
+      // Populate form
+      document.getElementById('f_name').value = s.name || '';
+      document.getElementById('f_index').value = s.student_index || s.student_id || '';
+      document.getElementById('f_roll').value = s.roll || '';
+      document.getElementById('f_session').value = s.session_year || '';
+      document.getElementById('f_guardian').value = s.father_name || s.guardian_name || '';
+      document.getElementById('f_phone').value = s.guardian_phone || '';
+      document.getElementById('f_email').value = s.email || '';
+      document.getElementById('f_blood').value = s.blood_group || '';
+      document.getElementById('f_group').value = s.group_name || '';
+      document.getElementById('f_type').value = s.student_type || 'active';
+
+      // Set class + trigger section load
+      document.getElementById('f_class').value = s.class_id || '';
+      document.getElementById('f_class').dispatchEvent(new Event('change'));
+      setTimeout(() => {
+        document.getElementById('f_section').value = s.section || '';
+      }, 50);
+
+      // Update form title
+      document.getElementById('formTitle').innerHTML = `
+        <span>✏️ ছাত্র এডিট করুন — ${esc(s.name)}</span>
+        <button class="st-btn st-btn-secondary" id="clearBtn" style="padding:6px 14px;font-size:12px">✕ বাতিল</button>
+      `;
+      document.getElementById('clearBtn').onclick = resetForm;
+
+      // Scroll to form
+      document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('f_name').focus();
+    }
+
+    /* ============ Reset Form ============ */
+    function resetForm() {
+      editingId = null;
+      document.getElementById('f_name').value = '';
+      document.getElementById('f_index').value = '';
+      document.getElementById('f_class').value = '';
+      document.getElementById('f_section').innerHTML = '<option value="">-- সেকশন --</option>';
+      document.getElementById('f_roll').value = '';
+      document.getElementById('f_session').value = '';
+      document.getElementById('f_group').value = '';
+      document.getElementById('f_type').value = 'active';
+      document.getElementById('f_guardian').value = '';
+      document.getElementById('f_phone').value = '';
+      document.getElementById('f_email').value = '';
+      document.getElementById('f_blood').value = '';
+
+      document.getElementById('formTitle').innerHTML = `
+        <span>➕ নতুন ছাত্র যোগ করুন</span>
+      `;
+
+      // Clear error styling
+      document.querySelectorAll('.st-form .error').forEach(el => el.classList.remove('error'));
+    }
+
+    document.getElementById('resetFormBtn').onclick = resetForm;
+
+    /* ============ Save Student ============ */
+    document.getElementById('saveBtn').onclick = async () => {
+      const name = document.getElementById('f_name').value.trim();
+      const studentIndex = document.getElementById('f_index').value.trim();
+      const classId = document.getElementById('f_class').value;
+      const section = document.getElementById('f_section').value;
+      const roll = document.getElementById('f_roll').value;
+      const session = document.getElementById('f_session').value;
+      const group = document.getElementById('f_group').value;
+      const type = document.getElementById('f_type').value;
+      const guardian = document.getElementById('f_guardian').value.trim();
+      const phone = document.getElementById('f_phone').value.trim();
+      const email = document.getElementById('f_email').value.trim();
+      const blood = document.getElementById('f_blood').value;
+
+      // Validation
+      const errors = {
+        name: validate.required(name, 'নাম'),
+        studentIndex: validate.required(studentIndex, 'Student ID'),
+        classId: validate.required(classId, 'ক্লাস'),
+        phone: validate.phone(phone, false),
+        email: validate.email(email, false),
+      };
+
+      if (!showValidationErrors(errors)) return;
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ সেভ হচ্ছে...';
+
+      try {
+        const payload = {
+          name,
+          student_index: studentIndex,
+          student_id: studentIndex.startsWith('STU-') ? studentIndex : ('STU-' + studentIndex),
+          class_id: +classId,
+          section: section || null,
+          roll: roll ? +roll : null,
+          session_year: session ? +session : new Date().getFullYear(),
+          group_name: group || null,
+          student_type: type || 'active',
+          guardian_name: guardian || null,
+          father_name: guardian || null,
+          guardian_phone: phone || null,
+          email: email || null,
+          blood_group: blood || null,
+        };
+
+        let result;
+
+        if (editingId) {
+          // Update
+          result = await supabase
+            .from('students')
+            .update(payload)
+            .eq('id', editingId)
+            .select()
+            .single();
+
+          if (result.error) throw result.error;
+
+          await logAction('update', 'students', editingId, `ছাত্র আপডেট: ${name}`);
+          toast(`✅ "${name}" আপডেট হয়েছে`, 'success');
+
+        } else {
+          // Insert
+          result = await supabase
+            .from('students')
+            .insert(payload)
+            .select()
+            .single();
+
+          if (result.error) throw result.error;
+
+          await logAction('create', 'students', result.data.id, `নতুন ছাত্র: ${name}`);
+          toast(`✅ "${name}" যোগ হয়েছে`, 'success');
+        }
+
+        resetForm();
+        await loadStudents();
+
+      } catch (err) {
+        console.error('Save error:', err);
+
+        let msg = err.message || 'সেভ হয়নি';
+        if (msg.includes('duplicate') || msg.includes('unique')) {
+          msg = 'এই Student ID আগেই ব্যবহার করা হয়েছে';
+        }
+        toast('❌ ' + msg, 'error');
+
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 সেভ করুন';
+      }
+    };
+
+    /* ============================================================
+       DELETE STUDENT — Soft delete with fallbacks
+       ============================================================ */
+    async function deleteStudent(id, btnElement) {
+      const s = allStudents.find(x => String(x.id) === String(id));
+      if (!s) {
+        toast('❌ ছাত্র পাওয়া যায়নি', 'error');
+        return;
+      }
+
+      const confirmed = confirm(
+        `🗑️ "${s.name}" কে Recycle Bin-এ পাঠাবেন?\n\n` +
+        `ID: ${s.student_index || s.student_id}\n` +
+        `ক্লাস: ${s.classes?.class_name || '-'}\n\n` +
+        `✅ পরে Recycle Bin থেকে ফিরিয়ে আনা যাবে।`
+      );
+      if (!confirmed) return;
+
+      // Disable button
+      const originalText = btnElement.textContent;
+      btnElement.disabled = true;
+      btnElement.textContent = '⏳';
+
+      let success = false;
+
+      /* ============ Method 1: Soft delete (UPDATE) ============ */
+      try {
+        const { error } = await supabase
+          .from('students')
+          .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString()
+          })
+          .eq('id', id);
+
+        if (!error) {
+          success = true;
+          console.log('✅ Soft delete succeeded');
+        } else {
+          console.warn('Soft delete failed:', error.message);
+        }
+      } catch (err) {
+        console.warn('Soft delete exception:', err);
+      }
+
+      /* ============ Method 2: Direct DELETE (trigger handles soft) ============ */
+      if (!success) {
+        try {
+          const { error } = await supabase
+            .from('students')
+            .delete()
+            .eq('id', id);
+
+          if (!error) {
+            success = true;
+            console.log('✅ Direct delete succeeded');
+          } else {
+            console.warn('Direct delete failed:', error.message);
+          }
+        } catch (err) {
+          console.warn('Direct delete exception:', err);
+        }
+      }
+
+      /* ============ Method 3: RPC call (if you have a stored procedure) ============ */
+      if (!success) {
+        try {
+          const { error } = await supabase.rpc('soft_delete_student', { p_id: id });
+          if (!error) {
+            success = true;
+            console.log('✅ RPC delete succeeded');
+          }
+        } catch (err) {
+          console.warn('RPC delete exception:', err);
+        }
+      }
+
+      btnElement.disabled = false;
+      btnElement.textContent = originalText;
+
+      if (success) {
+        await logAction('delete', 'students', id, `ছাত্র মুছে ফেলা: ${s.name}`);
+        toast(`🗑️ "${s.name}" Recycle Bin-এ পাঠানো হয়েছে`, 'success');
+
+        // Remove from local list and re-render
+        allStudents = allStudents.filter(x => String(x.id) !== String(id));
+        renderTable();
+        renderMiniStats();
+      } else {
+        toast('❌ Delete করা যায়নি। F12 Console দেখুন', 'error');
+        console.error('All delete methods failed for student id:', id);
+      }
+    }
+
+    /* ============ Initial Load ============ */
+    await loadStudents();
+
+  </script>
+</body>
+</html>

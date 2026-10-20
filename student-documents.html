@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Documents · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============ HEADER ============ */
+    .sd-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #7c3aed;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .sd-header .left { display: flex; align-items: center; gap: 14px; }
+    .sd-header .icon {
+      font-size: 32px; width: 52px; height: 52px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sd-header h1 { color: #7c3aed; font-size: 22px; margin: 0; font-weight: 700; }
+    .sd-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .sd-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .sd-back:hover { background: #111827; }
+    .sd-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* ============ TABS ============ */
+    .sd-tabs {
+      display: flex; gap: 3px; background: white;
+      padding: 0 16px; border-bottom: 2px solid #e5e7eb;
+      overflow-x: auto;
+    }
+    .sd-tabs button {
+      padding: 12px 20px; background: none; border: none;
+      cursor: pointer; font-weight: 700; font-size: 13.5px;
+      color: #6b7280; border-bottom: 3px solid transparent;
+      white-space: nowrap; transition: all 0.15s;
+    }
+    .sd-tabs button:hover { color: #7c3aed; }
+    .sd-tabs button.active {
+      color: #7c3aed; border-bottom-color: #7c3aed;
+    }
+
+    /* ============ BODY ============ */
+    .sd-body {
+      background: white; padding: 22px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px; border-radius: 0 0 10px 10px;
+    }
+    .sd-pane { display: none; }
+    .sd-pane.active { display: block; }
+
+    .info-banner {
+      background: #d1fae5; border-left: 4px solid #16a34a;
+      padding: 10px 14px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 13px; color: #065f46;
+    }
+    .info-banner.warn { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
+    .info-banner a { color: #1e3a8a; font-weight: 700; }
+
+    .sd-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px 40px; max-width: 1000px; margin: 0 auto;
+    }
+    .sd-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      align-items: center; gap: 12px;
+    }
+    .sd-row label {
+      color: #374151; font-weight: 700; font-size: 13.5px; text-align: right;
+    }
+    .sd-row input, .sd-row select, .sd-row textarea {
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px;
+      font-size: 14px; width: 100%; background: white; font-family: inherit;
+    }
+    .sd-row textarea { min-height: 60px; resize: vertical; }
+    .sd-row input:focus, .sd-row select:focus, .sd-row textarea:focus {
+      outline: none; border-color: #7c3aed;
+    }
+
+    .sd-btn-row {
+      grid-column: 1 / -1;
+      display: flex; gap: 14px; justify-content: center;
+      margin-top: 12px; flex-wrap: wrap;
+    }
+    .sd-gen-btn {
+      background: #7c3aed; color: white; border: none;
+      padding: 12px 34px; border-radius: 6px;
+      font-weight: 700; font-size: 14.5px; cursor: pointer;
+      box-shadow: 0 2px 6px rgba(124,58,237,0.3);
+    }
+    .sd-gen-btn:hover { background: #6d28d9; }
+    .sd-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .sd-gen-btn.gray { background: #6b7280; }
+    .sd-gen-btn.gray:hover { background: #4b5563; }
+    .sd-gen-btn.green { background: #16a34a; }
+    .sd-gen-btn.green:hover { background: #15803d; }
+
+    /* ============ ACTIONS ============ */
+    .doc-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .doc-actions button {
+      padding: 11px 26px; border-radius: 6px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .btn-print { background: #16a34a; color: white; }
+    .btn-print:hover { background: #15803d; }
+    .btn-back2 { background: #6b7280; color: white; }
+    .btn-back2:hover { background: #4b5563; }
+
+    /* ============ ID CARD ============ */
+    .idcard-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 24px; max-width: 900px; margin: 0 auto;
+    }
+    .idcard {
+      width: 100%;
+      aspect-ratio: 1.58 / 1;
+      background: white;
+      border: 2px solid #1e1b4b;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      position: relative;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .idcard.front {
+      background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+    }
+    .idcard.back {
+      background: #fff;
+    }
+    .idcard .wm-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 70%; max-height: 70%;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .idcard > *:not(.wm-bg) { position: relative; z-index: 1; }
+
+    .idcard-head {
+      text-align: center;
+      border-bottom: 2px solid #1e1b4b;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .idcard-head h2 {
+      font-size: 18px; font-weight: 800; color: #1e1b4b;
+      margin: 0; letter-spacing: 0.4px;
+    }
+    .idcard-head p {
+      font-size: 11px; color: #374151; margin: 2px 0 0 0;
+    }
+
+    .idcard-body {
+      display: grid; grid-template-columns: 90px 1fr;
+      gap: 12px;
+    }
+    .idcard-photo {
+      width: 90px; height: 108px;
+      border: 2px solid #1e1b4b;
+      object-fit: cover;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: #9ca3af;
+    }
+    .idcard-info {
+      font-size: 11px; line-height: 1.4;
+    }
+    .idcard-info .row {
+      display: flex; gap: 5px;
+      padding: 2px 0;
+      border-bottom: 1px dotted #cbd5e1;
+    }
+    .idcard-info .row .lbl {
+      font-weight: 700; color: #374151; min-width: 62px;
+    }
+    .idcard-info .row .val {
+      font-weight: 700; color: #000; flex: 1;
+    }
+
+    .idcard-foot {
+      position: absolute;
+      bottom: 8px; left: 16px; right: 16px;
+      display: flex; justify-content: space-between;
+      font-size: 9.5px; font-weight: 700;
+    }
+    .idcard-foot > div {
+      border-top: 1px solid #1e1b4b;
+      padding-top: 2px;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .idcard-title-bar {
+      background: #1e1b4b;
+      color: white;
+      text-align: center;
+      padding: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+
+    /* Back side */
+    .back-body {
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+    .back-body h4 {
+      font-size: 11.5px;
+      color: #7c3aed;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+    .back-body ol {
+      padding-left: 16px;
+      margin: 0 0 8px 0;
+    }
+    .back-body ol li { margin-bottom: 2px; }
+    .back-emergency {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .back-emergency .qr {
+      width: 70px; height: 70px;
+      border: 1px solid #1e1b4b;
+      background: white;
+      padding: 2px;
+    }
+    .back-emergency .qr img { width: 100%; height: 100%; }
+
+    /* ============ CERTIFICATE STYLE (TC, Testimonial) ============ */
+    .cert {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border: 8px double #1e1b4b;
+      padding: 40px 50px;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      color: #000;
+      position: relative;
+      overflow: hidden;
+    }
+    .cert .wm-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 50%; max-height: 50%;
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .cert > *:not(.wm-bg) { position: relative; z-index: 1; }
+
+    .cert-head {
+      text-align: center;
+      border-bottom: 3px double #1e1b4b;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .cert-head .logo-img {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      border: 2px solid #1e1b4b;
+      margin: 0 auto 8px;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      overflow: hidden;
+    }
+    .cert-head .logo-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cert-head h1 {
+      font-size: 30px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .cert-head .sub {
+      font-size: 14px;
+      color: #374151;
+      margin: 4px 0 0 0;
+    }
+
+    .cert-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #1e1b4b;
+      background: #ede9fe;
+      display: inline-block;
+      padding: 8px 40px;
+      margin: 0 auto 26px;
+      display: block;
+      width: fit-content;
+      border-radius: 4px;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    .cert-body {
+      font-size: 15.5px;
+      line-height: 2.1;
+      text-align: justify;
+      text-indent: 0;
+    }
+    .cert-body p { margin-bottom: 14px; }
+    .cert-body strong { font-weight: 800; color: #1e1b4b; }
+
+    .cert-underline {
+      display: inline-block;
+      border-bottom: 1px dotted #1f2937;
+      padding: 0 6px;
+      font-weight: 700;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .cert-signs {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 70px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .cert-signs > div {
+      border-top: 1px solid #1e1b4b;
+      padding-top: 5px;
+      min-width: 160px;
+      text-align: center;
+    }
+
+    .cert-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    /* ============ PROGRESS REPORT ============ */
+    .prog {
+      max-width: 850px; margin: 0 auto;
+      background: white;
+      border: 4px solid #7c3aed;
+      padding: 22px 26px;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      color: #000;
+    }
+    .prog-head {
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border-bottom: 3px double #1e1b4b;
+      padding-bottom: 10px;
+      margin-bottom: 6px;
+    }
+    .prog-head .logo {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      border: 2px solid #1e1b4b;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      overflow: hidden;
+    }
+    .prog-head .logo img { width: 100%; height: 100%; object-fit: cover; }
+    .prog-head .title h1 {
+      font-size: 22px; font-weight: 800; color: #1e1b4b;
+      margin: 0;
+    }
+    .prog-head .title p { font-size: 12.5px; color: #374151; margin: 2px 0 0 0; }
+    .prog-head .right { font-size: 12px; text-align: right; }
+    .prog-head .right .emis { font-weight: 800; font-size: 14px; }
+
+    .prog-title {
+      background: #ede9fe;
+      text-align: center;
+      padding: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #4c1d95;
+      margin: 8px 0 12px;
+      border-radius: 3px;
+    }
+
+    .prog-info {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .prog-info-table {
+      width: 100%; font-size: 13px;
+    }
+    .prog-info-table tr td {
+      padding: 3px 0; vertical-align: top;
+    }
+    .prog-info-table td:first-child {
+      font-weight: 700; width: 130px; color: #374151;
+    }
+    .prog-info-table td:nth-child(2) { width: 16px; }
+    .prog-info-table td:nth-child(3) { font-weight: 700; }
+    .prog-photo {
+      width: 130px; height: 150px;
+      border: 1px solid #1e1b4b;
+      object-fit: cover;
+      background: #f3f4f6;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 42px; color: #9ca3af;
+    }
+
+    .prog-tbl {
+      width: 100%; border-collapse: collapse;
+      font-size: 12px; margin-bottom: 12px;
+    }
+    .prog-tbl th, .prog-tbl td {
+      border: 1px solid #000; padding: 5px 6px; text-align: center;
+    }
+    .prog-tbl thead th {
+      background: #ede9fe; font-weight: 700; font-size: 12px;
+    }
+    .prog-tbl td.sname { text-align: left; font-weight: 600; }
+    .prog-tbl tbody tr:nth-child(even) td { background: #faf5ff; }
+
+    .prog-summary {
+      border: 2px solid #000;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      font-size: 13px;
+    }
+    .prog-summary .row {
+      display: flex; justify-content: space-between;
+      padding: 2px 0;
+    }
+    .prog-summary .row b { font-weight: 800; }
+
+    .prog-note {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      border-radius: 4px;
+      font-size: 12.5px;
+    }
+
+    .prog-signs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 30px;
+      margin-top: 50px;
+      font-size: 12px;
+    }
+    .prog-signs > div {
+      border-top: 1px solid #000;
+      padding-top: 4px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    /* ============ PRINT ============ */
+    @media print {
+      @page { size: A4; margin: 8mm; }
+      body { background: white !important; padding: 0 !important; }
+      header.top, aside.sidebar, #toast, .no-print { display: none !important; }
+      main.content { margin-left: 0 !important; padding: 0 !important; }
+      .sd-body, .info-banner, .sd-tabs { display: none !important; }
+      .sd-header { display: none !important; }
+      .doc-actions { display: none !important; }
+
+      .idcard-wrap { gap: 10px; }
+      .idcard {
+        border-color: #000 !important;
+        page-break-inside: avoid;
+      }
+      .cert { border-color: #1e1b4b !important; page-break-inside: avoid; }
+      .cert-title {
+        background: #ede9fe !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .prog { border-color: #7c3aed !important; }
+      .prog-title, .prog-tbl thead th {
+        background: #ede9fe !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .prog-note {
+        background: #fef3c7 !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .idcard-title-bar {
+        background: #1e1b4b !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sd-form { grid-template-columns: 1fr; }
+      .sd-row { grid-template-columns: 1fr; }
+      .sd-row label { text-align: left; }
+      .idcard-wrap { grid-template-columns: 1fr; }
+      .prog-info { grid-template-columns: 1fr; }
+      .prog-summary { grid-template-columns: 1fr; }
+      .prog-signs { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'student-documents.html', 'Student Documents');
+
+    const content = document.getElementById('content');
+
+    /* ============ স্কুল প্রোফাইল ============ */
+    let school = {
+      name: 'SCHOOL NAME', address: '', emis: '', logo: '', watermark: '',
+      principal: '', id_card_validity: ''
+    };
+    async function loadSchoolProfile() {
+      const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+      if (data) school = {
+        name: data.institute_name || 'SCHOOL NAME',
+        address: data.address || '',
+        emis: data.ein_no || '',
+        logo: data.school_logo || '',
+        watermark: data.watermark_logo || '',
+        principal: data.principal_name || 'Head Teacher',
+        id_card_validity: data.id_card_validity || '',
+      };
+    }
+    await loadSchoolProfile();
+
+    /* ============ UI ============ */
+    content.innerHTML = `
+      <div id="searchView">
+        <div class="sd-header">
+          <div class="left">
+            <div class="icon">📄</div>
+            <div>
+              <h1>Student Documents</h1>
+              <p>ID Card · TC · Testimonial · Progress Report</p>
+            </div>
+          </div>
+          <button class="sd-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="sd-tabs">
+          <button class="active" data-tab="idcard">🆔 ID Card</button>
+          <button data-tab="tc">📜 Transfer Certificate</button>
+          <button data-tab="testimonial">📄 Testimonial</button>
+          <button data-tab="progress">📊 Progress Report</button>
+        </div>
+
+        <div class="sd-body">
+          <div class="info-banner" id="schoolBanner"></div>
+
+          <!-- Common selector -->
+          <div class="sd-row" style="max-width:600px;margin:0 auto 18px">
+            <label>ছাত্র সিলেক্ট</label>
+            <select id="studentSelect"><option value="">-- ছাত্র --</option></select>
+          </div>
+
+          <!-- ====== ID CARD PANE ====== -->
+          <div class="sd-pane active" id="pane-idcard">
+            <div class="sd-form">
+              <div class="sd-row">
+                <label>Valid Until</label>
+                <input type="date" id="id_valid" value="${school.id_card_validity || ''}">
+              </div>
+              <div class="sd-row">
+                <label>Blood Group</label>
+                <input id="id_blood" placeholder="A+ / B+">
+              </div>
+              <div class="sd-row">
+                <label>Emergency Contact</label>
+                <input id="id_emergency" placeholder="01712345678">
+              </div>
+              <div class="sd-row">
+                <label>Cards / Page</label>
+                <select id="id_perpage">
+                  <option value="2">২টি / পেজ</option>
+                  <option value="1">১টি / পেজ</option>
+                </select>
+              </div>
+              <div class="sd-btn-row">
+                <button class="sd-gen-btn" id="genIdBtn">🆔 ID Card তৈরি করুন</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== TC PANE ====== -->
+          <div class="sd-pane" id="pane-tc">
+            <div class="sd-form">
+              <div class="sd-row">
+                <label>TC Date</label>
+                <input type="date" id="tc_date" value="${new Date().toISOString().slice(0,10)}">
+              </div>
+              <div class="sd-row">
+                <label>Leaving Class</label>
+                <input id="tc_class" placeholder="যে ক্লাস থেকে যাচ্ছে">
+              </div>
+              <div class="sd-row">
+                <label>Reason</label>
+                <input id="tc_reason" value="Higher education">
+              </div>
+              <div class="sd-row">
+                <label>Conduct</label>
+                <select id="tc_conduct">
+                  <option>Excellent</option>
+                  <option>Good</option>
+                  <option>Satisfactory</option>
+                </select>
+              </div>
+              <div class="sd-btn-row">
+                <button class="sd-gen-btn" id="genTcBtn">📜 TC তৈরি করুন</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== TESTIMONIAL PANE ====== -->
+          <div class="sd-pane" id="pane-testimonial">
+            <div class="sd-form">
+              <div class="sd-row">
+                <label>Date</label>
+                <input type="date" id="ts_date" value="${new Date().toISOString().slice(0,10)}">
+              </div>
+              <div class="sd-row">
+                <label>Conduct</label>
+                <select id="ts_conduct">
+                  <option>Excellent</option>
+                  <option>Good</option>
+                  <option>Satisfactory</option>
+                </select>
+              </div>
+              <div class="sd-row" style="grid-column:1/-1">
+                <label>Special Note (ঐচ্ছিক)</label>
+                <textarea id="ts_note" placeholder="ছাত্রের বিশেষ গুণ বা কৃতিত্ব..." style="min-height:60px"></textarea>
+              </div>
+              <div class="sd-btn-row">
+                <button class="sd-gen-btn" id="genTsBtn">📄 Testimonial তৈরি করুন</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== PROGRESS PANE ====== -->
+          <div class="sd-pane" id="pane-progress">
+            <div class="sd-form">
+              <div class="sd-row">
+                <label>Session</label>
+                <select id="pr_session">
+                  ${[new Date().getFullYear()-1, new Date().getFullYear(), new Date().getFullYear()+1].map(y =>
+                    `<option value="${y}" ${y===new Date().getFullYear()?'selected':''}>${y}</option>`
+                  ).join('')}
+                </select>
+              </div>
+              <div class="sd-row">
+                <label>Exam Term</label>
+                <select id="pr_term"><option value="">লোড হচ্ছে...</option></select>
+              </div>
+              <div class="sd-btn-row">
+                <button class="sd-gen-btn" id="genPrBtn">📊 Progress Report তৈরি করুন</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="docView" style="display:none"></div>
+    `;
+
+    /* ============ স্কুল banner ============ */
+    (function showBanner() {
+      const b = document.getElementById('schoolBanner');
+      if (school.name && school.name !== 'SCHOOL NAME') {
+        b.innerHTML = `✅ <b>${esc(school.name)}</b> থেকে হেডার অটো লোড হয়েছে ·
+          <a href="school-profile.html">স্কুল প্রোফাইল →</a>`;
+      } else {
+        b.className = 'info-banner warn';
+        b.innerHTML = `⚠️ স্কুল প্রোফাইল সেট করুন ·
+          <a href="school-profile.html">এখনই সেট করুন →</a>`;
+      }
+    })();
+
+    /* ============ Data ============ */
+    let allStudents = [];
+    let allClasses = [];
+
+    async function loadData() {
+      const [s, c, e] = await Promise.all([
+        supabase.from('students').select('*, classes(class_name)').order('class_id').order('roll'),
+        supabase.from('classes').select('*').order('id'),
+        supabase.from('exams').select('exam_name, exam_serial').order('exam_serial'),
+      ]);
+      allStudents = s.data || [];
+      allClasses = c.data || [];
+
+      document.getElementById('studentSelect').innerHTML =
+        '<option value="">-- ছাত্র --</option>' +
+        allStudents.map(st =>
+          `<option value="${st.id}">${esc(st.name)} (${esc(st.student_index || st.student_id)}) · ${esc(st.classes?.class_name || '')}</option>`
+        ).join('');
+
+      const terms = e.data || [];
+      document.getElementById('pr_term').innerHTML = terms.length
+        ? terms.map(t => `<option value="${esc(t.exam_name)}">${esc(t.exam_name)}</option>`).join('')
+        : '<option value="">-- Exam নাম নেই --</option>';
+    }
+    await loadData();
+
+    /* ============ Student select → auto-fill ============ */
+    document.getElementById('studentSelect').onchange = () => {
+      const sid = document.getElementById('studentSelect').value;
+      const st = allStudents.find(x => String(x.id) === sid);
+      if (!st) return;
+      if (st.blood_group) document.getElementById('id_blood').value = st.blood_group;
+      if (st.guardian_phone) document.getElementById('id_emergency').value = st.guardian_phone;
+    };
+
+    /* ============ Tabs ============ */
+    document.querySelectorAll('.sd-tabs button').forEach(b => {
+      b.onclick = () => {
+        document.querySelectorAll('.sd-tabs button').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.sd-pane').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        document.getElementById('pane-' + b.dataset.tab).classList.add('active');
+      };
+    });
+
+    /* ============ Back ============ */
+    function backToSearch() {
+      document.getElementById('docView').style.display = 'none';
+      document.getElementById('searchView').style.display = 'block';
+    }
+
+    /* ============ QR helper ============ */
+    function qrUrl(text, size = 120) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
+    }
+
+    /* ====================================================
+       ID CARD
+       ==================================================== */
+    document.getElementById('genIdBtn').onclick = () => {
+      const sid = document.getElementById('studentSelect').value;
+      if (!sid) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+
+      const st = allStudents.find(x => String(x.id) === sid);
+      const valid = document.getElementById('id_valid').value;
+      const blood = document.getElementById('id_blood').value.trim() || st.blood_group || '-';
+      const emergency = document.getElementById('id_emergency').value.trim() || st.guardian_phone || '-';
+      const perPage = +document.getElementById('id_perpage').value;
+
+      const qrText = `${school.emis}|${st.student_index}|${st.name}|${st.classes?.class_name}|${st.section}`;
+      const qr = qrUrl(qrText, 160);
+
+      const front = `
+        <div class="idcard front">
+          ${school.watermark ? `<img src="${school.watermark}" class="wm-bg">` : ''}
+
+          <div class="idcard-head">
+            <h2>${esc(school.name).toUpperCase()}</h2>
+            <p>${esc(school.address)}${school.emis ? ' · EMIS: ' + esc(school.emis) : ''}</p>
+          </div>
+
+          <div class="idcard-title-bar">STUDENT IDENTITY CARD</div>
+
+          <div class="idcard-body">
+            <div>
+              ${st.student_photo
+                ? `<img src="${st.student_photo}" class="idcard-photo" alt="photo">`
+                : `<div class="idcard-photo">👤</div>`}
+            </div>
+            <div class="idcard-info">
+              <div class="row"><span class="lbl">Name</span><span class="val">${esc(st.name).toUpperCase()}</span></div>
+              <div class="row"><span class="lbl">ID No.</span><span class="val">${esc(st.student_index || st.student_id)}</span></div>
+              <div class="row"><span class="lbl">Class</span><span class="val">${esc(st.classes?.class_name || '-')} · ${esc(st.section || '-')}</span></div>
+              <div class="row"><span class="lbl">Roll</span><span class="val">${esc(st.roll ?? '-')}</span></div>
+              <div class="row"><span class="lbl">Father</span><span class="val">${esc(st.father_name || '-')}</span></div>
+              <div class="row"><span class="lbl">Blood</span><span class="val">${esc(blood)}</span></div>
+              <div class="row"><span class="lbl">Session</span><span class="val">${esc(st.session_year || '-')}</span></div>
+              <div class="row"><span class="lbl">Validity</span><span class="val">${valid || 'N/A'}</span></div>
+            </div>
+          </div>
+
+          <div class="idcard-foot">
+            <div>Student Sign</div>
+            <div>Principal</div>
+          </div>
+        </div>
+      `;
+
+      const back = `
+        <div class="idcard back">
+          ${school.watermark ? `<img src="${school.watermark}" class="wm-bg">` : ''}
+
+          <div class="idcard-head" style="margin-bottom:6px">
+            <h2 style="font-size:15px">${esc(school.name).toUpperCase()}</h2>
+          </div>
+
+          <div class="back-body">
+            <h4>📌 নির্দেশনা:</h4>
+            <ol>
+              <li>প্রতিদিন আইডি কার্ড সাথে রাখতে হবে।</li>
+              <li>কার্ড হারালে স্কুল অফিসে জানাতে হবে।</li>
+              <li>কার্ড অন্য কাউকে দেওয়া যাবে না।</li>
+              <li>কার্ড নষ্ট হলে নতুন করে নিতে হবে।</li>
+            </ol>
+
+            <div class="back-emergency">
+              <div style="font-size:10.5px">
+                <b>📍 ঠিকানা:</b> ${esc(school.address)}<br>
+                <b>📞 জরুরি:</b> ${esc(emergency)}<br>
+                <b>🩸 Blood:</b> ${esc(blood)}<br>
+                <b>🎓 Guardian:</b> ${esc(st.guardian_name || '-')}
+              </div>
+              <div class="qr"><img src="${qr}" alt="QR"></div>
+            </div>
+          </div>
+
+          <div class="idcard-foot">
+            <div>Issued Date: ${new Date().toLocaleDateString('en-GB')}</div>
+            <div>Head Teacher</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('docView').innerHTML = `
+        <div class="sd-header">
+          <div class="left">
+            <div class="icon">🆔</div>
+            <div>
+              <h1>Student ID Card</h1>
+              <p>${esc(st.name)} · ${esc(st.student_index || st.student_id)}</p>
+            </div>
+          </div>
+          <button class="sd-back" id="vBack">Back <span class="arrow">←</span></button>
+        </div>
+
+        <div class="doc-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-back2" id="vBack2">← আবার সার্চ</button>
+        </div>
+
+        <div class="idcard-wrap" style="grid-template-columns: ${perPage === 1 ? '1fr' : '1fr 1fr'}">
+          ${front}${back}
+        </div>
+      `;
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('docView').style.display = 'block';
+      document.getElementById('vBack').onclick = backToSearch;
+      document.getElementById('vBack2').onclick = backToSearch;
+      toast('✅ ID Card তৈরি হয়েছে', 'success');
+    };
+
+    /* ====================================================
+       TRANSFER CERTIFICATE
+       ==================================================== */
+    document.getElementById('genTcBtn').onclick = () => {
+      const sid = document.getElementById('studentSelect').value;
+      if (!sid) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+      const st = allStudents.find(x => String(x.id) === sid);
+      const tcDate = document.getElementById('tc_date').value;
+      const leaveClass = document.getElementById('tc_class').value.trim() || st.classes?.class_name || '-';
+      const reason = document.getElementById('tc_reason').value.trim() || 'Higher education';
+      const conduct = document.getElementById('tc_conduct').value;
+
+      const dateStr = tcDate ? new Date(tcDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : '';
+
+      document.getElementById('docView').innerHTML = `
+        <div class="sd-header">
+          <div class="left">
+            <div class="icon">📜</div>
+            <div>
+              <h1>Transfer Certificate</h1>
+              <p>${esc(st.name)}</p>
+            </div>
+          </div>
+          <button class="sd-back" id="vBack">Back <span class="arrow">←</span></button>
+        </div>
+
+        <div class="doc-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-back2" id="vBack2">← আবার সার্চ</button>
+        </div>
+
+        <div class="cert">
+          ${school.watermark ? `<img src="${school.watermark}" class="wm-bg">` : ''}
+
+          <div class="cert-head">
+            <div class="logo-img">${school.logo ? `<img src="${school.logo}">` : '🏫'}</div>
+            <h1>${esc(school.name).toUpperCase()}</h1>
+            <p class="sub">${esc(school.address)}</p>
+            ${school.emis ? `<p class="sub">EMIS: <b>${esc(school.emis)}</b></p>` : ''}
+          </div>
+
+          <div class="cert-title">TRANSFER CERTIFICATE</div>
+
+          <div class="cert-body">
+            <p>
+              This is to certify that <strong>${esc(st.name).toUpperCase()}</strong>,
+              son/daughter of <strong>${esc(st.father_name || '___')}</strong> and
+              <strong>${esc(st.mother_name || '___')}</strong>, bearing
+              Student ID <strong>${esc(st.student_index || st.student_id)}</strong>,
+              was a bona fide student of this institution. He/She studied in
+              <strong>${esc(leaveClass)}</strong>
+              ${st.section ? `, Section <strong>${esc(st.section)}</strong>` : ''}
+              during the session <strong>${esc(st.session_year || '____')}</strong>
+              and passed the <strong>${esc(leaveClass)}</strong> class with satisfactory result.
+            </p>
+
+            <p>
+              His/Her conduct and character during the period of study at this school were
+              found <strong>${esc(conduct)}</strong>. He/She bears a good moral character and
+              had never been involved in any anti-disciplinary activities. All dues payable to
+              the school have been fully cleared.
+            </p>
+
+            <p>
+              This certificate is issued upon the request of the student/guardian on
+              <strong>${dateStr}</strong> for the purpose of
+              <strong>${esc(reason)}</strong>. We wish him/her every success in life.
+            </p>
+          </div>
+
+          <div class="cert-signs">
+            <div>Class Teacher</div>
+            <div>Guardian</div>
+            <div>${esc(school.principal || 'Head Teacher')}</div>
+          </div>
+
+          <div class="cert-footer">
+            This is a computer-generated certificate issued on ${dateStr} · ${esc(school.name)}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('docView').style.display = 'block';
+      document.getElementById('vBack').onclick = backToSearch;
+      document.getElementById('vBack2').onclick = backToSearch;
+      toast('✅ TC তৈরি হয়েছে', 'success');
+    };
+
+    /* ====================================================
+       TESTIMONIAL
+       ==================================================== */
+    document.getElementById('genTsBtn').onclick = () => {
+      const sid = document.getElementById('studentSelect').value;
+      if (!sid) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+      const st = allStudents.find(x => String(x.id) === sid);
+      const tsDate = document.getElementById('ts_date').value;
+      const conduct = document.getElementById('ts_conduct').value;
+      const note = document.getElementById('ts_note').value.trim();
+
+      const dateStr = tsDate ? new Date(tsDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : '';
+
+      document.getElementById('docView').innerHTML = `
+        <div class="sd-header">
+          <div class="left">
+            <div class="icon">📄</div>
+            <div>
+              <h1>Testimonial</h1>
+              <p>${esc(st.name)}</p>
+            </div>
+          </div>
+          <button class="sd-back" id="vBack">Back <span class="arrow">←</span></button>
+        </div>
+
+        <div class="doc-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-back2" id="vBack2">← আবার সার্চ</button>
+        </div>
+
+        <div class="cert">
+          ${school.watermark ? `<img src="${school.watermark}" class="wm-bg">` : ''}
+
+          <div class="cert-head">
+            <div class="logo-img">${school.logo ? `<img src="${school.logo}">` : '🏫'}</div>
+            <h1>${esc(school.name).toUpperCase()}</h1>
+            <p class="sub">${esc(school.address)}</p>
+            ${school.emis ? `<p class="sub">EMIS: <b>${esc(school.emis)}</b></p>` : ''}
+          </div>
+
+          <div class="cert-title">TESTIMONIAL</div>
+
+          <div class="cert-body">
+            <p>
+              This is to certify that <strong>${esc(st.name).toUpperCase()}</strong>,
+              son/daughter of <strong>${esc(st.father_name || '___')}</strong> and
+              <strong>${esc(st.mother_name || '___')}</strong>, bearing Student ID
+              <strong>${esc(st.student_index || st.student_id)}</strong>, was a student of
+              <strong>${esc(school.name)}</strong> from session
+              <strong>${esc(st.session_year || '____')}</strong>.
+            </p>
+
+            <p>
+              During his/her study at this institution, he/she was found to be
+              <strong>hardworking, well-behaved and disciplined</strong>. He/She actively
+              participated in academic and co-curricular activities of the school. His/Her
+              conduct and character were found to be <strong>${esc(conduct)}</strong>.
+            </p>
+
+            ${note ? `<p><strong>Special Note:</strong> ${esc(note)}</p>` : ''}
+
+            <p>
+              I wish him/her a very bright future and success in all his/her future endeavors.
+            </p>
+          </div>
+
+          <div class="cert-signs">
+            <div>Class Teacher</div>
+            <div>Guardian</div>
+            <div>${esc(school.principal || 'Head Teacher')}</div>
+          </div>
+
+          <div class="cert-footer">
+            Issued on ${dateStr} · This is a computer-generated document.
+          </div>
+        </div>
+      `;
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('docView').style.display = 'block';
+      document.getElementById('vBack').onclick = backToSearch;
+      document.getElementById('vBack2').onclick = backToSearch;
+      toast('✅ Testimonial তৈরি হয়েছে', 'success');
+    };
+
+    /* ====================================================
+       PROGRESS REPORT
+       ==================================================== */
+    document.getElementById('genPrBtn').onclick = async () => {
+      const sid = document.getElementById('studentSelect').value;
+      if (!sid) { toast('ছাত্র সিলেক্ট করুন', 'error'); return; }
+      const st = allStudents.find(x => String(x.id) === sid);
+      const session = +document.getElementById('pr_session').value;
+      const term = document.getElementById('pr_term').value;
+      if (!term) { toast('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+      const btn = document.getElementById('genPrBtn');
+      btn.disabled = true; btn.textContent = 'তৈরি হচ্ছে...';
+
+      // Subjects
+      const { data: subjects } = await supabase.from('subjects').select('*')
+        .eq('session_year', session).eq('class_id', st.class_id).eq('exam_term', term).order('id');
+      const subjectList = subjects || [];
+
+      // Results
+      const { data: results } = await supabase.from('exam_results').select('*')
+        .eq('session_year', session).eq('class_id', st.class_id).eq('exam_term', term)
+        .eq('student_index', st.student_index);
+      const resultMap = {};
+      (results || []).forEach(r => resultMap[r.subject_code || r.subject_name] = r);
+
+      // Attendance (this term)
+      const { data: att } = await supabase.from('attendance').select('status')
+        .eq('student_id', st.student_id || st.student_index);
+
+      btn.disabled = false; btn.textContent = '📊 Progress Report তৈরি করুন';
+
+      // Compute
+      let totalObt = 0, totalFull = 0, totalGP = 0, count = 0;
+      const subRows = subjectList.map(su => {
+        const r = resultMap[su.subject_code || su.subject_name] || {};
+        const obt = (r.present === false) ? 0
+                  : (+r.subjective_marks || 0) + (+r.objective_marks || 0)
+                  + (+r.practical_marks || 0) + (+r.assessment_marks || 0)
+                  + (+r.ct_mt_marks || 0);
+        const full = +su.total_marks || 100;
+        const pct = full ? (obt / full * 100) : 0;
+
+        let g = { gp: 0, letter: 'F' };
+        if (pct >= 80) g = { gp: 5, letter: 'A+' };
+        else if (pct >= 70) g = { gp: 4, letter: 'A' };
+        else if (pct >= 60) g = { gp: 3.5, letter: 'A-' };
+        else if (pct >= 50) g = { gp: 3, letter: 'B' };
+        else if (pct >= 40) g = { gp: 2, letter: 'C' };
+        else if (pct >= 33) g = { gp: 1, letter: 'D' };
+
+        totalObt += obt; totalFull += full; totalGP += g.gp; count++;
+
+        return { sub: su.subject_name, full, obt, gp: g.gp, letter: g.letter };
+      });
+
+      const gpa = count ? (totalGP / count) : 0;
+      const totalPresent = (att || []).filter(a => a.status === 'present').length;
+      const totalAbsent = (att || []).filter(a => a.status === 'absent').length;
+      const totalDays = (att || []).length;
+      const percent = totalDays ? Math.round((totalPresent / totalDays) * 100) : 0;
+
+      const classObj = allClasses.find(c => c.id == st.class_id);
+
+      document.getElementById('docView').innerHTML = `
+        <div class="sd-header">
+          <div class="left">
+            <div class="icon">📊</div>
+            <div>
+              <h1>Progress Report</h1>
+              <p>${esc(st.name)} · ${esc(term)}</p>
+            </div>
+          </div>
+          <button class="sd-back" id="vBack">Back <span class="arrow">←</span></button>
+        </div>
+
+        <div class="doc-actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-back2" id="vBack2">← আবার সার্চ</button>
+        </div>
+
+        <div class="prog">
+          <div class="prog-head">
+            <div class="logo">${school.logo ? `<img src="${school.logo}">` : '🏫'}</div>
+            <div class="title">
+              <h1>${esc(school.name).toUpperCase()}</h1>
+              <p>${esc(school.address)}</p>
+            </div>
+            <div class="right">
+              <div>EMIS:</div>
+              <div class="emis">${esc(school.emis || '-')}</div>
+            </div>
+          </div>
+
+          <div class="prog-title">STUDENT PROGRESS REPORT · ${esc(term).toUpperCase()}</div>
+
+          <div class="prog-info">
+            <table class="prog-info-table">
+              <tr><td>Student ID</td><td>:</td><td>${esc(st.student_index || st.student_id)}</td></tr>
+              <tr><td>Name</td><td>:</td><td>${esc(st.name).toUpperCase()}</td></tr>
+              <tr><td>Father</td><td>:</td><td>${esc(st.father_name || '-')}</td></tr>
+              <tr><td>Mother</td><td>:</td><td>${esc(st.mother_name || '-')}</td></tr>
+              <tr><td>Class</td><td>:</td><td>${esc(classObj?.class_name || '-')}</td></tr>
+              <tr><td>Section / Roll</td><td>:</td><td>${esc(st.section || '-')} / ${esc(st.roll ?? '-')}</td></tr>
+              <tr><td>Session</td><td>:</td><td>${session}</td></tr>
+            </table>
+            <div style="text-align:center">
+              ${st.student_photo
+                ? `<img src="${st.student_photo}" class="prog-photo">`
+                : `<div class="prog-photo">👤</div>`}
+            </div>
+          </div>
+
+          <table class="prog-tbl">
+            <thead>
+              <tr>
+                <th style="text-align:left">Subject</th>
+                <th style="width:70px">Full Marks</th>
+                <th style="width:80px">Obtained</th>
+                <th style="width:60px">GP</th>
+                <th style="width:65px">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${subRows.length ? subRows.map(r => `
+                <tr>
+                  <td class="sname">${esc(r.sub)}</td>
+                  <td>${r.full}</td>
+                  <td><b>${r.obt}</b></td>
+                  <td>${r.gp.toFixed(2)}</td>
+                  <td><b>${r.letter}</b></td>
+                </tr>
+              `).join('') : `<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:16px">এই Term-এ কোনো নম্বর নেই</td></tr>`}
+            </tbody>
+          </table>
+
+          <div class="prog-summary">
+            <div>
+              <div class="row"><span>Total Marks:</span><b>${totalFull}</b></div>
+              <div class="row"><span>Obtained:</span><b>${totalObt}</b></div>
+              <div class="row"><span>GPA:</span><b>${gpa.toFixed(2)}</b></div>
+            </div>
+            <div>
+              <div class="row"><span>Total Days:</span><b>${totalDays}</b></div>
+              <div class="row"><span>Present:</span><b style="color:#16a34a">${totalPresent}</b></div>
+              <div class="row"><span>Absent:</span><b style="color:#dc2626">${totalAbsent}</b></div>
+            </div>
+            <div>
+              <div class="row"><span>Attendance:</span><b>${percent}%</b></div>
+              <div class="row"><span>Subjects:</span><b>${count}</b></div>
+              <div class="row"><span>Grade:</span><b>${gpa >= 5 ? 'A+' : gpa >= 4 ? 'A' : gpa >= 3.5 ? 'A-' : gpa >= 3 ? 'B' : gpa >= 2 ? 'C' : gpa >= 1 ? 'D' : 'F'}</b></div>
+            </div>
+          </div>
+
+          <div class="prog-note">
+            <b>📌 Remarks:</b>
+            ${gpa >= 4.5 ? 'Excellent performance! Keep up the outstanding work.' :
+              gpa >= 3.5 ? 'Very good progress. Continue your efforts.' :
+              gpa >= 2.5 ? 'Good. More attention needed in weak subjects.' :
+              gpa >= 1.5 ? 'Satisfactory. Regular study required.' :
+              'Needs significant improvement. Please focus on studies.'}
+          </div>
+
+          <div class="prog-signs">
+            <div>Class Teacher</div>
+            <div>Guardian</div>
+            <div>${esc(school.principal || 'Head Teacher')}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('searchView').style.display = 'none';
+      document.getElementById('docView').style.display = 'block';
+      document.getElementById('vBack').onclick = backToSearch;
+      document.getElementById('vBack2').onclick = backToSearch;
+      toast('✅ Progress Report তৈরি হয়েছে', 'success');
+    };
+  </script>
+</body>
+</html>

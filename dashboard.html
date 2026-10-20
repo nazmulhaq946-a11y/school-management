@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+:root{
+  --db-purple:#7c3aed;--db-purple-dark:#6d28d9;
+  --db-indigo:#4f46e5;--db-emerald:#10b981;
+  --db-rose:#f43f5e;--db-orange:#f59e0b;
+  --db-blue:#3b82f6;--db-cyan:#06b6d4;
+  --db-violet:#8b5cf6;--db-slate:#64748b;
+}
+.db-wrap{max-width:1400px;margin:0 auto}
+.db-hero{
+  background:linear-gradient(135deg,#1e1b4b 0%,#4c1d95 40%,#7c3aed 100%);
+  border-radius:24px;padding:32px 36px;color:white;
+  margin-bottom:24px;position:relative;overflow:hidden;
+  box-shadow:0 20px 50px rgba(76,29,149,.35);
+}
+.db-hero::before{
+  content:'';position:absolute;top:-100px;right:-50px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%);
+  border-radius:50%;
+}
+.db-hero::after{
+  content:'';position:absolute;bottom:-120px;left:30%;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(236,72,153,.25),transparent 70%);
+  border-radius:50%;
+}
+.db-hero>*{position:relative;z-index:2}
+.db-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:20px}
+.db-hero-left{display:flex;align-items:center;gap:20px;flex:1;min-width:260px}
+.db-hero-avatar{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  border-radius:20px;display:flex;align-items:center;justify-content:center;
+  font-size:34px;box-shadow:0 10px 30px rgba(245,158,11,.4);
+  flex-shrink:0;border:2px solid rgba(255,255,255,.3);
+}
+.db-hero-text h1{
+  font-size:26px;font-weight:900;margin:0 0 6px;
+  letter-spacing:-.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.db-hero-text h1 .wave{display:inline-block;animation:wave 2s ease-in-out infinite;transform-origin:70% 70%}
+@keyframes wave{
+  0%,100%{transform:rotate(0)}
+  10%,30%{transform:rotate(14deg)}
+  20%{transform:rotate(-8deg)}
+  40%,60%{transform:rotate(14deg)}
+  50%{transform:rotate(-4deg)}
+}
+.db-hero-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;opacity:.9;font-weight:500}
+.db-hero-meta .item{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;background:rgba(255,255,255,.15);
+  border-radius:20px;backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);
+}
+.db-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.db-stat{
+  background:white;border-radius:18px;padding:20px;
+  box-shadow:0 2px 10px rgba(15,23,42,.05);
+  border:1px solid #e5e7eb;
+  display:flex;align-items:center;gap:16px;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;cursor:default;
+}
+.db-stat::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--c1,#7c3aed),var(--c2,#a78bfa));
+  transform:scaleX(0);transform-origin:left;transition:transform .3s;
+}
+.db-stat:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(15,23,42,.1);border-color:#ddd6fe}
+.db-stat:hover::after{transform:scaleX(1)}
+.db-stat .icon-circle{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  flex-shrink:0;background:var(--ibg,#ede9fe);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.05);
+}
+.db-stat .info{min-width:0;flex:1}
+.db-stat .info h4{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;font-weight:800;margin-bottom:4px}
+.db-stat .info p{font-size:26px;font-weight:900;color:#1e1b4b;line-height:1;letter-spacing:-1px;font-family:'Inter',system-ui,sans-serif}
+.db-stat .info .trend{font-size:11px;font-weight:800;margin-top:4px;display:inline-flex;align-items:center;gap:3px}
+.db-stat .info .trend.up{color:#10b981}
+.db-stat .info .trend.down{color:#ef4444}
+.db-stat.purple{--c1:#7c3aed;--c2:#a78bfa;--ibg:#ede9fe}
+.db-stat.blue{--c1:#3b82f6;--c2:#93c5fd;--ibg:#dbeafe}
+.db-stat.green{--c1:#10b981;--c2:#6ee7b7;--ibg:#d1fae5}
+.db-stat.orange{--c1:#f59e0b;--c2:#fcd34d;--ibg:#fef3c7}
+.db-stat.rose{--c1:#f43f5e;--c2:#fda4af;--ibg:#fee2e2}
+.db-stat.cyan{--c1:#06b6d4;--c2:#67e8f9;--ibg:#cffafe}
+.db-stat.green .info p{color:#10b981}
+.db-stat.rose .info p{color:#f43f5e}
+.db-stat.orange .info p{color:#f59e0b}
+.db-stat.blue .info p{color:#3b82f6}
+.db-stat.cyan .info p{color:#06b6d4}
+.db-quick{background:white;border-radius:20px;padding:22px 24px;box-shadow:0 2px 10px rgba(15,23,42,.05);border:1px solid #e5e7eb;margin-bottom:24px}
+.db-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.db-section-head h3{font-size:15px;font-weight:900;color:#1e1b4b;letter-spacing:.3px;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin:0}
+.db-section-head h3 .badge{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:white;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:none}
+.db-section-head .line{flex:1;height:2px;background:linear-gradient(90deg,#e5e7eb,transparent);border-radius:2px;margin-left:12px}
+.db-quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.db-quick-btn{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border-radius:14px;border:2px solid transparent;background:#f9fafb;
+  cursor:pointer;text-decoration:none;color:#1f2937;font-weight:700;font-size:14px;
+  transition:all .2s;position:relative;overflow:hidden;font-family:inherit;text-align:left;
+}
+.db-quick-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--qb1,#7c3aed),var(--qb2,#a78bfa));
+  opacity:0;transition:opacity .2s;z-index:0;
+}
+.db-quick-btn > *{position:relative;z-index:1;transition:color .2s}
+.db-quick-btn .qb-icon{
+  width:40px;height:40px;border-radius:12px;background:white;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;transition:transform .2s;
+}
+.db-quick-btn .qb-label{display:flex;flex-direction:column;gap:2px;min-width:0}
+.db-quick-btn .qb-label small{font-size:11px;font-weight:600;color:#6b7280;transition:color .2s}
+.db-quick-btn:hover{transform:translateY(-3px);box-shadow:0 12px 25px rgba(124,58,237,.25)}
+.db-quick-btn:hover::before{opacity:1}
+.db-quick-btn:hover,.db-quick-btn:hover > *,.db-quick-btn:hover .qb-label small{color:white}
+.db-quick-btn:hover .qb-icon{transform:scale(1.1) rotate(-5deg)}
+.db-quick-btn.purple{--qb1:#7c3aed;--qb2:#a78bfa}
+.db-quick-btn.blue{--qb1:#3b82f6;--qb2:#60a5fa}
+.db-quick-btn.green{--qb1:#10b981;--qb2:#34d399}
+.db-quick-btn.orange{--qb1:#f59e0b;--qb2:#fbbf24}
+.db-quick-btn.rose{--qb1:#f43f5e;--qb2:#fb7185}
+.db-quick-btn.cyan{--qb1:#06b6d4;--qb2:#22d3ee}
+.db-layout{display:grid;grid-template-columns:1fr 340px;gap:24px}
+.db-categories{display:flex;flex-direction:column;gap:24px}
+.db-category{background:white;border-radius:20px;padding:22px 24px;box-shadow:0 2px 10px rgba(15,23,42,.05);border:1px solid #e5e7eb}
+.db-cat-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px dashed #f3f4f6}
+.db-cat-head .cat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.db-cat-head h3{font-size:15px;font-weight:900;color:#1e1b4b;letter-spacing:.2px;flex:1;margin:0}
+.db-cat-head .cat-count{background:#f3f4f6;color:#6b7280;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px}
+.db-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.db-tile{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px 10px;border-radius:14px;text-decoration:none;color:#1f2937;
+  background:#fafbfc;border:1.5px solid transparent;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  text-align:center;position:relative;overflow:hidden;cursor:pointer;min-height:118px;
+}
+.db-tile:hover{transform:translateY(-4px);border-color:var(--tile-color,#7c3aed);background:white;box-shadow:0 12px 25px rgba(15,23,42,.1)}
+.db-tile .tile-icon{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin-bottom:10px;background:var(--tile-bg,#ede9fe);
+  transition:all .25s;position:relative;
+}
+.db-tile:hover .tile-icon{transform:scale(1.08) rotate(-5deg);box-shadow:0 8px 20px var(--tile-shadow,rgba(124,58,237,.3))}
+.db-tile .tile-label{font-size:12.5px;font-weight:800;color:#1f2937;line-height:1.25;margin-bottom:3px}
+.db-tile .tile-sub{font-size:10.5px;color:#9ca3af;font-weight:600;line-height:1.2}
+.db-tile.c-purple{--tile-bg:#ede9fe;--tile-color:#7c3aed;--tile-shadow:rgba(124,58,237,.3)}
+.db-tile.c-blue{--tile-bg:#dbeafe;--tile-color:#3b82f6;--tile-shadow:rgba(59,130,246,.3)}
+.db-tile.c-green{--tile-bg:#d1fae5;--tile-color:#10b981;--tile-shadow:rgba(16,185,129,.3)}
+.db-tile.c-orange{--tile-bg:#fef3c7;--tile-color:#f59e0b;--tile-shadow:rgba(245,158,11,.3)}
+.db-tile.c-rose{--tile-bg:#fee2e2;--tile-color:#f43f5e;--tile-shadow:rgba(244,63,94,.3)}
+.db-tile.c-cyan{--tile-bg:#cffafe;--tile-color:#06b6d4;--tile-shadow:rgba(6,182,212,.3)}
+.db-tile.c-slate{--tile-bg:#f1f5f9;--tile-color:#64748b;--tile-shadow:rgba(100,116,139,.3)}
+.db-side{display:flex;flex-direction:column;gap:20px;position:sticky;top:80px;height:fit-content}
+.db-panel{background:white;border-radius:20px;box-shadow:0 2px 10px rgba(15,23,42,.05);border:1px solid #e5e7eb;overflow:hidden}
+.db-panel-head{padding:16px 20px;background:linear-gradient(180deg,#fafbfc,#fff);border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center}
+.db-panel-head h3{font-size:13px;font-weight:900;color:#1e1b4b;margin:0;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:8px}
+.db-panel-head a{font-size:11.5px;font-weight:800;color:#7c3aed;text-decoration:none;padding:4px 10px;border-radius:8px;transition:background .15s}
+.db-panel-head a:hover{background:#f5f3ff}
+.db-panel-body{padding:14px 18px 18px;max-height:500px;overflow-y:auto}
+.db-panel-body::-webkit-scrollbar{width:4px}
+.db-panel-body::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+.db-notice-item{padding:14px 16px;background:linear-gradient(90deg,#faf5ff,#fff);border-left:4px solid #7c3aed;border-radius:10px;margin-bottom:12px;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.db-notice-item:hover{transform:translateX(3px);box-shadow:0 4px 10px rgba(124,58,237,.1)}
+.db-notice-item h4{font-size:13.5px;font-weight:800;color:#4c1d95;margin-bottom:5px;line-height:1.35}
+.db-notice-item p{font-size:12px;color:#4b5563;line-height:1.55;margin-bottom:6px;white-space:pre-wrap}
+.db-notice-item small{font-size:10.5px;color:#9ca3af;font-weight:700}
+.db-empty-small{padding:40px 20px;text-align:center;color:#9ca3af;font-size:12.5px;font-weight:600}
+.db-empty-small .icon{font-size:40px;display:block;margin-bottom:10px;opacity:.5}
+@media (max-width:1100px){
+  .db-layout{grid-template-columns:1fr}
+  .db-side{position:static;display:grid;grid-template-columns:1fr 1fr}
+}
+@media (max-width:768px){
+  .db-hero{padding:22px 20px;border-radius:18px}
+  .db-hero-text h1{font-size:20px}
+  .db-hero-avatar{width:56px;height:56px;font-size:26px;border-radius:16px}
+  .db-stats{grid-template-columns:1fr 1fr;gap:10px}
+  .db-stat{padding:14px;gap:12px}
+  .db-stat .icon-circle{width:44px;height:44px;font-size:20px;border-radius:12px}
+  .db-stat .info p{font-size:20px}
+  .db-stat .info h4{font-size:10px}
+  .db-quick{padding:16px}
+  .db-quick-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .db-quick-btn{padding:12px;gap:10px}
+  .db-quick-btn .qb-icon{width:34px;height:34px;font-size:17px}
+  .db-quick-btn .qb-label{font-size:12.5px}
+  .db-category{padding:16px}
+  .db-tiles{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px}
+  .db-tile{padding:12px 6px;min-height:100px}
+  .db-tile .tile-icon{width:46px;height:46px;font-size:22px;margin-bottom:8px}
+  .db-tile .tile-label{font-size:11.5px}
+  .db-tile .tile-sub{font-size:9.5px}
+  .db-side{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .db-stats{grid-template-columns:1fr}
+  .db-hero-text h1{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, today, hideDeadLinks } from './js/helpers.js';
+
+const profile = await requireLogin();
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'dashboard.html', 'School Dashboard');
+
+const content = document.getElementById('content');
+const todayDate = today();
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+if (profile.role === 'admin') {
+  const [s, t, c, n] = await Promise.all([
+    supabase.from('students').select('*', { count: 'exact', head: true }).or('is_deleted.is.null,is_deleted.eq.false'),
+    supabase.from('teachers').select('*', { count: 'exact', head: true }).or('is_deleted.is.null,is_deleted.eq.false'),
+    supabase.from('classes').select('*', { count: 'exact', head: true }),
+    supabase.from('notices').select('*', { count: 'exact', head: true }).or('is_deleted.is.null,is_deleted.eq.false'),
+  ]);
+  
+  const { data: att } = await supabase
+    .from('attendance').select('status').eq('date', todayDate);
+  const present = (att || []).filter(a => a.status === 'present').length;
+  const absent  = (att || []).filter(a => a.status === 'absent').length;
+
+  const { data: notices } = await supabase
+    .from('notices').select('*')
+    .or('is_deleted.is.null,is_deleted.eq.false')
+    .order('created_at', { ascending: false }).limit(3);
+
+  content.innerHTML = `
+    <div class="db-wrap">
+      <div class="db-hero">
+        <div class="db-hero-top">
+          <div class="db-hero-left">
+            <div class="db-hero-avatar">👑</div>
+            <div class="db-hero-text">
+              <h1>স্বাগতম, ${esc(profile.full_name)} <span class="wave">👋</span></h1>
+              <div class="db-hero-meta">
+                <span class="item">🛡️ Admin Panel</span>
+                <span class="item">📅 ${new Date().toLocaleDateString('bn-BD', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-stats">
+        <div class="db-stat purple">
+          <div class="icon-circle">🎓</div>
+          <div class="info"><h4>মোট ছাত্রছাত্রী</h4><p>${s.count ?? 0}</p><div class="trend up">📈 Enrollment</div></div>
+        </div>
+        <div class="db-stat blue">
+          <div class="icon-circle">👩‍🏫</div>
+          <div class="info"><h4>মোট শিক্ষক</h4><p>${t.count ?? 0}</p><div class="trend up">👥 Active</div></div>
+        </div>
+        <div class="db-stat cyan">
+          <div class="icon-circle">🏫</div>
+          <div class="info"><h4>মোট ক্লাস</h4><p>${c.count ?? 0}</p><div class="trend up">📚 Sections</div></div>
+        </div>
+        <div class="db-stat green">
+          <div class="icon-circle">✅</div>
+          <div class="info"><h4>আজ উপস্থিত</h4><p>${present}</p><div class="trend up">🎯 Attendance</div></div>
+        </div>
+        <div class="db-stat rose">
+          <div class="icon-circle">❌</div>
+          <div class="info"><h4>আজ অনুপস্থিত</h4><p>${absent}</p><div class="trend ${absent === 0 ? 'up' : 'down'}">${absent === 0 ? '✨ Perfect!' : '⚠️ Follow up'}</div></div>
+        </div>
+        <div class="db-stat orange">
+          <div class="icon-circle">📢</div>
+          <div class="info"><h4>মোট নোটিশ</h4><p>${n.count ?? 0}</p><div class="trend up">📌 Updates</div></div>
+        </div>
+      </div>
+
+      <div class="db-quick">
+        <div class="db-section-head">
+          <h3>⚡ Quick Actions <span class="badge">Most Used</span></h3>
+          <div class="line"></div>
+        </div>
+        <div class="db-quick-grid">
+          <a class="db-quick-btn purple" href="admission.html"><div class="qb-icon">📚</div><div class="qb-label"><span>নতুন ভর্তি</span><small>Add Student</small></div></a>
+          <a class="db-quick-btn green" href="attendance.html"><div class="qb-icon">✅</div><div class="qb-label"><span>হাজিরা নিন</span><small>Attendance</small></div></a>
+          <a class="db-quick-btn orange" href="fee-management.html"><div class="qb-icon">💵</div><div class="qb-label"><span>ফি সংগ্রহ</span><small>Collect Fee</small></div></a>
+          <a class="db-quick-btn blue" href="exam-results.html"><div class="qb-icon">🎯</div><div class="qb-label"><span>নম্বর এন্ট্রি</span><small>Marks Entry</small></div></a>
+          <a class="db-quick-btn rose" href="notices.html"><div class="qb-icon">📢</div><div class="qb-label"><span>নোটিশ দিন</span><small>New Notice</small></div></a>
+        </div>
+      </div>
+
+      <div class="db-layout">
+        <div class="db-categories" id="adminCategories"></div>
+        <div class="db-side">
+          <div class="db-panel">
+            <div class="db-panel-head">
+              <h3>📢 সর্বশেষ নোটিশ</h3>
+              <a href="notices.html">সব দেখুন →</a>
+            </div>
+            <div class="db-panel-body">
+              ${renderNotices(notices)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderAdminCategories();
+
+} 
+/* ============================================================
+   TEACHER DASHBOARD
+   ============================================================ */
+else if (profile.role === 'teacher') {
+  const { count: totalClasses } = await supabase
+    .from('classes').select('*', { count: 'exact', head: true });
+
+  const { data: attToday } = await supabase
+    .from('attendance').select('*')
+    .eq('date', todayDate).eq('taken_by', profile.full_name);
+
+  const { data: teacherInfo } = await supabase
+    .from('teachers').select('*').eq('teacher_id', profile.linked_id).single();
+
+  content.innerHTML = `
+    <div class="db-wrap">
+      <div class="db-hero">
+        <div class="db-hero-top">
+          <div class="db-hero-left">
+            <div class="db-hero-avatar">👩‍🏫</div>
+            <div class="db-hero-text">
+              <h1>স্বাগতম, ${esc(profile.full_name)} <span class="wave">👋</span></h1>
+              <div class="db-hero-meta">
+                <span class="item">🪪 ID: ${esc(profile.linked_id || '-')}</span>
+                <span class="item">👩‍🏫 শিক্ষক প্যানেল</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-stats">
+        <div class="db-stat green"><div class="icon-circle">✅</div><div class="info"><h4>আজ হাজিরা</h4><p>${(attToday || []).length}</p><div class="trend up">📋 Taken</div></div></div>
+        <div class="db-stat cyan"><div class="icon-circle">🏫</div><div class="info"><h4>মোট ক্লাস</h4><p>${totalClasses ?? 0}</p><div class="trend up">📚 Sections</div></div></div>
+      </div>
+
+      <div class="db-quick">
+        <div class="db-section-head"><h3>⚡ Quick Actions</h3><div class="line"></div></div>
+        <div class="db-quick-grid">
+          <a class="db-quick-btn green" href="attendance.html"><div class="qb-icon">✅</div><div class="qb-label"><span>হাজিরা নিন</span><small>Attendance</small></div></a>
+          <a class="db-quick-btn blue" href="exam-results.html"><div class="qb-icon">🎯</div><div class="qb-label"><span>নম্বর এন্ট্রি</span><small>Marks Entry</small></div></a>
+          <a class="db-quick-btn purple" href="student-result.html"><div class="qb-icon">📊</div><div class="qb-label"><span>রেজাল্ট শীট</span><small>Result Sheet</small></div></a>
+          <a class="db-quick-btn orange" href="report-card.html"><div class="qb-icon">🖨️</div><div class="qb-label"><span>রিপোর্ট কার্ড</span><small>Report Card</small></div></a>
+          <a class="db-quick-btn rose" href="routine.html"><div class="qb-icon">📅</div><div class="qb-label"><span>রুটিন</span><small>Routine</small></div></a>
+        </div>
+      </div>
+
+      ${teacherInfo ? `
+        <div class="db-panel">
+          <div class="db-panel-head"><h3>🎓 আমার তথ্য</h3></div>
+          <div class="db-panel-body">
+            <table style="width:100%;font-size:13px">
+              <tr><td style="padding:8px 0;color:#6b7280;font-weight:700">নাম</td><td style="padding:8px 0;font-weight:800">${esc(teacherInfo.name)}</td></tr>
+              <tr><td style="padding:8px 0;color:#6b7280;font-weight:700">Teacher ID</td><td style="padding:8px 0;font-weight:800">${esc(teacherInfo.teacher_id)}</td></tr>
+              <tr><td style="padding:8px 0;color:#6b7280;font-weight:700">বিষয়</td><td style="padding:8px 0;font-weight:800">${esc(teacherInfo.subject || '-')}</td></tr>
+              <tr><td style="padding:8px 0;color:#6b7280;font-weight:700">ফোন</td><td style="padding:8px 0;font-weight:800">${esc(teacherInfo.phone || '-')}</td></tr>
+            </table>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+} 
+/* ============================================================
+   STUDENT / GUARDIAN DASHBOARD
+   ============================================================ */
+else {
+  const sid = profile.linked_id;
+
+  let attRate = 0, totalDays = 0, presentDays = 0;
+  let resultCount = 0;
+  let dueAmount = 0;
+  let notices = [];
+
+  if (sid) {
+    const [att, res, fees, ntc] = await Promise.all([
+      supabase.from('attendance').select('status').eq('student_id', sid),
+      supabase.from('exam_results').select('*', { count: 'exact', head: true }).eq('student_index', sid),
+      supabase.from('fee_payments').select('fee_status, paid_amount, amount').eq('student_index', sid),
+      supabase.from('notices').select('*').or('is_deleted.is.null,is_deleted.eq.false').order('created_at', { ascending: false }).limit(5),
+    ]);
+
+    if (att.data) {
+      totalDays = att.data.length;
+      presentDays = att.data.filter(x => x.status === 'present').length;
+      attRate = totalDays ? Math.round((presentDays / totalDays) * 100) : 0;
+    }
+    if (res.count) resultCount = res.count;
+    if (fees.data) {
+      dueAmount = fees.data
+        .filter(f => f.fee_status === 'due' || f.fee_status === 'partial')
+        .reduce((sum, f) => sum + ((+f.amount || 0) - (+f.paid_amount || 0)), 0);
+    }
+    if (ntc.data) notices = ntc.data;
+  }
+
+  content.innerHTML = `
+    <div class="db-wrap">
+      <div class="db-hero">
+        <div class="db-hero-top">
+          <div class="db-hero-left">
+            <div class="db-hero-avatar">🎓</div>
+            <div class="db-hero-text">
+              <h1>স্বাগতম, ${esc(profile.full_name || 'Student')} <span class="wave">👋</span></h1>
+              <div class="db-hero-meta">
+                <span class="item">🎓 ছাত্র প্যানেল</span>
+                <span class="item">🆔 ${esc(sid || '-')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-stats">
+        <div class="db-stat green">
+          <div class="icon-circle">📊</div>
+          <div class="info">
+            <h4>আমার উপস্থিতি</h4>
+            <p>${attRate}%</p>
+            <div class="trend up">${presentDays} / ${totalDays} দিন</div>
+          </div>
+        </div>
+        <div class="db-stat purple">
+          <div class="icon-circle">📝</div>
+          <div class="info">
+            <h4>পরীক্ষার ফলাফল</h4>
+            <p>${resultCount}</p>
+            <div class="trend up">📋 রেকর্ড</div>
+          </div>
+        </div>
+        <div class="db-stat rose">
+          <div class="icon-circle">💰</div>
+          <div class="info">
+            <h4>বাকি ফি</h4>
+            <p>৳ ${dueAmount.toLocaleString()}</p>
+            <div class="trend ${dueAmount === 0 ? 'up' : 'down'}">${dueAmount === 0 ? '✨ Paid' : '⚠️ Due'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-layout">
+        <div class="db-categories">
+          <div class="db-category">
+            <div class="db-cat-head">
+              <div class="cat-icon" style="background:#d1fae5;color:#10b981">🎓</div>
+              <h3>আমার তথ্য</h3>
+              <span class="cat-count">6টি</span>
+            </div>
+            <div class="db-tiles">
+              <a href="attendance.html" class="db-tile c-green">
+                <div class="tile-icon">📋</div>
+                <div class="tile-label">আমার হাজিরা</div>
+                <div class="tile-sub">Attendance</div>
+              </a>
+              <a href="report-card.html" class="db-tile c-purple">
+                <div class="tile-icon">🖨️</div>
+                <div class="tile-label">রিপোর্ট কার্ড</div>
+                <div class="tile-sub">Report Card</div>
+              </a>
+              <a href="money-receipts.html" class="db-tile c-orange">
+                <div class="tile-icon">💰</div>
+                <div class="tile-label">আমার ফি</div>
+                <div class="tile-sub">Fees</div>
+              </a>
+              <a href="routine.html" class="db-tile c-cyan">
+                <div class="tile-icon">📅</div>
+                <div class="tile-label">রুটিন</div>
+                <div class="tile-sub">Routine</div>
+              </a>
+              <a href="monthly-workdays.html" class="db-tile c-blue">
+                <div class="tile-icon">📆</div>
+                <div class="tile-label">কার্যদিবস</div>
+                <div class="tile-sub">Workdays</div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-side">
+          <div class="db-panel">
+            <div class="db-panel-head">
+              <h3>📢 সর্বশেষ নোটিশ</h3>
+            </div>
+            <div class="db-panel-body">
+              ${renderNotices(notices)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function renderNotices(notices) {
+  if (!notices || !notices.length) {
+    return `<div class="db-empty-small"><span class="icon">📭</span>এখনো কোনো নোটিশ নেই</div>`;
+  }
+  return notices.map(n => `
+    <div class="db-notice-item">
+      <h4>📌 ${esc(n.title || '')}</h4>
+      <p>${esc(n.body || '')}</p>
+      <small>📅 ${new Date(n.created_at).toLocaleDateString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric' })}</small>
+    </div>
+  `).join('');
+}
+
+function renderAdminCategories() {
+  const categories = [
+    {
+      title: 'ছাত্র ব্যবস্থাপনা', icon: '🎓', color: 'purple',
+      tiles: [
+        { href: 'admission.html', icon: '📚', label: 'ভর্তি', sub: 'Admission', color: 'purple' },
+        { href: 'students.html', icon: '🎓', label: 'ছাত্র তথ্য', sub: 'Students', color: 'blue' },
+        { href: 'promote.html', icon: '🎯', label: 'প্রমোশন', sub: 'Promote', color: 'green' },
+        { href: 'student-documents.html', icon: '📄', label: 'ডকুমেন্ট', sub: 'Documents', color: 'orange' },
+      ]
+    },
+    {
+      title: 'শিক্ষক ও একাডেমিক', icon: '👩‍🏫', color: 'blue',
+      tiles: [
+        { href: 'teachers.html', icon: '👩‍🏫', label: 'শিক্ষক', sub: 'Teachers', color: 'blue' },
+        { href: 'classes.html', icon: '🏫', label: 'ক্লাস', sub: 'Classes', color: 'purple' },
+        { href: 'subjects.html', icon: '📖', label: 'সাবজেক্ট', sub: 'Subjects', color: 'green' },
+        { href: 'grade-system.html', icon: '🎯', label: 'গ্রেড', sub: 'Grade', color: 'orange' },
+      ]
+    },
+    {
+      title: 'দৈনিক কাজ', icon: '✅', color: 'green',
+      tiles: [
+        { href: 'attendance.html', icon: '✅', label: 'হাজিরা', sub: 'Attendance', color: 'green' },
+        { href: 'routine.html', icon: '📅', label: 'রুটিন', sub: 'Routine', color: 'cyan' },
+        { href: 'monthly-workdays.html', icon: '📆', label: 'কার্যদিবস', sub: 'Workdays', color: 'blue' },
+        { href: 'notices.html', icon: '📢', label: 'নোটিশ', sub: 'Notices', color: 'rose' },
+      ]
+    },
+    {
+      title: 'পরীক্ষা ও ফলাফল', icon: '📝', color: 'rose',
+      tiles: [
+        { href: 'exam-names.html', icon: '📋', label: 'পরীক্ষার নাম', sub: 'Exam Names', color: 'orange' },
+        { href: 'exam-results.html', icon: '🎯', label: 'নম্বর এন্ট্রি', sub: 'Marks', color: 'purple' },
+        { href: 'student-result.html', icon: '📊', label: 'রেজাল্ট শীট', sub: 'Result', color: 'blue' },
+        { href: 'report-card.html', icon: '🖨️', label: 'রিপোর্ট কার্ড', sub: 'Report', color: 'green' },
+        { href: 'admit-card.html', icon: '🎫', label: 'প্রবেশপত্র', sub: 'Admit Card', color: 'rose' },
+        { href: 'exam-attendance.html', icon: '📄', label: 'হাজিরা শীট', sub: 'Exam Attd.', color: 'cyan' },
+        { href: 'tabulation-sheet.html', icon: '📈', label: 'ট্যাবুলেশন', sub: 'Tabulation', color: 'slate' },
+        { href: 'result-publish.html', icon: '🏆', label: 'রেজাল্ট পাবলিশ', sub: 'Publish', color: 'green' },
+      ]
+    },
+    {
+      title: 'ফি ও হিসাব', icon: '💰', color: 'orange',
+      tiles: [
+        { href: 'chart-of-accounts.html', icon: '📊', label: 'হিসাবের খাত', sub: 'Accounts', color: 'purple' },
+        { href: 'fee-management.html', icon: '💵', label: 'ফি সংগ্রহ', sub: 'Collection', color: 'green' },
+        { href: 'fee-bulk-assign.html', icon: '⚡', label: 'এক ক্লিকে ফি', sub: 'Bulk', color: 'orange' },
+        { href: 'due-list-report.html', icon: '📋', label: 'বাকির খাতা', sub: 'Due List', color: 'rose' },
+        { href: 'bill-details.html', icon: '🧾', label: 'বিল ডিটেইলস', sub: 'Bill Details', color: 'cyan' },
+        { href: 'fee-due-report.html', icon: '📈', label: 'বাকি রিপোর্ট', sub: 'Due Report', color: 'blue' },
+        { href: 'expense-management.html', icon: '💸', label: 'খরচ', sub: 'Expenses', color: 'rose' },
+        { href: 'money-receipts.html', icon: '🧾', label: 'মানি রিসিট', sub: 'Receipts', color: 'green' },
+      ]
+    },
+    {
+      title: 'ডকুমেন্ট ও সার্টিফিকেট', icon: '📜', color: 'cyan',
+      tiles: [
+        { href: 'id-card.html', icon: '🪪', label: 'ID কার্ড', sub: 'ID Card', color: 'purple' },
+        { href: 'testimonial-tc.html', icon: '📜', label: 'TC / Testimonial', sub: 'TC', color: 'cyan' },
+      ]
+    },
+    {
+      title: 'সিস্টেম', icon: '⚙️', color: 'slate',
+      tiles: [
+        { href: 'school-profile.html', icon: '🏫', label: 'স্কুল প্রোফাইল', sub: 'Profile', color: 'blue' },
+        { href: 'sessions.html', icon: '📅', label: 'সেশন', sub: 'Sessions', color: 'green' },
+        { href: 'student-credentials.html', icon: '🔑', label: 'লগইন এক্সেস', sub: 'Credentials', color: 'orange' },
+        { href: 'backup.html', icon: '💾', label: 'ব্যাকআপ', sub: 'Backup', color: 'orange' },
+        { href: 'audit-log.html', icon: '📜', label: 'Audit', sub: 'Log', color: 'purple' },
+        { href: 'recycle-bin.html', icon: '🗑️', label: 'রিসাইকেল', sub: 'Recycle', color: 'rose' },
+        { href: 'danger-zone.html', icon: '⚠️', label: 'ডেঞ্জার জোন', sub: 'Danger', color: 'rose' },
+      ]
+    }
+  ];
+
+  const catColorMap = {
+    purple: { bg: '#ede9fe', color: '#7c3aed' },
+    blue: { bg: '#dbeafe', color: '#3b82f6' },
+    green: { bg: '#d1fae5', color: '#10b981' },
+    orange: { bg: '#fef3c7', color: '#f59e0b' },
+    rose: { bg: '#fee2e2', color: '#f43f5e' },
+    cyan: { bg: '#cffafe', color: '#06b6d4' },
+    slate: { bg: '#f1f5f9', color: '#64748b' },
+  };
+
+  const el = document.getElementById('adminCategories');
+  if (!el) return;
+
+  el.innerHTML = categories.map(cat => {
+    const cc = catColorMap[cat.color] || catColorMap.purple;
+    return `
+      <div class="db-category">
+        <div class="db-cat-head">
+          <div class="cat-icon" style="background:${cc.bg};color:${cc.color}">${cat.icon}</div>
+          <h3>${cat.title}</h3>
+          <span class="cat-count">${cat.tiles.length}টি</span>
+        </div>
+        <div class="db-tiles">
+          ${cat.tiles.map(t => `
+            <a class="db-tile c-${t.color}" href="${t.href}">
+              <div class="tile-icon">${t.icon}</div>
+              <div class="tile-label">${t.label}</div>
+              <div class="tile-sub">${t.sub}</div>
+            </a>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // ✅ Auto-hide dead links after dashboard renders
+  setTimeout(() => hideDeadLinks(), 150);
+}
+</script>
+</body>
+</html>

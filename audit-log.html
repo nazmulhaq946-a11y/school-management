@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit Log · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .al-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #7c3aed;
+    }
+    .al-header .left { display: flex; align-items: center; gap: 14px; }
+    .al-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #7c3aed; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .al-header h1 { color: #7c3aed; font-size: 22px; margin: 0; font-weight: 700; }
+    .al-header p { color: #4c1d95; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .al-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+      text-decoration: none;
+    }
+    .al-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .al-body {
+      background: white; padding: 22px 26px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+      border-radius: 0 0 10px 10px;
+    }
+    .al-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    .al-filters .fld {
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .al-filters label {
+      font-size: 11.5px;
+      color: #6b7280;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .al-filters input, .al-filters select {
+      padding: 8px 11px;
+      border: 1px solid #d1d5db;
+      border-radius: 5px;
+      font-size: 13.5px;
+      font-family: inherit;
+      background: white;
+    }
+    .al-filters input:focus, .al-filters select:focus {
+      outline: none; border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+    }
+    .al-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .al-btn {
+      padding: 10px 20px;
+      border: none; border-radius: 6px;
+      font-weight: 700; font-size: 13.5px;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-purple { background: #7c3aed; color: white; }
+    .btn-purple:hover { background: #6d28d9; }
+    .btn-gray { background: #6b7280; color: white; }
+    .btn-gray:hover { background: #4b5563; }
+    .btn-green { background: #16a34a; color: white; }
+    .btn-green:hover { background: #15803d; }
+    .btn-red { background: #dc2626; color: white; }
+    .btn-red:hover { background: #b91c1c; }
+
+    .al-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .al-stat {
+      background: #faf5ff;
+      border-left: 4px solid #7c3aed;
+      padding: 10px 14px;
+      border-radius: 6px;
+    }
+    .al-stat h4 {
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+    }
+    .al-stat p {
+      font-size: 20px;
+      font-weight: 800;
+      color: #4c1d95;
+    }
+
+    .al-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    .al-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 900px;
+    }
+    .al-table thead th {
+      background: #7c3aed;
+      color: white;
+      padding: 11px 10px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .al-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+    .al-table tbody tr:nth-child(even) td { background: #f9fafb; }
+    .al-table tbody tr:hover td { background: #faf5ff; }
+
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .action-create { background: #d1fae5; color: #065f46; }
+    .action-update { background: #dbeafe; color: #1e40af; }
+    .action-delete { background: #fee2e2; color: #991b1b; }
+    .action-restore { background: #fef3c7; color: #92400e; }
+    .action-login { background: #ede9fe; color: #6d28d9; }
+    .action-logout { background: #f3f4f6; color: #374151; }
+    .action-backup { background: #cffafe; color: #155e75; }
+    .action-other { background: #f3f4f6; color: #4b5563; }
+
+    .user-cell { font-weight: 700; color: #1f2937; }
+    .user-cell small {
+      display: block;
+      color: #6b7280;
+      font-weight: 500;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .table-cell {
+      font-family: 'Courier New', monospace;
+      color: #7c3aed;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .date-cell {
+      color: #4b5563;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .date-cell small {
+      display: block;
+      color: #9ca3af;
+      font-size: 10.5px;
+    }
+    .desc-cell {
+      color: #374151;
+      font-size: 12.5px;
+      max-width: 250px;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+    .empty-msg .icon { font-size: 56px; display: block; margin-bottom: 12px; }
+
+    @media (max-width: 900px) {
+      .al-filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .al-filters { grid-template-columns: 1fr; }
+      .al-body { padding: 14px; }
+      .al-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'audit-log.html', 'Audit Log');
+
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+      <div class="al-header">
+        <div class="left">
+          <div class="icon">📜</div>
+          <div>
+            <h1>Audit Log</h1>
+            <p>কে কী করলো — সম্পূর্ণ ট্র্যাকিং</p>
+          </div>
+        </div>
+        <a class="al-back" href="dashboard.html">
+          Back <span class="arrow">←</span>
+        </a>
+      </div>
+
+      <div class="al-body">
+        <div class="al-filters">
+          <div class="fld">
+            <label>From Date</label>
+            <input type="date" id="f_from">
+          </div>
+          <div class="fld">
+            <label>To Date</label>
+            <input type="date" id="f_to">
+          </div>
+          <div class="fld">
+            <label>Action</label>
+            <select id="f_action">
+              <option value="">সব Action</option>
+              <option value="create">Create</option>
+              <option value="update">Update</option>
+              <option value="delete">Delete</option>
+              <option value="restore">Restore</option>
+              <option value="login">Login</option>
+              <option value="logout">Logout</option>
+              <option value="backup">Backup</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>Table</label>
+            <select id="f_table">
+              <option value="">সব Table</option>
+              <option value="students">students</option>
+              <option value="teachers">teachers</option>
+              <option value="classes">classes</option>
+              <option value="subjects">subjects</option>
+              <option value="exams">exams</option>
+              <option value="exam_results">exam_results</option>
+              <option value="attendance">attendance</option>
+              <option value="fee_payments">fee_payments</option>
+              <option value="notices">notices</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="al-actions">
+          <button class="al-btn btn-purple" id="searchBtn">🔍 খুঁজুন</button>
+          <button class="al-btn btn-gray" id="clearBtn">🔄 রিসেট</button>
+          <button class="al-btn btn-red" id="cleanupBtn">🧹 ৯০+ দিনের পুরনো মুছুন</button>
+        </div>
+
+        <div class="al-stats" id="statsBox"></div>
+
+        <div id="tableArea">
+          <div class="empty-msg">লোড হচ্ছে...</div>
+        </div>
+      </div>
+    `;
+
+    /* ============ Set default dates ============ */
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    document.getElementById('f_from').value = weekAgo.toISOString().slice(0, 10);
+    document.getElementById('f_to').value = today.toISOString().slice(0, 10);
+
+    /* ============ Load logs ============ */
+    async function loadLogs() {
+      const from = document.getElementById('f_from').value;
+      const to = document.getElementById('f_to').value;
+      const action = document.getElementById('f_action').value;
+      const table = document.getElementById('f_table').value;
+
+      const area = document.getElementById('tableArea');
+      area.innerHTML = '<div class="empty-msg">⏳ লোড হচ্ছে...</div>';
+
+      let q = supabase.from('audit_log').select('*')
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (from) q = q.gte('created_at', from + 'T00:00:00');
+      if (to) q = q.lte('created_at', to + 'T23:59:59');
+      if (action) q = q.eq('action', action);
+      if (table) q = q.eq('table_name', table);
+
+      const { data, error } = await q;
+
+      if (error) {
+        area.innerHTML = `<div class="empty-msg">❌ ${esc(error.message)}</div>`;
+        return;
+      }
+
+      const logs = data || [];
+      renderStats(logs);
+      renderTable(logs);
+    }
+
+    /* ============ Stats ============ */
+    function renderStats(logs) {
+      const counts = {};
+      logs.forEach(l => { counts[l.action] = (counts[l.action] || 0) + 1; });
+      const users = new Set(logs.map(l => l.user_id)).size;
+
+      document.getElementById('statsBox').innerHTML = `
+        <div class="al-stat">
+          <h4>মোট Entry</h4>
+          <p>${logs.length}</p>
+        </div>
+        <div class="al-stat" style="border-left-color:#16a34a">
+          <h4>Create</h4>
+          <p style="color:#16a34a">${counts.create || 0}</p>
+        </div>
+        <div class="al-stat" style="border-left-color:#2563eb">
+          <h4>Update</h4>
+          <p style="color:#2563eb">${counts.update || 0}</p>
+        </div>
+        <div class="al-stat" style="border-left-color:#dc2626">
+          <h4>Delete</h4>
+          <p style="color:#dc2626">${counts.delete || 0}</p>
+        </div>
+        <div class="al-stat" style="border-left-color:#ea580c">
+          <h4>Active Users</h4>
+          <p style="color:#ea580c">${users}</p>
+        </div>
+      `;
+    }
+
+    /* ============ Render table ============ */
+    function renderTable(logs) {
+      const area = document.getElementById('tableArea');
+
+      if (!logs.length) {
+        area.innerHTML = `
+          <div class="empty-msg">
+            <span class="icon">📭</span>
+            এই শর্তে কোনো লগ পাওয়া যায়নি
+          </div>
+        `;
+        return;
+      }
+
+      const ACTION_ICONS = {
+        create: '➕', update: '✏️', delete: '🗑️',
+        restore: '♻️', login: '🔓', logout: '🔒', backup: '💾',
+      };
+      const ACTION_LABELS = {
+        create: 'Create', update: 'Update', delete: 'Delete',
+        restore: 'Restore', login: 'Login', logout: 'Logout', backup: 'Backup',
+      };
+
+      area.innerHTML = `
+        <div class="al-table-wrap">
+          <table class="al-table">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:160px">সময়</th>
+                <th style="width:150px">ব্যবহারকারী</th>
+                <th style="width:100px">Action</th>
+                <th style="width:130px">Table</th>
+                <th>বিবরণ</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${logs.map((l, i) => {
+                const dt = new Date(l.created_at);
+                const timeStr = dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+                const act = (l.action || 'other').toLowerCase();
+                const cls = ['create','update','delete','restore','login','logout','backup'].includes(act)
+                  ? `action-${act}` : 'action-other';
+                const icon = ACTION_ICONS[act] || '📌';
+                const label = ACTION_LABELS[act] || act;
+
+                return `
+                  <tr>
+                    <td>${i + 1}</td>
+                    <td class="date-cell">
+                      ${dateStr} ${timeStr}
+                      <small>${dt.toLocaleDateString('bn-BD', { weekday: 'short' })}</small>
+                    </td>
+                    <td class="user-cell">
+                      ${esc(l.user_name || 'Unknown')}
+                      <small>${esc(l.user_role || '')}</small>
+                    </td>
+                    <td>
+                      <span class="action-badge ${cls}">
+                        ${icon} ${esc(label)}
+                      </span>
+                    </td>
+                    <td class="table-cell">${esc(l.table_name || '—')}</td>
+                    <td class="desc-cell">
+                      ${esc(l.description || '—')}
+                      ${l.record_id ? `<br><small style="color:#9ca3af">ID: ${esc(l.record_id)}</small>` : ''}
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    /* ============ Event handlers ============ */
+    document.getElementById('searchBtn').onclick = loadLogs;
+    document.getElementById('clearBtn').onclick = () => {
+      document.getElementById('f_from').value = weekAgo.toISOString().slice(0, 10);
+      document.getElementById('f_to').value = today.toISOString().slice(0, 10);
+      document.getElementById('f_action').value = '';
+      document.getElementById('f_table').value = '';
+      loadLogs();
+    };
+
+    document.getElementById('cleanupBtn').onclick = async () => {
+      if (!confirm('৯০+ দিনের পুরনো লগ মুছে ফেলবেন?')) return;
+      const { data, error } = await supabase.rpc('cleanup_old_audit_logs');
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+      toast(`🧹 ${data}টি পুরনো লগ মুছে ফেলা হয়েছে`, 'success');
+      loadLogs();
+    };
+
+    /* ============ Init ============ */
+    await loadLogs();
+  </script>
+</body>
+</html>

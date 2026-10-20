@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tabulation Sheet · School</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ============================================================
+   SCREEN STYLES
+   ============================================================ */
+:root{
+  --ts-primary:#1e40af;--ts-primary-light:#dbeafe;--ts-primary-dark:#1e3a8a;
+  --ts-bg:#f1f5f9;--ts-border:#e2e8f0;--ts-text:#0f172a;--ts-gray:#64748b;
+}
+*{box-sizing:border-box}
+.ts-page{padding:0;background:var(--ts-bg);min-height:100vh}
+
+/* Header */
+.ts-top{
+  background:linear-gradient(135deg,#1e40af 0%,#1e3a8a 50%,#0f172a 100%);
+  padding:22px 28px;border-radius:14px 14px 0 0;color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;
+}
+.ts-top .tl{display:flex;align-items:center;gap:16px}
+.ts-top .ticon{
+  width:56px;height:56px;background:rgba(255,255,255,.2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:28px;border:1px solid rgba(255,255,255,.3);
+}
+.ts-top h1{margin:0;font-size:22px;font-weight:900;letter-spacing:-.3px}
+.ts-top p{margin:4px 0 0;font-size:13px;opacity:.85;font-weight:500}
+.ts-back{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:10px 18px;border-radius:10px;
+  font-weight:700;font-size:13px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all .2s;cursor:pointer;font-family:inherit;
+}
+.ts-back:hover{background:rgba(255,255,255,.25)}
+
+/* Filters */
+.ts-filters{
+  background:#fff;padding:20px 28px;
+  border-bottom:1px solid var(--ts-border);
+  display:grid;grid-template-columns:repeat(4,1fr) auto;
+  gap:14px;align-items:end;
+}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld label{font-size:11px;color:var(--ts-gray);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.fld select,.fld input{
+  padding:11px 13px;border:2px solid var(--ts-border);border-radius:10px;
+  font-size:13.5px;font-family:inherit;font-weight:600;
+  background:#fafbfc;color:var(--ts-text);transition:all .2s;width:100%;
+}
+.fld select:focus,.fld input:focus{
+  outline:none;border-color:var(--ts-primary);background:#fff;
+  box-shadow:0 0 0 4px rgba(30,64,175,.1);
+}
+.btn-gen{
+  padding:12px 24px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--ts-primary),var(--ts-primary-dark));
+  color:#fff;font-weight:800;font-size:13.5px;cursor:pointer;
+  font-family:inherit;display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 6px 16px rgba(30,64,175,.35);transition:all .2s;
+  white-space:nowrap;height:42px;
+}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(30,64,175,.45)}
+.btn-gen:disabled{opacity:.6;cursor:not-allowed}
+
+/* Toolbar */
+.ts-toolbar{
+  background:#fff;padding:12px 28px;
+  border-bottom:1px solid var(--ts-border);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:10px;
+}
+.ts-toolbar .info{font-size:13px;color:var(--ts-gray);font-weight:600}
+.ts-toolbar .actions{display:flex;gap:8px}
+.btn-tool{
+  padding:9px 18px;border:none;border-radius:8px;
+  font-weight:800;font-size:12.5px;cursor:pointer;
+  font-family:inherit;display:inline-flex;align-items:center;gap:6px;
+  transition:all .15s;
+}
+.btn-print{background:#16a34a;color:#fff}
+.btn-print:hover{background:#15803d}
+.btn-excel{background:#0284c7;color:#fff}
+.btn-excel:hover{background:#0369a1}
+
+/* Table Area */
+.ts-body{background:#fff;border-radius:0 0 14px 14px;padding:20px 28px;overflow-x:auto}
+
+/* Official Sheet Wrapper */
+.ts-sheet{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  background:#fff;
+  font-family:'Times New Roman','Noto Sans Bengali',serif;
+  color:#000;
+  border:2px solid #000;
+  padding:15px;
+}
+
+/* Sheet Header */
+.sheet-head{text-align:center;margin-bottom:16px}
+.sheet-head h1{font-size:26px;font-weight:900;margin:0;text-transform:uppercase;line-height:1.1}
+.sheet-head p{font-size:14px;margin:3px 0;font-weight:600}
+.sheet-info{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:10px;font-size:14px;margin:14px 0 8px;
+  font-family:'Segoe UI',Arial,sans-serif;font-weight:700;
+}
+.sheet-title{
+  text-align:center;
+  background:#b4c7e7;
+  padding:6px;
+  font-size:16px;
+  font-weight:800;
+  border:1.5px solid #000;
+  border-bottom:none;
+  font-family:'Segoe UI',Arial,sans-serif;
+}
+
+/* Sheet Table */
+.sheet-table{
+  width:100%;border-collapse:collapse;
+  font-size:11.5px;font-family:'Segoe UI',Arial,sans-serif;
+}
+.sheet-table th,.sheet-table td{
+  border:1.5px solid #000;
+  padding:5px 4px;
+  text-align:center;vertical-align:middle;
+}
+.sheet-table th{
+  background:#f3f4f6;font-weight:800;
+  font-size:11px;line-height:1.15;
+}
+.sheet-table .st-name{text-align:left;font-weight:700;padding-left:8px}
+.sheet-table tbody tr:nth-child(even) td{background:#fafafa}
+.sheet-table .fail-row td{background:#fee2e2 !important;color:#991b1b}
+.sheet-table .total-cell{font-weight:800;background:#eff6ff}
+.sheet-table .merit-cell{font-weight:800;background:#fef3c7}
+
+/* Empty */
+.ts-empty{padding:60px 20px;text-align:center;color:#94a3b8;font-weight:600}
+.ts-empty .icon{font-size:56px;display:block;margin-bottom:12px;opacity:.4}
+
+/* ============================================================
+   ✅ PRINT CSS — A4 Landscape
+   ============================================================ */
+@media print {
+  @page { size: A4 landscape; margin: 6mm; }
+  html,body{margin:0 !important;padding:0 !important;background:#fff !important}
+
+  /* Hide chrome */
+  header.top,aside.sidebar,#toast,.no-print,
+  .ts-top,.ts-filters,.ts-toolbar,.sidebar-overlay,.hamburger-btn{
+    display:none !important;
+  }
+
+  main.content,main{margin:0 !important;padding:0 !important}
+  .ts-page{background:#fff !important;min-height:auto !important}
+  .ts-body{padding:0 !important;background:#fff !important}
+
+  .ts-sheet{
+    width:100% !important;
+    max-width:100% !important;
+    border:2px solid #000 !important;
+    padding:6px !important;
+    box-shadow:none !important;
+    page-break-inside: avoid;
+  }
+  .sheet-head h1{font-size:20px !important}
+  .sheet-head p{font-size:12px !important}
+  .sheet-info{font-size:11.5px !important;margin:8px 0 6px !important}
+  .sheet-title{font-size:13px !important;padding:4px !important}
+
+  .sheet-table{font-size:9.5px !important}
+  .sheet-table th,.sheet-table td{padding:3px 2px !important}
+  .sheet-table th{font-size:9px !important}
+
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'tabulation-sheet.html', 'Tabulation Sheet');
+
+const content = document.getElementById('content');
+const CURRENT_YEAR = new Date().getFullYear();
+
+let allClasses = [];
+let allExamTerms = [];
+let school = { name: 'School', address: '', emis: '' };
+let classGradeMap = {};
+
+// Load school profile
+const { data: schData } = await supabase.from('school_settings').select('*').eq('id', 1).single();
+if (schData) {
+  school = {
+    name: schData.institute_name || 'SCHOOL NAME',
+    address: schData.address || '',
+    emis: schData.ein_no || ''
+  };
+}
+
+// Load Grade System
+const { data: gsData } = await supabase.from('grade_system').select('*');
+(gsData || []).forEach(g => {
+  if (!classGradeMap[g.class_name]) classGradeMap[g.class_name] = [];
+  classGradeMap[g.class_name].push(g);
+});
+Object.keys(classGradeMap).forEach(k => {
+  classGradeMap[k].sort((a, b) => b.mark_from - a.mark_from);
+});
+
+function getGrade(percent, className) {
+  const list = classGradeMap[className] || [];
+  for (const g of list) {
+    if (percent >= +g.mark_from && percent <= +g.mark_to) return { gp: +g.grading_point, letter: g.grade_name };
+  }
+  if (percent >= 80) return { gp: 5.00, letter: 'A+' };
+  if (percent >= 70) return { gp: 4.00, letter: 'A' };
+  if (percent >= 60) return { gp: 3.50, letter: 'A-' };
+  if (percent >= 50) return { gp: 3.00, letter: 'B' };
+  if (percent >= 40) return { gp: 2.00, letter: 'C' };
+  if (percent >= 33) return { gp: 1.00, letter: 'D' };
+  return { gp: 0, letter: 'F' };
+}
+function gpaToLetter(gpa) {
+  if (gpa >= 5.00) return 'A+';
+  if (gpa >= 4.00) return 'A';
+  if (gpa >= 3.50) return 'A-';
+  if (gpa >= 3.00) return 'B';
+  if (gpa >= 2.00) return 'C';
+  if (gpa >= 1.00) return 'D';
+  return 'F';
+}
+function ord(n) {
+  if (!n) return '—';
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+/* ============================================================
+   INITIAL UI
+   ============================================================ */
+content.innerHTML = `
+<div class="ts-page">
+  <div class="ts-top">
+    <div class="tl">
+      <div class="ticon">📊</div>
+      <div>
+        <h1>Tabulation Sheet</h1>
+        <p>Class-wise Result Summary</p>
+      </div>
+    </div>
+    <button class="ts-back" onclick="window.location.href='dashboard.html'">← Back</button>
+  </div>
+
+  <div class="ts-filters">
+    <div class="fld">
+      <label>Session</label>
+      <select id="f_session">
+        ${[CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+          `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+        ).join('')}
+      </select>
+    </div>
+    <div class="fld">
+      <label>Class</label>
+      <select id="f_class"><option value="">-- Select Class --</option></select>
+    </div>
+    <div class="fld">
+      <label>Exam Term</label>
+      <select id="f_term"><option value="">লোড হচ্ছে...</option></select>
+    </div>
+    <div class="fld">
+      <label>Section (Optional)</label>
+      <select id="f_section"><option value="">All Sections</option></select>
+    </div>
+    <button class="btn-gen" id="genBtn">
+      <span>🔍</span><span>Generate Sheet</span>
+    </button>
+  </div>
+
+  <div class="ts-toolbar no-print" id="tsToolbar" style="display:none">
+    <div class="info" id="tsInfo"></div>
+    <div class="actions">
+      <button class="btn-tool btn-print" onclick="window.print()">🖨️ Print Sheet</button>
+    </div>
+  </div>
+
+  <div class="ts-body" id="tsBody">
+    <div class="ts-empty">
+      <span class="icon">📄</span>
+      <h3 style="color:#374151;margin:0 0 8px">সিলেক্ট করুন</h3>
+      <p>Session, Class ও Exam Term সিলেক্ট করে Generate Sheet ক্লিক করুন।</p>
+    </div>
+  </div>
+</div>
+`;
+
+/* ============================================================
+   LOAD BASE DATA
+   ============================================================ */
+async function loadBase() {
+  const [c, e] = await Promise.all([
+    supabase.from('classes').select('*').order('id'),
+    supabase.from('exams').select('exam_name, exam_serial').order('exam_serial')
+  ]);
+  allClasses = c.data || [];
+  allExamTerms = e.data || [];
+
+  document.getElementById('f_class').innerHTML =
+    '<option value="">-- Select Class --</option>' +
+    allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+
+  const termSel = document.getElementById('f_term');
+  if (allExamTerms.length) {
+    termSel.innerHTML = allExamTerms.map(t => `<option value="${esc(t.exam_name)}">${esc(t.exam_name)}</option>`).join('');
+  } else {
+    termSel.innerHTML = '<option value="">-- No Exam Found --</option>';
+  }
+}
+await loadBase();
+
+document.getElementById('f_class').onchange = () => {
+  const cls = allClasses.find(x => x.id == document.getElementById('f_class').value);
+  const sections = cls?.sections?.length ? cls.sections : [];
+  document.getElementById('f_section').innerHTML =
+    '<option value="">All Sections</option>' +
+    sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+};
+
+/* ============================================================
+   GENERATE SHEET
+   ============================================================ */
+document.getElementById('genBtn').onclick = async () => {
+  const session = +document.getElementById('f_session').value;
+  const classId = document.getElementById('f_class').value;
+  const term = document.getElementById('f_term').value;
+  const section = document.getElementById('f_section').value;
+
+  if (!classId) { toast('❌ Class সিলেক্ট করুন', 'error'); return; }
+  if (!term) { toast('❌ Exam Term সিলেক্ট করুন', 'error'); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>Loading...</span>';
+  document.getElementById('tsBody').innerHTML = '<div class="ts-empty"><span class="icon">⏳</span>লোড হচ্ছে...</div>';
+
+  try {
+    const cls = allClasses.find(x => x.id == classId);
+    const className = cls?.class_name || '';
+
+    // 1. Fetch Students
+    let sQ = supabase.from('students').select('*').eq('class_id', classId).or('is_deleted.is.null,is_deleted.eq.false').order('roll');
+    if (section) sQ = sQ.eq('section', section);
+    const { data: students, error: sErr } = await sQ;
+    if (sErr) throw sErr;
+    if (!students || !students.length) throw new Error('No students found');
+
+    // 2. Fetch Subjects
+    const { data: subjects } = await supabase.from('subjects').select('*')
+      .eq('session_year', session).eq('class_id', classId).eq('exam_term', term)
+      .order('subject_type').order('id');
+    const subjectList = subjects || [];
+    if (!subjectList.length) throw new Error('No subjects found for this class & term');
+
+    // 3. Fetch Results
+    const idxs = students.map(s => s.student_index).filter(Boolean);
+    const resultMap = {};
+    if (idxs.length) {
+      const { data: results } = await supabase.from('exam_results').select('*')
+        .eq('session_year', session).eq('exam_term', term).eq('class_id', classId)
+        .in('student_index', idxs);
+      (results || []).forEach(r => {
+        if (!resultMap[r.student_index]) resultMap[r.student_index] = {};
+        resultMap[r.student_index][r.subject_code || r.subject_name] = r;
+      });
+    }
+
+    // 4. Compute
+    const computed = students.map(s => {
+      const sRes = resultMap[s.student_index] || {};
+      let totalGP = 0, subjectCount = 0, totalObt = 0, totalFull = 0, hasAnyF = false;
+      const subjectRows = [];
+
+      subjectList.forEach(sub => {
+        const r = sRes[sub.subject_code || sub.subject_name] || {};
+        const isAbsent = r.is_absent === true || r.present === false;
+        const cq = isAbsent ? 0 : (+r.subjective_marks || 0);
+        const mcq = isAbsent ? 0 : (+r.objective_marks || 0);
+        const prac = isAbsent ? 0 : (+r.practical_marks || 0);
+        const ct = isAbsent ? 0 : (+r.ct_mt_marks || 0);
+        const subObt = cq + mcq + prac + ct;
+
+        const cqMax = +sub.subjective_marks || 0;
+        const mcqMax = +sub.objective_marks || 0;
+        const pracMax = +sub.practical_marks || 0;
+        const ctMax = +sub.ct_mt_marks || 0;
+        const subFull = +sub.total_marks || (cqMax + mcqMax + pracMax + ctMax);
+        const pct = subFull ? (subObt / subFull * 100) : 0;
+
+        let colF = false;
+        if (cqMax > 0 && (cq / cqMax * 100) < 33) colF = true;
+        if (mcqMax > 0 && (mcq / mcqMax * 100) < 33) colF = true;
+        if (pracMax > 0 && (prac / pracMax * 100) < 33) colF = true;
+
+        let g = getGrade(pct, className);
+        const fail = isAbsent || colF || g.letter === 'F';
+        if (fail) { g = { gp: 0, letter: 'F' }; hasAnyF = true; }
+
+        totalObt += subObt;
+        totalFull += subFull;
+        totalGP += g.gp;
+        subjectCount++;
+
+        subjectRows.push({
+          name: sub.subject_name,
+          code: sub.subject_code || '',
+          obt: subObt,
+          full: subFull,
+          letter: g.letter,
+          gp: g.gp,
+          fail: fail,
+          isAbsent: isAbsent,
+        });
+      });
+
+      let gpa = subjectCount ? (totalGP / subjectCount) : 0;
+      if (hasAnyF) gpa = 0;
+      const finalLetter = hasAnyF ? 'F' : gpaToLetter(gpa);
+
+      return {
+        student: s,
+        totalObt, totalFull, totalGP,
+        gpa: +gpa.toFixed(2),
+        letter: finalLetter,
+        subjects: subjectRows,
+        hasAnyF,
+      };
+    });
+
+    // 5. Sort for Merit
+    const sorted = [...computed].sort((a, b) => {
+      if (a.hasAnyF !== b.hasAnyF) return a.hasAnyF ? 1 : -1;
+      return b.totalObt - a.totalObt;
+    });
+
+    let meritCounter = 0;
+    sorted.forEach((row, i) => {
+      if (!row.hasAnyF) {
+        if (i > 0 && sorted[i-1].totalObt === row.totalObt && !sorted[i-1].hasAnyF) {
+          row.merit = sorted[i-1].merit;
+        } else {
+          meritCounter++;
+          row.merit = meritCounter;
+        }
+      } else {
+        row.merit = null;
+      }
+    });
+
+    // 6. Render
+    renderSheet(computed, sorted, subjectList, session, term, className, section);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('tsBody').innerHTML = `<div class="ts-empty"><span class="icon">❌</span>${esc(err.message)}</div>`;
+    toast('❌ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>🔍</span><span>Generate Sheet</span>';
+  }
+};
+
+/* ============================================================
+   RENDER SHEET
+   ============================================================ */
+function renderSheet(computed, sorted, subjectList, session, term, className, section) {
+  const toolbar = document.getElementById('tsToolbar');
+  toolbar.style.display = 'flex';
+  document.getElementById('tsInfo').innerHTML =
+    `<b>${esc(className)}</b> · ${esc(term)} · Session ${session} · মোট ${sorted.length} জন`;
+
+  // Generate Subject Columns
+  const subjectCols = subjectList.map(sub => `
+    <th style="min-width:50px">${esc(sub.subject_name)}<br><small>(${sub.total_marks || 100})</small></th>
+  `).join('');
+
+  // Generate Rows
+  const rows = sorted.map((c, i) => {
+    const s = c.student;
+    const isFail = c.hasAnyF;
+
+    const subCells = c.subjects.map(sr => {
+      let val = sr.obt;
+      if (sr.isAbsent) val = 'A';
+      return `<td>${val}</td>`;
+    }).join('');
+
+    return `
+      <tr class="${isFail ? 'fail-row' : ''}">
+        <td>${String(i+1).padStart(2,'0')}</td>
+        <td class="st-name">${esc(s.name)}<br><small style="color:#6b7280;font-size:9px">(${esc(s.student_index || '')})</small></td>
+        <td>${esc(s.roll ?? '-')}</td>
+        ${subCells}
+        <td class="total-cell">${c.totalObt}</td>
+        <td>${c.gpa.toFixed(2)}</td>
+        <td style="font-weight:800">${c.letter}</td>
+        <td class="merit-cell">${c.merit ? ord(c.merit) : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('tsBody').innerHTML = `
+    <div class="ts-sheet">
+      <div class="sheet-head">
+        <h1>${esc(school.name)}</h1>
+        <p>${esc(school.address)}</p>
+      </div>
+      <div class="sheet-info">
+        <div>Session : ${session}</div>
+        <div>Class : ${esc(className)}</div>
+        <div>Group : ...</div>
+        <div>Section : ${esc(section || '...')}</div>
+      </div>
+      <div class="sheet-title">
+        ${esc(term)} Tabulation Sheet
+      </div>
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th style="width:35px">SL</th>
+            <th style="min-width:140px;text-align:left;padding-left:8px">Student's Name</th>
+            <th style="width:45px">Roll No</th>
+            ${subjectCols}
+            <th style="width:60px">Total Marks</th>
+            <th style="width:40px">GPA</th>
+            <th style="width:40px">LG</th>
+            <th style="width:50px">Merit Place</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

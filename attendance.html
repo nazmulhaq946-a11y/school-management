@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>হাজিরা · School</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, today } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher','student','guardian']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'attendance.html', 'হাজিরা');
+
+    const content = document.getElementById('content');
+    const isStaff = profile.role === 'admin' || profile.role === 'teacher';
+
+    /* ====================================================
+       STAFF VIEW (অ্যাডমিন / শিক্ষক)
+       ==================================================== */
+    if (isStaff) {
+      content.innerHTML = `
+        <h2>📋 হাজিরা</h2>
+
+        <div class="panel">
+          <h3>🔍 ক্লাস ও তারিখ সিলেক্ট করুন</h3>
+          <div class="form-grid">
+            <select id="clsSel"><option value="">-- ক্লাস --</option></select>
+            <input id="secInput" placeholder="সেকশন (A)">
+            <input id="dateInput" type="date">
+          </div>
+          <br>
+          <button class="btn btn-primary" id="loadBtn">📥 ছাত্রছাত্রী লোড করুন</button>
+        </div>
+
+        <div class="panel" id="listPanel" style="display:none">
+          <h3>✅ ছাত্রছাত্রীদের হাজিরা</h3>
+          <p style="color:#6b7280;margin-bottom:12px;font-size:14px">
+            প্রত্যেকের জন্য উপস্থিত / অনুপস্থিত / দেরি — যেটা সঠিক সেটা ক্লিক করুন
+          </p>
+          <div id="list" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden"></div>
+          <br>
+          <button class="btn btn-primary" id="saveBtn">💾 হাজিরা সংরক্ষণ করুন</button>
+          <button class="btn btn-secondary" id="allPresent">সবাই উপস্থিত</button>
+          <button class="btn btn-secondary" id="allAbsent">সবাই অনুপস্থিত</button>
+        </div>
+      `;
+
+      document.getElementById('dateInput').value = today();
+
+      const { data: classes } = await supabase.from('classes').select('*').order('id');
+      document.getElementById('clsSel').innerHTML =
+        '<option value="">-- ক্লাস --</option>' +
+        (classes || []).map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+
+      document.getElementById('loadBtn').onclick = async () => {
+        const classId = document.getElementById('clsSel').value;
+        const section = document.getElementById('secInput').value.trim();
+        const date = document.getElementById('dateInput').value;
+        if (!classId || !date) { toast('ক্লাস ও তারিখ দিন', 'error'); return; }
+
+        let q = supabase.from('students').select('*').eq('class_id', classId);
+        if (section) q = q.eq('section', section);
+        q = q.order('roll');
+
+        const { data, error } = await q;
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+        if (!data || !data.length) {
+          toast('এই ক্লাসে কোনো ছাত্র নেই', 'error');
+          document.getElementById('listPanel').style.display = 'none';
+          return;
+        }
+
+        const { data: existing } = await supabase
+          .from('attendance').select('student_id,status')
+          .eq('date', date).eq('class_id', classId)
+          .in('student_id', data.map(s => s.student_id));
+
+        const existMap = {};
+        (existing || []).forEach(e => existMap[e.student_id] = e.status);
+
+        const list = document.getElementById('list');
+        list.innerHTML = data.map(s => {
+          const st = existMap[s.student_id] || 'present';
+          return `
+            <div class="att-row" data-sid="${esc(s.student_id)}">
+              <div>
+                <b>${esc(s.name)}</b>
+                <small style="color:#6b7280"> · ${esc(s.student_id)}</small>
+                ${s.roll ? `<small style="color:#9ca3af"> · রোল ${s.roll}</small>` : ''}
+              </div>
+              <div class="att-btns">
+                <button data-status="present" class="${st==='present'?'active present':''}">উপস্থিত</button>
+                <button data-status="absent"  class="${st==='absent' ?'active absent' :''}">অনুপস্থিত</button>
+                <button data-status="late"    class="${st==='late'   ?'active late'   :''}">দেরি</button>
+              </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('listPanel').style.display = 'block';
+
+        list.querySelectorAll('.att-row').forEach(row => {
+          row.querySelectorAll('button').forEach(btn => {
+            btn.onclick = () => {
+              row.querySelectorAll('button').forEach(b => { b.className = ''; });
+              btn.className = 'active ' + btn.dataset.status;
+            };
+          });
+        });
+
+        toast('✅ ' + data.length + ' জন ছাত্র লোড হয়েছে', 'success');
+      };
+
+      document.getElementById('allPresent').onclick = () => {
+        document.querySelectorAll('.att-row').forEach(row => {
+          row.querySelectorAll('button').forEach(b => b.className = '');
+          row.querySelector('[data-status="present"]').className = 'active present';
+        });
+      };
+
+      document.getElementById('allAbsent').onclick = () => {
+        document.querySelectorAll('.att-row').forEach(row => {
+          row.querySelectorAll('button').forEach(b => b.className = '');
+          row.querySelector('[data-status="absent"]').className = 'active absent';
+        });
+      };
+
+      document.getElementById('saveBtn').onclick = async () => {
+        const classId = document.getElementById('clsSel').value;
+        const section = document.getElementById('secInput').value.trim();
+        const date = document.getElementById('dateInput').value;
+
+        const records = [];
+        document.querySelectorAll('.att-row').forEach(row => {
+          const active = row.querySelector('button.active');
+          const status = active ? active.dataset.status : 'present';
+          records.push({
+            date, class_id: classId,
+            section: section || null,
+            student_id: row.dataset.sid,
+            status,
+            taken_by: profile.full_name
+          });
+        });
+
+        if (!records.length) { toast('কোনো রেকর্ড নেই', 'error'); return; }
+
+        const sids = records.map(r => r.student_id);
+        await supabase.from('attendance').delete()
+          .eq('date', date).eq('class_id', classId).in('student_id', sids);
+
+        const { error } = await supabase.from('attendance').insert(records);
+        if (error) { toast('❌ ' + error.message, 'error'); return; }
+        toast('✅ হাজিরা সংরক্ষিত (' + records.length + ' জন)', 'success');
+      };
+    }
+
+    /* ====================================================
+       STUDENT VIEW (ছাত্র / অভিভাবক)
+       ==================================================== */
+    else {
+      const sid = profile.linked_id;
+
+      content.innerHTML = `
+        <h2>📋 আমার হাজিরা</h2>
+        <div id="myStats" class="stats"></div>
+
+        <div class="panel">
+          <h3>📅 সাম্প্রতিক হাজিরা</h3>
+          <div id="myAttendance"></div>
+        </div>
+      `;
+
+      // পুরো ছাত্র view এই async function-এর ভিতরে
+      await (async () => {
+        if (!sid) {
+          document.getElementById('myAttendance').innerHTML =
+            '<div class="empty">Student ID সংযুক্ত নেই — অ্যাডমিনের সাথে যোগাযোগ করুন</div>';
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('attendance')
+          .select('*')
+          .eq('student_id', sid)
+          .order('date', { ascending: false })
+          .limit(100);
+
+        if (error) {
+          document.getElementById('myAttendance').innerHTML =
+            `<div class="empty">❌ ${error.message}</div>`;
+          return;
+        }
+
+        const rows = data || [];
+        const total = rows.length;
+        const present = rows.filter(r => r.status === 'present').length;
+        const absent  = rows.filter(r => r.status === 'absent').length;
+        const late    = rows.filter(r => r.status === 'late').length;
+        const percent = total ? Math.round((present / total) * 100) : 0;
+
+        document.getElementById('myStats').innerHTML = `
+          <div class="stat-card"><h3>মোট দিন</h3><p>${total}</p></div>
+          <div class="stat-card"><h3>উপস্থিত</h3><p style="color:#10b981">${present}</p></div>
+          <div class="stat-card"><h3>অনুপস্থিত</h3><p style="color:#ef4444">${absent}</p></div>
+          <div class="stat-card"><h3>দেরি</h3><p style="color:#f59e0b">${late}</p></div>
+          <div class="stat-card"><h3>উপস্থিতির হার</h3><p style="color:#7c3aed">${percent}%</p></div>
+        `;
+
+        if (!rows.length) {
+          document.getElementById('myAttendance').innerHTML =
+            '<div class="empty">এখনো কোনো হাজিরা নেই</div>';
+          return;
+        }
+
+        const colorMap = {
+          present: { bg: '#d1fae5', color: '#065f46', label: 'উপস্থিত' },
+          absent:  { bg: '#fee2e2', color: '#991b1b', label: 'অনুপস্থিত' },
+          late:    { bg: '#fef3c7', color: '#92400e', label: 'দেরি' }
+        };
+
+        document.getElementById('myAttendance').innerHTML = `
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr><th>তারিখ</th><th>দিন</th><th>স্ট্যাটাস</th></tr>
+              </thead>
+              <tbody>
+                ${rows.map(r => {
+                  const c = colorMap[r.status] || colorMap.present;
+                  const d = new Date(r.date);
+                  const dayNames = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+                  return `
+                    <tr>
+                      <td>${d.toLocaleDateString('bn-BD')}</td>
+                      <td>${dayNames[d.getDay()]}</td>
+                      <td>
+                        <span style="padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600;
+                          background:${c.bg};color:${c.color}">${c.label}</span>
+                      </td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      })();
+    }
+  </script>
+</body>
+</html>

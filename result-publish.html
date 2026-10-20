@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Result Publish · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============ PUBLIC PAGE (no sidebar) ============ */
+    body.public-page {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+    body.public-page #app { min-height: 100vh; }
+
+    .pub-nav {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 14px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .pub-nav .brand {
+      color: white; font-weight: 700; font-size: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .pub-nav .brand .logo-circle {
+      width: 38px; height: 38px;
+      background: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #7c3aed;
+      overflow: hidden;
+    }
+    .pub-nav .brand .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .pub-nav .actions a {
+      color: white; text-decoration: none; font-size: 13.5px;
+      font-weight: 600; padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px; margin-left: 8px;
+    }
+    .pub-nav .actions a:hover { background: rgba(255,255,255,0.3); }
+
+    /* ============ CONTAINER ============ */
+    .pub-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* ============ HERO ============ */
+    .pub-hero {
+      text-align: center;
+      color: white;
+      margin-bottom: 28px;
+    }
+    .pub-hero h1 {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .pub-hero p {
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    /* ============ SEARCH CARD ============ */
+    .pub-card {
+      background: white;
+      border-radius: 14px;
+      padding: 28px 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      margin-bottom: 22px;
+    }
+
+    .pub-form .fld {
+      display: flex; flex-direction: column; gap: 7px;
+      margin-bottom: 16px;
+    }
+    .pub-form label {
+      font-size: 13px; color: #374151; font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .pub-form input,
+    .pub-form select {
+      padding: 13px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      background: white;
+      width: 100%;
+    }
+    .pub-form input:focus,
+    .pub-form select:focus {
+      outline: none; border-color: #7c3aed;
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.12);
+    }
+
+    .pub-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .pub-search-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: white; border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+      transition: transform 0.1s;
+    }
+    .pub-search-btn:hover { transform: translateY(-1px); }
+    .pub-search-btn:active { transform: translateY(0); }
+    .pub-search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .pub-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      display: none;
+    }
+    .pub-msg.show { display: block; }
+    .pub-msg.error { background: #fee2e2; color: #991b1b; }
+    .pub-msg.success { background: #d1fae5; color: #065f46; }
+
+    /* ============ RESULT ============ */
+    .result-sheet {
+      background: white;
+      border-radius: 14px;
+      padding: 28px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Times New Roman', 'Noto Sans Bengali', serif;
+      color: #000;
+    }
+    .result-sheet .wm-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 50%; max-height: 50%;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .result-sheet > *:not(.wm-bg) { position: relative; z-index: 1; }
+
+    .rs-head {
+      text-align: center;
+      border-bottom: 3px double #1e1b4b;
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+    }
+    .rs-head .logo-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin-bottom: 6px;
+    }
+    .rs-head .logo {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      border: 2px solid #1e1b4b;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+    }
+    .rs-head .logo img { width: 100%; height: 100%; object-fit: cover; }
+    .rs-head h1 {
+      font-size: 28px; font-weight: 800;
+      color: #1e1b4b; margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .rs-head .sub {
+      font-size: 13.5px; color: #374151;
+      margin: 4px 0 0 0;
+    }
+
+    .rs-title {
+      background: #ede9fe;
+      color: #4c1d95;
+      text-align: center;
+      padding: 8px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-size: 14px;
+      margin: 10px 0 16px;
+      border-radius: 4px;
+    }
+
+    .rs-info {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .rs-info-table {
+      width: 100%; font-size: 13.5px;
+    }
+    .rs-info-table tr td {
+      padding: 4px 0; vertical-align: top;
+    }
+    .rs-info-table td:first-child {
+      font-weight: 700; width: 130px; color: #374151;
+    }
+    .rs-info-table td:nth-child(2) { width: 16px; }
+    .rs-info-table td:nth-child(3) { font-weight: 700; }
+    .rs-photo {
+      width: 130px; height: 150px;
+      border: 2px solid #1e1b4b;
+      object-fit: cover;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px; color: #9ca3af;
+      border-radius: 4px;
+    }
+
+    .rs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .rs-table th,
+    .rs-table td {
+      border: 1px solid #000;
+      padding: 7px 8px;
+      text-align: center;
+    }
+    .rs-table th {
+      background: #ede9fe;
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+    .rs-table td.sname {
+      text-align: left;
+      font-weight: 600;
+    }
+    .rs-table tbody tr:nth-child(even) td {
+      background: #faf5ff;
+    }
+
+    .rs-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .rs-summary .box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .rs-summary .box h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #6b7280;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: 0.4px;
+    }
+    .rs-summary .box p {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e1b4b;
+    }
+    .rs-summary .box.grade-box {
+      background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+      border-color: #c4b5fd;
+    }
+    .rs-summary .box.grade-box p {
+      font-size: 30px;
+      color: #7c3aed;
+    }
+    .rs-summary .box.grade-box.pass p { color: #16a34a; }
+    .rs-summary .box.grade-box.fail p { color: #dc2626; }
+
+    .rs-signs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 30px;
+      margin-top: 50px;
+      font-size: 12px;
+    }
+    .rs-signs > div {
+      border-top: 1px solid #000;
+      padding-top: 4px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .rs-footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .rs-actions {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .rs-actions button {
+      padding: 11px 24px; border-radius: 8px;
+      font-weight: 700; font-size: 14px; cursor: pointer; border: none;
+    }
+    .btn-print-green {
+      background: #16a34a; color: white;
+    }
+    .btn-print-green:hover { background: #15803d; }
+    .btn-new-search {
+      background: #6b7280; color: white;
+    }
+    .btn-new-search:hover { background: #4b5563; }
+
+    /* ============ PRINT ============ */
+    @media print {
+      @page { size: A4; margin: 10mm; }
+      body.public-page { background: white !important; padding: 0 !important; }
+      .pub-nav, .pub-hero, .no-print { display: none !important; }
+      .pub-wrap { padding: 0 !important; max-width: 100% !important; }
+      .result-sheet {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+      }
+      .rs-table th { background: #ede9fe !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .rs-title { background: #ede9fe !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .rs-summary .box.grade-box { background: #ede9fe !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    @media (max-width: 700px) {
+      .pub-form-grid { grid-template-columns: 1fr; }
+      .rs-info { grid-template-columns: 1fr; }
+      .rs-summary { grid-template-columns: 1fr 1fr; }
+      .rs-signs { grid-template-columns: 1fr; }
+      .pub-hero h1 { font-size: 24px; }
+      .result-sheet { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body class="public-page">
+  <div id="app">
+    <div class="pub-nav">
+      <div class="brand">
+        <div class="logo-circle" id="navLogo">🏫</div>
+        <span id="navName">School Result Portal</span>
+      </div>
+      <div class="actions">
+        <a href="index.html">🔐 Login</a>
+      </div>
+    </div>
+
+    <div class="pub-wrap">
+      <div class="pub-hero">
+        <h1>📊 Result Publish</h1>
+        <p>আপনার Student ID ও Exam Term দিয়ে ফলাফল দেখুন</p>
+      </div>
+
+      <div class="pub-card pub-form no-print" id="searchCard">
+        <div class="pub-form-grid">
+          <div class="fld">
+            <label>🎓 Student ID / Index</label>
+            <input id="f_index" placeholder="যেমন: 230359" autocomplete="off">
+          </div>
+          <div class="fld">
+            <label>📝 Exam Term</label>
+            <select id="f_term"><option value="">লোড হচ্ছে...</option></select>
+          </div>
+        </div>
+        <button class="pub-search-btn" id="searchBtn">🔍 ফলাফল দেখুন</button>
+        <div class="pub-msg" id="msg"></div>
+      </div>
+
+      <div id="resultArea"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+
+    const SCHOOL_DEFAULT = {
+      name: 'School Result Portal',
+      address: '',
+      emis: '',
+      logo: '',
+      watermark: '',
+    };
+
+    /* ============================================
+       স্কুল তথ্য লোড (public function)
+       ============================================ */
+    let school = { ...SCHOOL_DEFAULT };
+    async function loadSchool() {
+      try {
+        const { data, error } = await supabase.rpc('public_school_info');
+        if (error) throw error;
+        if (data) {
+          school = {
+            name: data.institute_name || SCHOOL_DEFAULT.name,
+            address: data.address || '',
+            emis: data.ein_no || '',
+            logo: data.school_logo || '',
+            watermark: data.watermark_logo || '',
+          };
+        }
+      } catch (e) {
+        console.warn('School info load failed:', e);
+      }
+
+      document.getElementById('navName').textContent = school.name;
+      const logoBox = document.getElementById('navLogo');
+      if (school.logo) {
+        logoBox.innerHTML = `<img src="${school.logo}" alt="logo">`;
+      }
+    }
+
+    /* ============================================
+       Exam Terms লোড (public function)
+       ============================================ */
+    async function loadTerms() {
+      const sel = document.getElementById('f_term');
+      try {
+        const { data, error } = await supabase.rpc('public_exam_terms');
+        if (error) throw error;
+
+        if (!data || !data.length) {
+          sel.innerHTML = '<option value="">-- কোনো পরীক্ষা এখনো Published হয়নি --</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="">-- Exam Term সিলেক্ট --</option>' +
+          data.map(t => `<option value="${escapeHtml(t.term)}">${escapeHtml(t.term)}</option>`).join('');
+      } catch (e) {
+        sel.innerHTML = '<option value="">লোড করা যায়নি</option>';
+        console.error(e);
+      }
+    }
+
+    /* ============================================
+       GPA helpers
+       ============================================ */
+    function calcGrade(percent) {
+      if (percent >= 80) return { gp: 5.00, letter: 'A+' };
+      if (percent >= 70) return { gp: 4.00, letter: 'A' };
+      if (percent >= 60) return { gp: 3.50, letter: 'A-' };
+      if (percent >= 50) return { gp: 3.00, letter: 'B' };
+      if (percent >= 40) return { gp: 2.00, letter: 'C' };
+      if (percent >= 33) return { gp: 1.00, letter: 'D' };
+      return { gp: 0.00, letter: 'F' };
+    }
+    function gpaToLetter(gpa) {
+      if (gpa >= 5.00) return 'A+';
+      if (gpa >= 4.00) return 'A';
+      if (gpa >= 3.50) return 'A-';
+      if (gpa >= 3.00) return 'B';
+      if (gpa >= 2.00) return 'C';
+      if (gpa >= 1.00) return 'D';
+      return 'F';
+    }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    /* ============================================
+       Search Result
+       ============================================ */
+    document.getElementById('searchBtn').onclick = async () => {
+      const index = document.getElementById('f_index').value.trim();
+      const term = document.getElementById('f_term').value;
+
+      const msg = document.getElementById('msg');
+      msg.className = 'pub-msg';
+      msg.textContent = '';
+
+      if (!index) { showMsg('Student ID / Index দিন', 'error'); return; }
+      if (!term) { showMsg('Exam Term সিলেক্ট করুন', 'error'); return; }
+
+      const btn = document.getElementById('searchBtn');
+      btn.disabled = true; btn.textContent = '⏳ খোঁজা হচ্ছে...';
+
+      try {
+        const { data, error } = await supabase.rpc('public_result_lookup', {
+          p_index: index,
+          p_exam_term: term
+        });
+
+        if (error) throw error;
+
+        if (!data || data.error === 'not_found' || !data.student) {
+          showMsg('❌ এই Student ID দিয়ে কোনো ছাত্র পাওয়া যায়নি।', 'error');
+          return;
+        }
+
+        if (!data.subjects || !data.subjects.length) {
+          showMsg('❌ এই পরীক্ষার ফলাফল এখনো প্রকাশ করা হয়নি।', 'error');
+          return;
+        }
+
+        renderResult(data, term);
+        showMsg('✅ ফলাফল পাওয়া গেছে', 'success');
+        setTimeout(() => document.getElementById('searchCard')?.classList.add('no-print'), 100);
+      } catch (e) {
+        console.error(e);
+        showMsg('❌ ' + (e.message || 'সমস্যা হয়েছে'), 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '🔍 ফলাফল দেখুন';
+      }
+    };
+
+    function showMsg(text, type) {
+      const msg = document.getElementById('msg');
+      msg.textContent = text;
+      msg.className = 'pub-msg show ' + type;
+    }
+
+    /* ============================================
+       Render Result
+       ============================================ */
+    function renderResult(data, term) {
+      const st = data.student;
+      const cls = data.class_name || '-';
+
+      // Calculate
+      let totalObt = 0, totalFull = 0, totalGP = 0;
+      const rows = data.subjects.map(s => {
+        const obt = s.present === false ? 0
+                  : (+s.subj || 0) + (+s.obj || 0) + (+s.prac || 0)
+                  + (+s.assess || 0) + (+s.ct || 0);
+        const full = +s.total_marks || 100;
+        const pct = full ? (obt / full * 100) : 0;
+        const g = calcGrade(pct);
+        totalObt += obt;
+        totalFull += full;
+        totalGP += g.gp;
+        return { ...s, obtained: obt, full, pct, gp: g.gp, letter: g.letter };
+      });
+
+      const gpa = rows.length ? (totalGP / rows.length) : 0;
+      const finalLetter = gpaToLetter(gpa);
+      const isPass = finalLetter !== 'F';
+      const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      const qrText = `${school.emis}|${st.student_index}|${st.name}|${gpa.toFixed(2)}|${finalLetter}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrText)}`;
+
+      const watermarkHtml = school.watermark
+        ? `<img src="${school.watermark}" class="wm-bg" alt="">` : '';
+
+      const photoHtml = st.student_photo
+        ? `<img src="${st.student_photo}" class="rs-photo" alt="">`
+        : `<div class="rs-photo">👤</div>`;
+
+      document.getElementById('resultArea').innerHTML = `
+        <div class="rs-actions no-print">
+          <button class="btn-print-green" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+          <button class="btn-new-search" onclick="location.reload()">🔄 নতুন করে খুঁজুন</button>
+        </div>
+
+        <div class="result-sheet">
+          ${watermarkHtml}
+
+          <div class="rs-head">
+            <div class="logo-row">
+              <div class="logo">${school.logo ? `<img src="${school.logo}" alt="">` : '🏫'}</div>
+              <div>
+                <h1>${escapeHtml(school.name).toUpperCase()}</h1>
+                <p class="sub">${escapeHtml(school.address)}</p>
+                ${school.emis ? `<p class="sub"><b>EMIS:</b> ${escapeHtml(school.emis)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="rs-title">📊 ACADEMIC RESULT · ${escapeHtml(term).toUpperCase()}</div>
+
+          <div class="rs-info">
+            <table class="rs-info-table">
+              <tr><td>Student ID</td><td>:</td><td>${escapeHtml(st.student_index || '-')}</td></tr>
+              <tr><td>Name</td><td>:</td><td>${escapeHtml(st.name).toUpperCase()}</td></tr>
+              <tr><td>Father's Name</td><td>:</td><td>${escapeHtml(st.father_name || '-')}</td></tr>
+              <tr><td>Mother's Name</td><td>:</td><td>${escapeHtml(st.mother_name || '-')}</td></tr>
+              <tr><td>Class</td><td>:</td><td>${escapeHtml(cls)}</td></tr>
+              <tr><td>Section / Roll</td><td>:</td><td>${escapeHtml(st.section || '-')} / ${escapeHtml(st.roll ?? '-')}</td></tr>
+              <tr><td>Group</td><td>:</td><td>${escapeHtml(st.group_name || 'N/A')}</td></tr>
+              <tr><td>Session</td><td>:</td><td>${escapeHtml(st.session_year || '-')}</td></tr>
+            </table>
+            <div style="text-align:center">${photoHtml}</div>
+          </div>
+
+          <table class="rs-table">
+            <thead>
+              <tr>
+                <th style="text-align:left">Subject</th>
+                <th style="width:65px">Full</th>
+                <th style="width:70px">Obtained</th>
+                <th style="width:65px">Percent</th>
+                <th style="width:60px">GP</th>
+                <th style="width:65px">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td class="sname">${escapeHtml(r.name)} ${r.present === false ? '<span style="color:#dc2626;font-size:11px">(Absent)</span>' : ''}</td>
+                  <td>${r.full}</td>
+                  <td><b>${r.obtained}</b></td>
+                  <td>${r.pct.toFixed(1)}%</td>
+                  <td>${r.gp.toFixed(2)}</td>
+                  <td><b style="color:${r.letter === 'F' ? '#dc2626' : '#16a34a'}">${r.letter}</b></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="rs-summary">
+            <div class="box"><h4>Total Marks</h4><p>${totalFull}</p></div>
+            <div class="box"><h4>Obtained</h4><p>${totalObt}</p></div>
+            <div class="box"><h4>GPA</h4><p>${gpa.toFixed(2)}</p></div>
+            <div class="box grade-box ${isPass ? 'pass' : 'fail'}">
+              <h4>Grade</h4>
+              <p>${finalLetter}</p>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;margin-top:14px">
+            <div style="padding:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:13px">
+              <b>Remarks:</b>
+              ${isPass
+                ? (finalLetter === 'A+'
+                    ? ' অসাধারণ ফলাফল! এই ধারাবাহিকতা বজায় রাখুন।'
+                    : finalLetter === 'A'
+                    ? ' খুব ভালো করেছে। আরো উন্নতির চেষ্টা করুন।'
+                    : ' ভালো করেছে। পরিশ্রম চালিয়ে যান।')
+                : ' আরো মনোযোগ দিতে হবে। পরবর্তী পরীক্ষায় ভালো করার চেষ্টা করুন।'}
+            </div>
+            <div style="text-align:center;font-size:10px;color:#6b7280">
+              <img src="${qrUrl}" style="width:100px;height:100px;border:1px solid #000;padding:2px;background:white">
+              <div style="margin-top:2px">Scan to verify</div>
+            </div>
+          </div>
+
+          <div class="rs-signs">
+            <div>Class Teacher</div>
+            <div>Guardian</div>
+            <div>Head Teacher</div>
+          </div>
+
+          <div class="rs-footer">
+            Result published on ${todayStr} · This is a computer-generated result.
+            For any mistake, please contact the school office.
+          </div>
+        </div>
+      `;
+
+      // Scroll to result
+      setTimeout(() => {
+        document.querySelector('.result-sheet')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    /* ============================================
+       Init
+       ============================================ */
+    (async () => {
+      await Promise.all([loadSchool(), loadTerms()]);
+    })();
+
+    // URL এ ?id=230359&term=... থাকলে অটো লোড
+    const params = new URLSearchParams(location.search);
+    if (params.get('id')) {
+      document.getElementById('f_index').value = params.get('id');
+      if (params.get('term')) {
+        // term load না হওয়া পর্যন্ত অপেক্ষা
+        const wait = setInterval(() => {
+          const sel = document.getElementById('f_term');
+          if (sel.options.length > 1 && sel.value !== '') {
+            clearInterval(wait);
+            document.getElementById('searchBtn').click();
+          } else {
+            for (const opt of sel.options) {
+              if (opt.value === params.get('term')) {
+                sel.value = params.get('term');
+                clearInterval(wait);
+                document.getElementById('searchBtn').click();
+                break;
+              }
+            }
+          }
+        }, 200);
+        setTimeout(() => clearInterval(wait), 5000);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans Bengali', system-ui, sans-serif;
+      background: #f8fafc;
+      color: #1f2937;
+    }
+
+    /* ============ TOP NAV ============ */
+    .site-nav {
+      background: white;
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-nav .brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 800; font-size: 19px; color: #1e1b4b;
+      text-decoration: none;
+    }
+    .site-nav .brand-logo {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid #7c3aed;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      overflow: hidden;
+    }
+    .site-nav .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .site-nav .menu {
+      display: flex; gap: 6px; align-items: center;
+      flex-wrap: wrap;
+    }
+    .site-nav .menu a {
+      text-decoration: none;
+      color: #374151;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .site-nav .menu a:hover { background: #f3f4f6; color: #7c3aed; }
+    .site-nav .menu a.btn-login {
+      background: #7c3aed;
+      color: white;
+    }
+    .site-nav .menu a.btn-login:hover { background: #6d28d9; color: white; }
+
+    /* ============ HERO ============ */
+    .hero {
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 50%, #1e1b4b 100%);
+      color: white;
+      padding: 70px 32px 90px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,0.08) 0%, transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(255,255,255,0.06) 0%, transparent 40%);
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+    .hero-logo {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.3);
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      margin: 0 auto 22px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .hero-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+    .hero p.tagline {
+      font-size: 17px;
+      opacity: 0.9;
+      margin-bottom: 30px;
+      max-width: 620px;
+      margin-left: auto; margin-right: auto;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-btns a {
+      text-decoration: none;
+      padding: 15px 34px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .hero-btns a:hover { transform: translateY(-2px); }
+    .btn-result {
+      background: #16a34a;
+      color: white;
+      box-shadow: 0 6px 20px rgba(22,163,74,0.4);
+    }
+    .btn-result:hover { background: #15803d; }
+    .btn-login-hero {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(10px);
+    }
+    .btn-login-hero:hover { background: rgba(255,255,255,0.25); }
+
+    /* ============ QUICK CARDS ============ */
+    .quick-section {
+      max-width: 1100px;
+      margin: -50px auto 40px;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .qcard {
+      background: white;
+      border-radius: 14px;
+      padding: 22px 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-top: 4px solid transparent;
+    }
+    .qcard:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+    }
+    .qcard.green { border-top-color: #16a34a; }
+    .qcard.blue { border-top-color: #2563eb; }
+    .qcard.orange { border-top-color: #f59e0b; }
+    .qcard.purple { border-top-color: #7c3aed; }
+    .qcard .icon-box {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .qcard.green .icon-box { background: #d1fae5; }
+    .qcard.blue .icon-box { background: #dbeafe; }
+    .qcard.orange .icon-box { background: #fef3c7; }
+    .qcard.purple .icon-box { background: #ede9fe; }
+    .qcard .info h4 {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #1e1b4b;
+      margin-bottom: 3px;
+    }
+    .qcard .info p {
+      font-size: 12.5px;
+      color: #6b7280;
+    }
+
+    /* ============ SECTION TITLE ============ */
+    .sec-head {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sec-head h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 8px;
+    }
+    .sec-head p {
+      color: #6b7280;
+      font-size: 14.5px;
+    }
+    .sec-head .underline {
+      width: 60px;
+      height: 4px;
+      background: #7c3aed;
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+
+    /* ============ TEACHERS SECTION ============ */
+    .teachers-section {
+      max-width: 1150px;
+      margin: 70px auto;
+      padding: 0 24px;
+    }
+
+    .teachers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .teacher-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-top: 4px solid #7c3aed;
+      position: relative;
+      overflow: hidden;
+    }
+    .teacher-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 40px rgba(124,58,237,0.15);
+    }
+    .teacher-card .badge-designation {
+      position: absolute;
+      top: 14px;
+      right: -30px;
+      background: #7c3aed;
+      color: white;
+      padding: 4px 40px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      transform: rotate(35deg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      text-transform: uppercase;
+    }
+    .teacher-card .badge-designation.head {
+      background: #c0392b;
+    }
+    .teacher-card .badge-designation.asst {
+      background: #ea580c;
+    }
+
+    .teacher-card .t-photo {
+      width: 100px; height: 115px;
+      border-radius: 10px;
+      border: 3px solid #ede9fe;
+      object-fit: cover;
+      background: #f3f4f6;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      color: #9ca3af;
+      overflow: hidden;
+    }
+    .teacher-card .t-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .teacher-card .t-name {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .teacher-card .t-designation {
+      font-size: 13px;
+      color: #7c3aed;
+      font-weight: 700;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+    .teacher-card .t-subject {
+      font-size: 12.5px;
+      color: #6b7280;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .teacher-card .t-subject .lbl {
+      color: #374151;
+      font-weight: 700;
+    }
+
+    .teacher-card .t-contact {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .teacher-card .t-contact .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0;
+      color: #4b5563;
+      font-weight: 600;
+    }
+    .teacher-card .t-contact .row .ico {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .teacher-card .t-contact a {
+      color: #16a34a;
+      text-decoration: none;
+      font-weight: 700;
+      word-break: break-all;
+    }
+    .teacher-card .t-contact a:hover { text-decoration: underline; }
+
+    .no-teachers {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 50px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* ============ NOTICES ============ */
+    .notices-section {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    .notice-card {
+      background: white;
+      border-left: 5px solid #7c3aed;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.15s;
+    }
+    .notice-card:hover { transform: translateX(4px); }
+    .notice-card h4 {
+      color: #4c1d95;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .notice-card p {
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .notice-card small {
+      display: block;
+      margin-top: 8px;
+      color: #9ca3af;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .no-notice {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* ============ RESULT CTA ============ */
+    .result-cta {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    .result-cta-inner {
+      background: linear-gradient(135deg, #16a34a 0%, #065f46 100%);
+      border-radius: 20px;
+      padding: 50px 40px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 20px 50px rgba(22,163,74,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .result-cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .result-cta-inner h2 {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .result-cta-inner p {
+      font-size: 15.5px;
+      opacity: 0.9;
+      margin-bottom: 26px;
+      max-width: 550px;
+      margin-left: auto; margin-right: auto;
+      position: relative;
+    }
+    .result-cta-inner a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: #15803d;
+      padding: 16px 40px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transition: transform 0.15s;
+      position: relative;
+    }
+    .result-cta-inner a:hover { transform: translateY(-3px); }
+
+    /* ============ CONTACT / FOOTER ============ */
+    .contact-section {
+      background: #1e1b4b;
+      color: white;
+      padding: 50px 32px 30px;
+      margin-top: 80px;
+    }
+    .contact-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .contact-grid h4 {
+      font-size: 15px;
+      color: #c4b5fd;
+      margin-bottom: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .contact-grid p, .contact-grid a {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.9;
+      text-decoration: none;
+      display: block;
+    }
+    .contact-grid a:hover { color: white; }
+    .contact-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ============ MOBILE ============ */
+    @media (max-width: 700px) {
+      .site-nav { padding: 12px 16px; }
+      .site-nav .brand { font-size: 16px; }
+      .site-nav .brand-logo { width: 38px; height: 38px; font-size: 20px; }
+      .site-nav .menu a { padding: 6px 10px; font-size: 13px; }
+      .hero { padding: 50px 20px 70px; }
+      .hero h1 { font-size: 28px; }
+      .hero p.tagline { font-size: 14.5px; }
+      .hero-btns a { padding: 12px 24px; font-size: 14px; }
+      .result-cta-inner { padding: 35px 22px; }
+      .result-cta-inner h2 { font-size: 22px; }
+      .contact-section { padding: 40px 20px 24px; }
+      .teachers-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ========== NAV ========== -->
+  <nav class="site-nav">
+    <a href="home.html" class="brand">
+      <div class="brand-logo" id="navLogo">🏫</div>
+      <span id="navName">School</span>
+    </a>
+    <div class="menu">
+      <a href="#teachers">👩‍🏫 শিক্ষকমণ্ডলী</a>
+      <a href="#notices">📢 নোটিশ</a>
+      <a href="#contact">📞 যোগাযোগ</a>
+      <a href="result-publish.html" style="color:#16a34a">🏆 রেজাল্ট</a>
+      <a href="index.html" class="btn-login">🔐 Login</a>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-logo" id="heroLogo">🏫</div>
+      <h1 id="heroName">School</h1>
+      <p class="tagline" id="heroTagline">শিক্ষা, জ্ঞান ও মূল্যবোধের এক অনন্য ঠিকানা</p>
+      <div class="hero-btns">
+        <a href="result-publish.html" class="btn-result">🏆 Result Publish দেখুন</a>
+        <a href="index.html" class="btn-login-hero">🔐 অ্যাডমিন লগইন</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== QUICK CARDS ========== -->
+  <section class="quick-section">
+    <a href="result-publish.html" class="qcard green">
+      <div class="icon-box">🏆</div>
+      <div class="info">
+        <h4>Result Publish</h4>
+        <p>পরীক্ষার ফলাফল দেখুন</p>
+      </div>
+    </a>
+    <a href="index.html" class="qcard blue">
+      <div class="icon-box">🔐</div>
+      <div class="info">
+        <h4>Login</h4>
+        <p>ছাত্র, শিক্ষক, অ্যাডমিন</p>
+      </div>
+    </a>
+    <a href="register.html" class="qcard orange">
+      <div class="icon-box">🎓</div>
+      <div class="info">
+        <h4>ছাত্র রেজিস্ট্রেশন</h4>
+        <p>নিজের অ্যাকাউন্ট খুলুন</p>
+      </div>
+    </a>
+    <a href="register-teacher.html" class="qcard purple">
+      <div class="icon-box">👩‍🏫</div>
+      <div class="info">
+        <h4>শিক্ষক রেজিস্ট্রেশন</h4>
+        <p>শিক্ষক অ্যাকাউন্ট খুলুন</p>
+      </div>
+    </a>
+  </section>
+
+  <!-- ========== RESULT CTA ========== -->
+  <section class="result-cta">
+    <div class="result-cta-inner">
+      <h2>🏆 পরীক্ষার ফলাফল জানুন</h2>
+      <p>Student ID ও Exam Term দিয়ে লগইন ছাড়াই আপনার সন্তানের ফলাফল দেখতে পারবেন। GPA, গ্রেড সহ বিস্তারিত।</p>
+      <a href="result-publish.html">📊 এখনই ফলাফল দেখুন →</a>
+    </div>
+  </section>
+
+  <!-- ========== TEACHERS ========== -->
+  <section class="teachers-section" id="teachers">
+    <div class="sec-head">
+      <h2>👩‍🏫 আমাদের শিক্ষকমণ্ডলী</h2>
+      <p>অভিজ্ঞ ও নিবেদিত শিক্ষকদের সাথে পরিচিত হোন</p>
+      <div class="underline"></div>
+    </div>
+    <div class="teachers-grid" id="teachersGrid">
+      <div class="no-teachers">লোড হচ্ছে...</div>
+    </div>
+  </section>
+
+  <!-- ========== NOTICES ========== -->
+  <section class="notices-section" id="notices">
+    <div class="sec-head">
+      <h2>📢 সর্বশেষ নোটিশ</h2>
+      <p>স্কুলের সাম্প্রতিক ঘোষণা ও তথ্য</p>
+      <div class="underline"></div>
+    </div>
+    <div id="noticesList">
+      <div class="no-notice">লোড হচ্ছে...</div>
+    </div>
+  </section>
+
+  <!-- ========== CONTACT / FOOTER ========== -->
+  <footer class="contact-section" id="contact">
+    <div class="contact-grid">
+      <div>
+        <h4>🏫 আমাদের সম্পর্কে</h4>
+        <p id="footName">School</p>
+        <p id="footAddress">-</p>
+        <p id="footEmis"></p>
+      </div>
+      <div>
+        <h4>🔗 দ্রুত লিংক</h4>
+        <a href="#teachers">👩‍🏫 শিক্ষকমণ্ডলী</a>
+        <a href="result-publish.html">🏆 Result Publish</a>
+        <a href="index.html">🔐 Login</a>
+        <a href="register.html">🎓 Student Registration</a>
+      </div>
+      <div>
+        <h4>📞 যোগাযোগ</h4>
+        <a id="footPhone" href="#">-</a>
+        <a id="footWeb" href="#">-</a>
+        <a id="footFb" href="#">-</a>
+      </div>
+      <div>
+        <h4>📌 শিক্ষার্থীদের জন্য</h4>
+        <a href="result-publish.html">📊 আমার ফলাফল</a>
+        <a href="index.html">👨‍🎓 ছাত্র প্যানেল</a>
+      </div>
+    </div>
+    <div class="contact-bottom">
+      © <span id="yr"></span> <span id="footBottomName">School</span> · All Rights Reserved
+    </div>
+  </footer>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    /* ============ স্কুল তথ্য লোড ============ */
+    async function loadSchool() {
+      const { data } = await supabase.rpc('public_school_info');
+      if (!data) return;
+
+      const name = data.institute_name || 'Our School';
+      const address = data.address || '';
+      const emis = data.ein_no || '';
+      const logo = data.school_logo || '';
+
+      document.getElementById('navName').textContent = name;
+      document.getElementById('heroName').textContent = name;
+      document.getElementById('footName').textContent = name;
+      document.getElementById('footBottomName').textContent = name;
+
+      if (address) {
+        document.getElementById('footAddress').textContent = address;
+        document.getElementById('heroTagline').textContent =
+          address + ' · শিক্ষা, জ্ঞান ও মূল্যবোধের ঠিকানা';
+      }
+      if (emis) document.getElementById('footEmis').textContent = 'EMIS: ' + emis;
+
+      if (logo) {
+        document.getElementById('navLogo').innerHTML = `<img src="${logo}" alt="logo">`;
+        document.getElementById('heroLogo').innerHTML = `<img src="${logo}" alt="logo">`;
+      }
+
+      const phone = data.contact || '';
+      if (phone) {
+        const p = document.getElementById('footPhone');
+        p.textContent = '📞 ' + phone;
+        p.href = 'tel:' + phone.replace(/\s+/g, '');
+      }
+
+      if (data.website) {
+        const w = document.getElementById('footWeb');
+        w.textContent = '🌐 ' + data.website;
+        w.href = data.website.startsWith('http') ? data.website : 'https://' + data.website;
+      }
+      if (data.facebook_url) {
+        const f = document.getElementById('footFb');
+        f.textContent = '📘 Facebook';
+        f.href = data.facebook_url;
+      }
+    }
+
+    /* ============ Teachers ============ */
+    async function loadTeachers() {
+      const { data, error } = await supabase.rpc('public_teachers');
+      const grid = document.getElementById('teachersGrid');
+
+      if (error) {
+        grid.innerHTML = '<div class="no-teachers">❌ শিক্ষকদের তথ্য লোড করা যায়নি</div>';
+        return;
+      }
+
+      const list = data || [];
+      if (!list.length) {
+        grid.innerHTML = '<div class="no-teachers">📭 এখনো কোনো শিক্ষকের তথ্য যোগ করা হয়নি</div>';
+        return;
+      }
+
+      grid.innerHTML = list.map(t => {
+        const designation = t.designation || 'Teacher';
+        const isHead = designation.toLowerCase().includes('head teacher') && !designation.toLowerCase().includes('assistant');
+        const isAsst = designation.toLowerCase().includes('assistant');
+
+        const badgeClass = isHead ? 'head' : (isAsst ? 'asst' : '');
+        const shortDesig = isHead ? 'HEAD' : (isAsst ? 'ASST' : designation.toUpperCase().slice(0, 8));
+
+        const photoHtml = t.photo
+          ? `<img src="${t.photo}" alt="${escapeHtml(t.name)}">`
+          : '👤';
+
+        const phoneHtml = t.phone
+          ? `<div class="row">
+              <span class="ico">📞</span>
+              <a href="tel:${escapeHtml(t.phone)}">${escapeHtml(t.phone)}</a>
+             </div>`
+          : `<div class="row"><span class="ico">📞</span> <span style="color:#9ca3af">ফোন নেই</span></div>`;
+
+        const emailHtml = t.email
+          ? `<div class="row">
+              <span class="ico">✉️</span>
+              <a href="mailto:${escapeHtml(t.email)}" style="color:#2563eb">${escapeHtml(t.email)}</a>
+             </div>`
+          : '';
+
+        const subjectHtml = t.subject
+          ? `<div class="t-subject"><span class="lbl">বিষয়:</span> ${escapeHtml(t.subject)}</div>`
+          : '';
+
+        return `
+          <div class="teacher-card">
+            <div class="badge-designation ${badgeClass}">${escapeHtml(shortDesig)}</div>
+            <div class="t-photo">${photoHtml}</div>
+            <div class="t-name">${escapeHtml(t.name)}</div>
+            <div class="t-designation">${escapeHtml(designation)}</div>
+            ${subjectHtml}
+            <div class="t-contact">
+              ${phoneHtml}
+              ${emailHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ============ Notices ============ */
+    async function loadNotices() {
+      const { data, error } = await supabase.rpc('public_notices', { limit_count: 5 });
+      const box = document.getElementById('noticesList');
+      if (error) { box.innerHTML = '<div class="no-notice">❌ নোটিশ লোড করা যায়নি</div>'; return; }
+
+      const list = data || [];
+      if (!list.length) {
+        box.innerHTML = '<div class="no-notice">📭 এখনো কোনো নোটিশ প্রকাশ করা হয়নি</div>';
+        return;
+      }
+      box.innerHTML = list.map(n => `
+        <div class="notice-card">
+          <h4>📌 ${escapeHtml(n.title)}</h4>
+          <p>${escapeHtml(n.body || '')}</p>
+          <small>📅 ${new Date(n.date).toLocaleDateString('bn-BD', { day: '2-digit', month: 'long', year: 'numeric' })}</small>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    (async () => {
+      await Promise.all([loadSchool(), loadTeachers(), loadNotices()]);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Backup · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- JSZip library — ZIP file বানাতে -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    .bk-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #16a34a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .bk-header .left { display: flex; align-items: center; gap: 14px; }
+    .bk-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #16a34a; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .bk-header h1 { color: #16a34a; font-size: 22px; margin: 0; font-weight: 700; }
+    .bk-header p { color: #14532d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .bk-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .bk-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .bk-body {
+      background: white; padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .info-banner {
+      background: #d1fae5; border-left: 4px solid #16a34a;
+      padding: 14px 18px; border-radius: 6px;
+      margin-bottom: 20px; font-size: 13.5px; color: #065f46;
+      line-height: 1.7;
+    }
+    .info-banner b { color: #065f46; }
+    .info-banner ul { margin: 8px 0 0 20px; }
+
+    .bk-btn-main {
+      display: block; margin: 0 auto 20px;
+      background: #16a34a; color: white;
+      border: none; padding: 16px 60px;
+      border-radius: 8px; font-size: 17px;
+      font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(22,163,74,0.35);
+      transition: transform 0.15s;
+    }
+    .bk-btn-main:hover:not(:disabled) { transform: translateY(-2px); background: #15803d; }
+    .bk-btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .progress-box {
+      max-width: 700px; margin: 0 auto 20px;
+      background: #f9fafb; border: 1px solid #e5e7eb;
+      border-radius: 8px; padding: 16px 20px;
+      display: none;
+    }
+    .progress-box.show { display: block; }
+    .progress-bar {
+      width: 100%; height: 10px;
+      background: #e5e7eb; border-radius: 5px;
+      overflow: hidden; margin: 10px 0;
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e);
+      width: 0%; transition: width 0.3s;
+    }
+    .progress-text {
+      font-size: 13px; color: #374151;
+      font-weight: 700; text-align: center;
+    }
+
+    /* Tables list */
+    .tbl-list {
+      max-width: 700px; margin: 20px auto 0;
+    }
+    .tbl-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 100px 90px;
+      gap: 10px; align-items: center;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      transition: background 0.15s;
+    }
+    .tbl-row.done { background: #f0fdf4; border-color: #86efac; }
+    .tbl-row.processing { background: #fef3c7; border-color: #fcd34d; }
+    .tbl-row.error { background: #fee2e2; border-color: #fca5a5; }
+
+    .tbl-row .status {
+      font-size: 16px; text-align: center;
+    }
+    .tbl-row .name {
+      font-weight: 700; color: #1f2937;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .tbl-row .name .icon {
+      font-size: 16px;
+    }
+    .tbl-row .name small {
+      color: #6b7280; font-weight: 500;
+      font-size: 11.5px; margin-left: 4px;
+    }
+    .tbl-row .rows {
+      text-align: right;
+      color: #4b5563; font-weight: 600;
+      font-size: 12.5px;
+    }
+    .tbl-row .size {
+      text-align: right;
+      color: #6b7280; font-weight: 600;
+      font-size: 11.5px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .last-backup-info {
+      text-align: center;
+      font-size: 12.5px;
+      color: #6b7280;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed #e5e7eb;
+    }
+    .last-backup-info .highlight {
+      color: #16a34a; font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      .tbl-row { grid-template-columns: 30px 1fr auto; }
+      .tbl-row .size { display: none; }
+      .bk-btn-main { padding: 14px 30px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'backup.html', 'Backup System');
+
+    const content = document.getElementById('content');
+
+    /* ============ Tables list ============ */
+    const TABLES = [
+      { name: 'profiles',          icon: '👤', label: 'Users / Profiles' },
+      { name: 'classes',           icon: '🏫', label: 'Classes' },
+      { name: 'students',          icon: '🎓', label: 'Students' },
+      { name: 'teachers',          icon: '👩‍🏫', label: 'Teachers' },
+      { name: 'subjects',          icon: '📖', label: 'Subjects' },
+      { name: 'attendance',        icon: '📋', label: 'Attendance' },
+      { name: 'exams',             icon: '📝', label: 'Exams' },
+      { name: 'exam_results',      icon: '🎯', label: 'Exam Results' },
+      { name: 'exam_routines',     icon: '📅', label: 'Exam Routines' },
+      { name: 'fee_types',         icon: '💰', label: 'Fee Types' },
+      { name: 'fee_structure',     icon: '📊', label: 'Fee Structure' },
+      { name: 'fee_payments',      icon: '💵', label: 'Fee Payments' },
+      { name: 'fee_waivers',       icon: '📉', label: 'Fee Waivers' },
+      { name: 'notices',           icon: '📢', label: 'Notices' },
+      { name: 'routines',          icon: '📅', label: 'Class Routines' },
+      { name: 'academic_sessions', icon: '🗓️', label: 'Academic Sessions' },
+      { name: 'grade_system',      icon: '🎯', label: 'Grade System' },
+      { name: 'testimonial_info',  icon: '📜', label: 'Testimonial Info' },
+      { name: 'school_settings',   icon: '🏫', label: 'School Settings' },
+    ];
+
+    const tableState = {};
+
+    function renderUI() {
+      content.innerHTML = `
+        <div class="bk-header">
+          <div class="left">
+            <div class="icon">💾</div>
+            <div>
+              <h1>Backup System</h1>
+              <p>সব ডেটা ZIP ফাইলে ডাউনলোড করুন</p>
+            </div>
+          </div>
+          <button class="bk-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+
+        <div class="bk-body">
+          <div class="info-banner">
+            ✅ <b>কেন Backup করবেন:</b>
+            <ul>
+              <li>🔒 যেকোনো দুর্ঘটনায় ডেটা ফিরিয়ে আনা যাবে</li>
+              <li>💾 সব ডেটা ZIP ফাইলে ডাউনলোড হবে</li>
+              <li>📅 প্রতিমাসে একবার Backup নিন</li>
+              <li>☁️ Google Drive-এ বা পেনড্রাইভে রাখুন</li>
+              <li>🆓 সম্পূর্ণ ফ্রি — কোনো খরচ নেই</li>
+            </ul>
+          </div>
+
+          <button class="bk-btn-main" id="startBackupBtn">💾 এখনই Backup নিন</button>
+
+          <div class="progress-box" id="progressBox">
+            <div class="progress-text" id="progressText">প্রস্তুতি নিচ্ছি...</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+
+          <div class="tbl-list" id="tableList">
+            ${TABLES.map(t => `
+              <div class="tbl-row" data-table="${t.name}" id="row-${t.name}">
+                <div class="status">⏳</div>
+                <div class="name">
+                  <span class="icon">${t.icon}</span>
+                  ${esc(t.label)}
+                  <small>${esc(t.name)}</small>
+                </div>
+                <div class="rows">—</div>
+                <div class="size">—</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="last-backup-info">
+            <span id="lastBackupInfo">এখনো Backup নেওয়া হয়নি</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('startBackupBtn').onclick = startBackup;
+    }
+
+    renderUI();
+
+    /* ============ CSV converter ============ */
+    function toCSV(rows) {
+      if (!rows || !rows.length) return '';
+      const headers = Object.keys(rows[0]);
+      const lines = [headers.join(',')];
+
+      rows.forEach(row => {
+        const cells = headers.map(h => {
+          let val = row[h];
+          if (val === null || val === undefined) return '';
+          if (typeof val === 'object') {
+            try { val = JSON.stringify(val); } catch (e) { val = ''; }
+          }
+          val = String(val);
+          if (val.includes(',') || val.includes('"') || val.includes('\n') || val.includes('\r')) {
+            val = '"' + val.replace(/"/g, '""') + '"';
+          }
+          return val;
+        });
+        lines.push(cells.join(','));
+      });
+
+      return lines.join('\n');
+    }
+
+    /* ============ Fetch all rows with pagination ============ */
+    async function fetchAllRows(table) {
+      const PAGE = 1000;
+      let all = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase.from(table)
+          .select('*').range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!data || !data.length) break;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return all;
+    }
+
+    /* ============ formatBytes ============ */
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    /* ============ update row ============ */
+    function setRowState(tableName, state, info = {}) {
+      const row = document.getElementById('row-' + tableName);
+      if (!row) return;
+      row.classList.remove('done', 'processing', 'error');
+      if (state) row.classList.add(state);
+
+      const statusEl = row.querySelector('.status');
+      const rowsEl = row.querySelector('.rows');
+      const sizeEl = row.querySelector('.size');
+
+      if (state === 'processing') statusEl.textContent = '⏳';
+      else if (state === 'done') statusEl.textContent = '✅';
+      else if (state === 'error') statusEl.textContent = '❌';
+      else statusEl.textContent = '⏳';
+
+      if (info.rowCount !== undefined) rowsEl.textContent = info.rowCount + ' rows';
+      if (info.size !== undefined) sizeEl.textContent = formatBytes(info.size);
+    }
+
+    /* ============ Main backup function ============ */
+    async function startBackup() {
+      const btn = document.getElementById('startBackupBtn');
+      const progressBox = document.getElementById('progressBox');
+      const progressText = document.getElementById('progressText');
+      const progressFill = document.getElementById('progressFill');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Backup চলছে...';
+      progressBox.classList.add('show');
+
+      const zip = new JSZip();
+      const meta = {
+        exportDate: new Date().toISOString(),
+        exportedBy: profile.full_name || 'Admin',
+        school: 'School Management System',
+        totalTables: TABLES.length,
+        tables: [],
+      };
+
+      let totalRows = 0;
+      let totalSize = 0;
+      let doneCount = 0;
+      let errorCount = 0;
+
+      // Reset all rows
+      TABLES.forEach(t => setRowState(t.name, null));
+
+      for (const t of TABLES) {
+        setRowState(t.name, 'processing');
+        progressText.textContent = `📥 ${t.label} — লোড হচ্ছে...`;
+        progressFill.style.width = ((doneCount / TABLES.length) * 100) + '%';
+
+        try {
+          const rows = await fetchAllRows(t.name);
+          const csv = toCSV(rows);
+          const csvSize = new Blob([csv]).size;
+
+          zip.file(t.name + '.csv', csv);
+
+          meta.tables.push({
+            name: t.name,
+            label: t.label,
+            rowCount: rows.length,
+            sizeBytes: csvSize,
+          });
+
+          totalRows += rows.length;
+          totalSize += csvSize;
+          doneCount++;
+          setRowState(t.name, 'done', { rowCount: rows.length, size: csvSize });
+
+          // Chhoto delay — UI smooth দেখানোর জন্য
+          await new Promise(r => setTimeout(r, 50));
+        } catch (err) {
+          console.error(`Error backing up ${t.name}:`, err);
+          errorCount++;
+          doneCount++;
+          setRowState(t.name, 'error');
+          meta.tables.push({
+            name: t.name,
+            label: t.label,
+            error: err.message || 'Unknown error',
+          });
+        }
+
+        progressFill.style.width = ((doneCount / TABLES.length) * 100) + '%';
+      }
+
+      // Add meta.json
+      meta.totalRows = totalRows;
+      meta.totalSizeBytes = totalSize;
+      meta.errorCount = errorCount;
+      zip.file('_meta.json', JSON.stringify(meta, null, 2));
+
+      // Add README
+      const readme = `# School Management System — Backup
+==================================
+
+Export Date : ${new Date().toLocaleString('en-GB')}
+Exported By : ${profile.full_name || 'Admin'}
+Total Tables: ${TABLES.length}
+Total Rows  : ${totalRows}
+Total Size  : ${formatBytes(totalSize)}
+
+## ফাইলগুলো
+${meta.tables.map(t => `- ${t.name}.csv (${t.rowCount || 0} rows)`).join('\n')}
+
+## কীভাবে সংরক্ষণ করবেন
+1. এই ZIP ফাইলটা নিরাপদে রাখুন
+2. Google Drive-এ বা পেনড্রাইভে upload করুন
+3. প্রতিমাসে একবার নতুন Backup নিন
+
+## কীভাবে ব্যবহার করবেন
+1. দুর্ঘটনায় পড়লে Supabase Dashboard → SQL Editor-এ যান
+2. অথবা Supabase Dashboard → Table Editor → Import CSV
+3. CSV ফাইলগুলো import করুন
+
+⚠️ কোনো সমস্যা হলে school admin-এর সাথে যোগাযোগ করুন।
+`;
+      zip.file('README.txt', readme);
+
+      // ZIP generate
+      progressText.textContent = '📦 ZIP তৈরি হচ্ছে...';
+      progressFill.style.width = '95%';
+
+      const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+
+      // Download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const now = new Date();
+      const fileName = `school-backup-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.zip`;
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      progressFill.style.width = '100%';
+      progressText.textContent = `✅ সফল! ${formatBytes(blob.size)} ZIP ডাউনলোড হয়েছে`;
+
+      btn.disabled = false;
+      btn.textContent = '💾 আবার Backup নিন';
+
+      // Show last backup info
+      document.getElementById('lastBackupInfo').innerHTML =
+        `✅ শেষ Backup: <span class="highlight">${new Date().toLocaleString('en-GB')}</span> · ${totalRows} rows · ${formatBytes(blob.size)}`;
+
+      // Save to localStorage
+      localStorage.setItem('school_last_backup', JSON.stringify({
+        time: new Date().toISOString(),
+        rows: totalRows,
+        size: blob.size,
+        errors: errorCount,
+      }));
+
+      if (errorCount > 0) {
+        toast(`⚠️ ${errorCount}টি টেবিলে সমস্যা — বাকি সব সেভ হয়েছে`, 'error');
+      } else {
+        toast(`✅ ${TABLES.length}টি টেবিল সফলভাবে Backup হয়েছে`, 'success');
+      }
+    }
+
+    /* ============ Show last backup on load ============ */
+    try {
+      const last = JSON.parse(localStorage.getItem('school_last_backup') || 'null');
+      if (last) {
+        document.getElementById('lastBackupInfo').innerHTML =
+          `📅 শেষ Backup: <span class="highlight">${new Date(last.time).toLocaleString('en-GB')}</span> · ${last.rows} rows · ${formatBytes(last.size)}`;
+      }
+    } catch (e) { /* */ }
+  </script>
+</body>
+</html>

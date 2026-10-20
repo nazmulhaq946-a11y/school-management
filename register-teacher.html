@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>শিক্ষক রেজিস্ট্রেশন · School</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card" style="max-width:440px">
+      <h1>👩‍🏫 শিক্ষক রেজিস্ট্রেশন</h1>
+      <p class="sub">স্কুল থেকে পাওয়া Teacher ID দিয়ে অ্যাকাউন্ট খুলুন</p>
+
+      <label>পূর্ণ নাম *</label>
+      <input id="fullName" placeholder="যেমন: ফাতেমা বেগম">
+
+      <label>Teacher ID * (স্কুল থেকে পাওয়া)</label>
+      <input id="teacherId" placeholder="যেমন: TCH-001" style="text-transform:uppercase">
+
+      <label>ইমেইল *</label>
+      <input id="email" type="email" placeholder="you@example.com">
+
+      <label>পাসওয়ার্ড * (কমপক্ষে ৬ অক্ষর)</label>
+      <input id="password" type="password" placeholder="••••••••">
+
+      <label>পাসওয়ার্ড আবার *</label>
+      <input id="password2" type="password" placeholder="••••••••">
+
+      <button id="registerBtn">✅ রেজিস্ট্রেশন করুন</button>
+      <p id="msg"></p>
+
+      <p style="text-align:center;margin-top:20px;font-size:14px;color:#6b7280">
+        আগে থেকেই অ্যাকাউন্ট আছে?
+        <a href="index.html" style="color:#7c3aed;font-weight:600;text-decoration:none">লগইন করুন</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) window.location.href = 'dashboard.html';
+
+    const btn = document.getElementById('registerBtn');
+    const msg = document.getElementById('msg');
+
+    btn.onclick = async () => {
+      const fullName = document.getElementById('fullName').value.trim();
+      const teacherId = document.getElementById('teacherId').value.trim().toUpperCase();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const password2 = document.getElementById('password2').value;
+
+      if (!fullName || !teacherId || !email || !password) {
+        msg.textContent = 'সব ঘর পূরণ করুন';
+        msg.style.color = 'red';
+        return;
+      }
+      if (password.length < 6) {
+        msg.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে';
+        msg.style.color = 'red';
+        return;
+      }
+      if (password !== password2) {
+        msg.textContent = 'দুইটা পাসওয়ার্ড মিলছে না';
+        msg.style.color = 'red';
+        return;
+      }
+
+      msg.textContent = 'Teacher ID যাচাই করা হচ্ছে...';
+      msg.style.color = '#7c3aed';
+      btn.disabled = true;
+
+      const { data: exists, error: checkErr } = await supabase
+        .rpc('check_teacher_id', { tid: teacherId });
+
+      if (checkErr) {
+        msg.textContent = '❌ ' + checkErr.message;
+        msg.style.color = 'red';
+        btn.disabled = false;
+        return;
+      }
+      if (!exists) {
+        msg.textContent = '❌ এই Teacher ID স্কুলে নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।';
+        msg.style.color = 'red';
+        btn.disabled = false;
+        return;
+      }
+
+      const { data: alreadyLinked } = await supabase
+        .rpc('is_teacher_id_linked', { tid: teacherId });
+
+      if (alreadyLinked) {
+        msg.textContent = '❌ এই Teacher ID দিয়ে ইতিমধ্যে অ্যাকাউন্ট খোলা হয়েছে।';
+        msg.style.color = 'red';
+        btn.disabled = false;
+        return;
+      }
+
+      msg.textContent = 'অ্যাকাউন্ট তৈরি হচ্ছে...';
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role: 'teacher',
+            linked_id: teacherId
+          }
+        }
+      });
+
+      btn.disabled = false;
+
+      if (error) {
+        msg.textContent = '❌ ' + error.message;
+        msg.style.color = 'red';
+        return;
+      }
+
+      if (data.session) {
+        msg.textContent = '✅ সফল! ড্যাশবোর্ডে যাচ্ছে...';
+        msg.style.color = 'green';
+        setTimeout(() => window.location.href = 'dashboard.html', 1000);
+      } else {
+        msg.innerHTML = '✅ অ্যাকাউন্ট তৈরি!<br><small>ইমেইল যাচাই করুন, তারপর লগইন করুন।</small>';
+        msg.style.color = 'green';
+      }
+    };
+
+    document.getElementById('password2').addEventListener('keydown', e => {
+      if (e.key === 'Enter') btn.click();
+    });
+  </script>
+</body>
+</html>

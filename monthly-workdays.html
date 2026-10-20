@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>মাসিক কার্যদিবস · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .wd-header {
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 50%, #155e75 100%);
+      padding: 22px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: white;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+      overflow: hidden;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .wd-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .wd-header > * { position: relative; z-index: 1; }
+    .wd-header .left { display: flex; align-items: center; gap: 16px; }
+    .wd-header .icon-box {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .wd-header h1 { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -0.3px; }
+    .wd-header p { font-size: 13px; margin: 4px 0 0 0; opacity: 0.9; font-weight: 500; }
+    .wd-back {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 10px 18px; border-radius: 10px; cursor: pointer;
+      font-weight: 700; font-size: 13.5px;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .wd-back:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .wd-back .arrow {
+      background: white; color: #0e7490;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+    }
+    .wd-body {
+      background: white;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+      border-radius: 0 0 10px 10px;
+    }
+    .wd-info {
+      background: linear-gradient(135deg, #ecfeff, #cffafe);
+      border-left: 4px solid #0891b2;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: #155e75;
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .wd-info .ico { font-size: 20px; flex-shrink: 0; }
+    .wd-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .wd-filters .fld { display: flex; flex-direction: column; gap: 6px; }
+    .wd-filters label {
+      font-size: 11.5px;
+      color: #64748b;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding-left: 2px;
+    }
+    .wd-filters select {
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: white;
+      color: #1e293b;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      transition: all 0.2s;
+    }
+    .wd-filters select:focus {
+      outline: none;
+      border-color: #0891b2;
+      box-shadow: 0 0 0 4px rgba(8,145,178,0.1);
+    }
+    .wd-upload-btn {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      box-shadow: 0 6px 16px rgba(8,145,178,0.35);
+      transition: all 0.2s;
+      height: 42px;
+    }
+    .wd-upload-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(8,145,178,0.45);
+    }
+    .wd-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .wd-stat {
+      background: #ecfeff;
+      border-left: 4px solid #0891b2;
+      padding: 12px 16px;
+      border-radius: 10px;
+    }
+    .wd-stat h4 {
+      font-size: 11px;
+      color: #155e75;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+    .wd-stat p { font-size: 22px; font-weight: 900; color: #0e7490; line-height: 1; }
+    .wd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .wd-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      padding: 18px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .wd-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0891b2, #22d3ee);
+    }
+    .wd-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(8,145,178,0.15);
+      border-color: #67e8f9;
+    }
+    .wd-card .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .wd-card .pdf-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #fef2f2, #fee2e2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .wd-card .class-badge {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .wd-card .month-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      letter-spacing: -0.2px;
+    }
+    .wd-card .file-name {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      word-break: break-all;
+      line-height: 1.4;
+      padding: 6px 10px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px dashed #cbd5e1;
+    }
+    .wd-card .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11.5px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .wd-card .meta-row .item { display: inline-flex; align-items: center; gap: 5px; }
+    .wd-card .actions {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .wd-act-btn {
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .act-download {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+    }
+    .act-download:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(16,185,129,0.4); }
+    .act-view {
+      background: #dbeafe;
+      color: #1e40af;
+      width: 36px;
+      padding: 9px 0;
+    }
+    .act-view:hover { background: #bfdbfe; }
+    .act-delete {
+      background: #fee2e2;
+      color: #991b1b;
+      width: 36px;
+      padding: 9px 0;
+    }
+    .act-delete:hover { background: #fecaca; }
+    .wd-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 600;
+      grid-column: 1 / -1;
+    }
+    .wd-empty .icon {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 14px;
+      opacity: 0.4;
+    }
+    .wd-empty h3 { color: #374151; font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .wd-loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #0891b2;
+      font-weight: 700;
+      grid-column: 1 / -1;
+    }
+    .wd-loading::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #cffafe;
+      border-top-color: #0891b2;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(15,23,42,0.75);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      padding: 22px 26px;
+      border-radius: 20px 20px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 900; margin: 0; letter-spacing: -0.3px; }
+    .modal-close {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-weight: 700;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+    .modal-body { padding: 24px 26px; }
+    .fld { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .fld.required label::after { content: ' *'; color: #dc2626; }
+    .fld label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 2px;
+    }
+    .fld input,
+    .fld select {
+      padding: 12px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 11px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      background: #fafbfc;
+      transition: all 0.2s;
+      width: 100%;
+      color: #1e293b;
+    }
+    .fld input:focus,
+    .fld select:focus {
+      outline: none;
+      border-color: #0891b2;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(8,145,178,0.1);
+    }
+    .file-drop {
+      border: 2px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 26px 20px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .file-drop:hover { border-color: #0891b2; background: #ecfeff; }
+    .file-drop.has-file { border-color: #10b981; background: #f0fdf4; border-style: solid; }
+    .file-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .file-drop .ico { font-size: 44px; margin-bottom: 8px; display: block; }
+    .file-drop .title { font-size: 14.5px; font-weight: 800; color: #334155; margin-bottom: 4px; }
+    .file-drop .sub { font-size: 12px; color: #64748b; font-weight: 600; }
+    .file-drop.has-file .title { color: #065f46; font-size: 13.5px; word-break: break-all; }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 8px;
+    }
+    .btn-cancel {
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-save {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 11px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 6px 16px rgba(8,145,178,0.3);
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-save:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(8,145,178,0.4);
+    }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .upload-progress {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #ecfeff;
+      border-radius: 10px;
+      border: 1px solid #67e8f9;
+    }
+    .upload-progress.show { display: block; }
+    .upload-progress .bar {
+      width: 100%;
+      height: 8px;
+      background: #cffafe;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .upload-progress .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0891b2, #22d3ee);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .upload-progress .text {
+      font-size: 12px;
+      color: #155e75;
+      font-weight: 700;
+      text-align: center;
+    }
+    .pdf-modal-inner {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .pdf-modal-head {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+      color: white;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pdf-modal-head h3 { margin: 0; font-size: 15px; font-weight: 800; }
+    .pdf-modal-head .actions { display: flex; gap: 8px; }
+    .pdf-modal-head a,
+    .pdf-modal-head button {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .pdf-modal-head a:hover,
+    .pdf-modal-head button:hover { background: rgba(255,255,255,0.3); }
+    .pdf-modal-body {
+      flex: 1;
+      background: #525659;
+      padding: 0;
+      overflow: hidden;
+    }
+    .pdf-modal-body iframe { width: 100%; height: 100%; border: none; }
+    @media (max-width: 900px) {
+      .wd-filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .wd-header { padding: 16px 18px; }
+      .wd-header h1 { font-size: 17px; }
+      .wd-header .icon-box { width: 46px; height: 46px; font-size: 22px; }
+      .wd-body { padding: 16px; }
+      .wd-filters { grid-template-columns: 1fr; }
+      .wd-grid { grid-template-columns: 1fr; }
+      .wd-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin','teacher','student','guardian']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'monthly-workdays.html', 'মাসিক কার্যদিবস');
+
+    const content = document.getElementById('content');
+    const isAdmin = profile.role === 'admin';
+
+    const CLASS_LIST = ['Play', 'Nursery', 'One', 'Two', 'Three', 'Four', 'Five'];
+    const CLASS_LIST_BN = {
+      'Play': 'প্লে',
+      'Nursery': 'নার্সারি',
+      'One': 'প্রথম শ্রেণি',
+      'Two': 'দ্বিতীয় শ্রেণি',
+      'Three': 'তৃতীয় শ্রেণি',
+      'Four': 'চতুর্থ শ্রেণি',
+      'Five': 'পঞ্চম শ্রেণি',
+    };
+
+    const MONTHS_EN = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
+    const MONTHS_BN = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন',
+                       'জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+
+    const CURRENT_YEAR = new Date().getFullYear();
+    const YEARS = [CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1];
+
+    let allWorkdays = [];
+    let filterClass = '';
+    let filterMonth = '';
+    let filterYear = CURRENT_YEAR;
+
+    content.innerHTML = `
+      <div class="wd-header">
+        <div class="left">
+          <div class="icon-box">📅</div>
+          <div>
+            <h1>মাসিক কার্যদিবস</h1>
+            <p>Monthly Workdays · Play to Class Five</p>
+          </div>
+        </div>
+        <a class="wd-back" href="dashboard.html">
+          Back <span class="arrow">←</span>
+        </a>
+      </div>
+
+      <div class="wd-body">
+
+        <div class="wd-info">
+          <span class="ico">💡</span>
+          <span>
+            ${isAdmin
+              ? 'এখানে মাসিক কার্যদিবস PDF আপলোড করুন। শিক্ষার্থী ও শিক্ষকরা ডাউনলোড করতে পারবেন।'
+              : 'আপনার শ্রেণির মাসিক কার্যদিবস PDF এখান থেকে ডাউনলোড করুন।'}
+          </span>
+        </div>
+
+        <div class="wd-filters">
+          <div class="fld">
+            <label>শ্রেণি (Class)</label>
+            <select id="f_class">
+              <option value="">সব শ্রেণি</option>
+              ${CLASS_LIST.map(c =>
+                `<option value="${c}">${esc(CLASS_LIST_BN[c] || c)}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="fld">
+            <label>মাস (Month)</label>
+            <select id="f_month">
+              <option value="">সব মাস</option>
+              ${MONTHS_EN.map((m, i) =>
+                `<option value="${m}">${MONTHS_BN[i]}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="fld">
+            <label>বছর (Year)</label>
+            <select id="f_year">
+              ${YEARS.map(y =>
+                `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+              ).join('')}
+            </select>
+          </div>
+          ${isAdmin ? `
+            <button class="wd-upload-btn" id="uploadBtn">
+              <span>⬆️</span>
+              <span>নতুন PDF আপলোড</span>
+            </button>
+          ` : '<div></div>'}
+        </div>
+
+        <div class="wd-stats" id="wdStats"></div>
+
+        <div class="wd-grid" id="wdGrid">
+          <div class="wd-loading">লোড হচ্ছে...</div>
+        </div>
+
+      </div>
+    `;
+
+    async function loadWorkdays() {
+      const grid = document.getElementById('wdGrid');
+      grid.innerHTML = '<div class="wd-loading">লোড হচ্ছে...</div>';
+
+      let q = supabase.from('monthly_workdays')
+        .select('*')
+        .or('is_deleted.is.null,is_deleted.eq.false')
+        .order('upload_date', { ascending: false })
+        .order('id', { ascending: false });
+
+      if (filterClass) q = q.eq('class_name', filterClass);
+      if (filterMonth) q = q.eq('month_name', filterMonth);
+      if (filterYear) q = q.eq('year', filterYear);
+
+      const { data, error } = await q;
+
+      if (error) {
+        console.error(error);
+        grid.innerHTML = `
+          <div class="wd-empty">
+            <span class="icon">❌</span>
+            <h3>লোড করা যায়নি</h3>
+            <p>${esc(error.message)}</p>
+          </div>
+        `;
+        return;
+      }
+
+      allWorkdays = data || [];
+      renderStats();
+      renderList();
+    }
+
+    function renderStats() {
+      const total = allWorkdays.length;
+      const classesCount = new Set(allWorkdays.map(w => w.class_name)).size;
+      const monthsCount = new Set(allWorkdays.map(w => w.month_name)).size;
+
+      document.getElementById('wdStats').innerHTML = `
+        <div class="wd-stat">
+          <h4>মোট PDF</h4>
+          <p>${total}</p>
+        </div>
+        <div class="wd-stat" style="border-left-color:#10b981">
+          <h4>শ্রেণি</h4>
+          <p style="color:#059669">${classesCount}</p>
+        </div>
+        <div class="wd-stat" style="border-left-color:#f59e0b">
+          <h4>মাস</h4>
+          <p style="color:#d97706">${monthsCount}</p>
+        </div>
+        <div class="wd-stat" style="border-left-color:#7c3aed">
+          <h4>বছর</h4>
+          <p style="color:#7c3aed">${filterYear}</p>
+        </div>
+      `;
+    }
+
+    function renderList() {
+      const grid = document.getElementById('wdGrid');
+
+      if (!allWorkdays.length) {
+        grid.innerHTML = `
+          <div class="wd-empty">
+            <span class="icon">📭</span>
+            <h3>কোনো PDF পাওয়া যায়নি</h3>
+            <p>${isAdmin ? 'উপরের "নতুন PDF আপলোড" বাটনে ক্লিক করুন' : 'শিক্ষক/অ্যাডমিন এখনো কিছু আপলোড করেননি'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = allWorkdays.map(w => renderCard(w)).join('');
+
+      grid.querySelectorAll('[data-act]').forEach(el => {
+        el.onclick = (e) => {
+          e.preventDefault();
+          const id = el.dataset.id;
+          const act = el.dataset.act;
+          const item = allWorkdays.find(x => String(x.id) === String(id));
+          if (!item) return;
+
+          if (act === 'view') openPdfView(item);
+          else if (act === 'delete') deleteWorkday(item);
+        };
+      });
+    }
+
+    function renderCard(w) {
+      const classBn = CLASS_LIST_BN[w.class_name] || w.class_name;
+      const monthBn = MONTHS_BN[MONTHS_EN.indexOf(w.month_name)] || w.month_name;
+
+      const uploadDateStr = w.upload_date
+        ? new Date(w.upload_date).toLocaleDateString('bn-BD', {
+            day: '2-digit', month: 'short', year: 'numeric'
+          })
+        : '-';
+
+      const fileSizeStr = w.file_size
+        ? (w.file_size / 1024 / 1024).toFixed(2) + ' MB'
+        : '';
+
+      return `
+        <div class="wd-card">
+          <div class="card-head">
+            <div class="pdf-icon">📄</div>
+            <div class="class-badge">${esc(classBn)}</div>
+          </div>
+
+          <div class="month-title">${esc(monthBn)} ${w.year}</div>
+
+          ${w.file_name ? `<div class="file-name">📎 ${esc(w.file_name)}</div>` : ''}
+
+          <div class="meta-row">
+            <span class="item">📅 ${esc(uploadDateStr)}</span>
+            ${fileSizeStr ? `<span class="item">💾 ${fileSizeStr}</span>` : ''}
+          </div>
+
+          <div class="actions">
+            <a class="wd-act-btn act-download"
+               href="${esc(w.file_url)}"
+               target="_blank"
+               download>
+              ⬇️ ডাউনলোড
+            </a>
+            <button class="wd-act-btn act-view"
+                    data-act="view" data-id="${w.id}"
+                    title="প্রিভিউ">
+              👁️
+            </button>
+            ${isAdmin ? `
+              <button class="wd-act-btn act-delete"
+                      data-act="delete" data-id="${w.id}"
+                      title="মুছে ফেলুন">
+                🗑️
+              </button>
+            ` : '<div></div>'}
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('f_class').onchange = (e) => {
+      filterClass = e.target.value;
+      loadWorkdays();
+    };
+    document.getElementById('f_month').onchange = (e) => {
+      filterMonth = e.target.value;
+      loadWorkdays();
+    };
+    document.getElementById('f_year').onchange = (e) => {
+      filterYear = +e.target.value;
+      loadWorkdays();
+    };
+
+    if (isAdmin) {
+      document.getElementById('uploadBtn').onclick = () => openUploadModal();
+    }
+
+    function openUploadModal() {
+      let selectedFile = null;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h3>📄 নতুন PDF আপলোড</h3>
+            <button class="modal-close" id="mClose">✕</button>
+          </div>
+          <div class="modal-body">
+
+            <div class="fld required">
+              <label>শ্রেণি (Class)</label>
+              <select id="u_class">
+                <option value="">-- শ্রেণি সিলেক্ট করুন --</option>
+                ${CLASS_LIST.map(c =>
+                  `<option value="${c}" ${filterClass === c ? 'selected' : ''}>${esc(CLASS_LIST_BN[c] || c)}</option>`
+                ).join('')}
+              </select>
+            </div>
+
+            <div class="fld required">
+              <label>মাস (Month)</label>
+              <select id="u_month">
+                <option value="">-- মাস সিলেক্ট করুন --</option>
+                ${MONTHS_EN.map((m, i) =>
+                  `<option value="${m}">${MONTHS_BN[i]} (${m})</option>`
+                ).join('')}
+              </select>
+            </div>
+
+            <div class="fld required">
+              <label>বছর (Year)</label>
+              <select id="u_year">
+                ${YEARS.map(y =>
+                  `<option value="${y}" ${y===filterYear?'selected':''}>${y}</option>`
+                ).join('')}
+              </select>
+            </div>
+
+            <div class="fld required">
+              <label>PDF ফাইল</label>
+              <div class="file-drop" id="fileDrop">
+                <input type="file" id="u_file" accept="application/pdf">
+                <span class="ico">☁️</span>
+                <div class="title">ক্লিক করুন বা ফাইল ড্র্যাগ করুন</div>
+                <div class="sub">শুধু PDF · সর্বোচ্চ 10 MB</div>
+              </div>
+            </div>
+
+            <div class="upload-progress" id="uploadProgress">
+              <div class="bar"><div class="fill" id="progressFill"></div></div>
+              <div class="text" id="progressText">আপলোড হচ্ছে...</div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn-cancel" id="mCancel">বাতিল</button>
+              <button class="btn-save" id="mSave">⬆️ আপলোড করুন</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+
+      const fileDrop = document.getElementById('fileDrop');
+      const fileInput = document.getElementById('u_file');
+
+      fileInput.onchange = () => {
+        const f = fileInput.files[0];
+        if (!f) return;
+
+        if (f.type !== 'application/pdf') {
+          toast('❌ শুধু PDF ফাইল দিন', 'error');
+          fileInput.value = '';
+          return;
+        }
+        if (f.size > 10 * 1024 * 1024) {
+          toast('❌ ফাইল 10 MB-এর কম হতে হবে', 'error');
+          fileInput.value = '';
+          return;
+        }
+
+        selectedFile = f;
+        fileDrop.classList.add('has-file');
+        fileDrop.innerHTML = `
+          <input type="file" id="u_file" accept="application/pdf">
+          <span class="ico">✅</span>
+          <div class="title">${esc(f.name)}</div>
+          <div class="sub">${(f.size / 1024 / 1024).toFixed(2)} MB · ক্লিক করে বদলান</div>
+        `;
+        const newInput = fileDrop.querySelector('input');
+        newInput.onchange = fileInput.onchange;
+      };
+
+      function closeModal() { modalDiv.remove(); }
+      document.getElementById('mClose').onclick = closeModal;
+      document.getElementById('mCancel').onclick = closeModal;
+
+      document.getElementById('mSave').onclick = async () => {
+        const cls = document.getElementById('u_class').value;
+        const month = document.getElementById('u_month').value;
+        const year = +document.getElementById('u_year').value;
+
+        if (!cls) { toast('শ্রেণি সিলেক্ট করুন', 'error'); return; }
+        if (!month) { toast('মাস সিলেক্ট করুন', 'error'); return; }
+        if (!selectedFile) { toast('PDF ফাইল দিন', 'error'); return; }
+
+        const btn = document.getElementById('mSave');
+        const progressBox = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        btn.disabled = true;
+        btn.textContent = '⏳ আপলোড হচ্ছে...';
+        progressBox.classList.add('show');
+        progressFill.style.width = '20%';
+        progressText.textContent = 'ফাইল প্রস্তুত হচ্ছে...';
+
+        try {
+          const ext = 'pdf';
+          const fileName = `${cls}_${month}_${year}_${Date.now()}.${ext}`;
+          const storagePath = `${cls}/${year}/${fileName}`;
+
+          progressFill.style.width = '40%';
+          progressText.textContent = 'Storage-এ আপলোড হচ্ছে...';
+
+          const { data: uploadData, error: uploadErr } = await supabase.storage
+            .from('monthly-workdays')
+            .upload(storagePath, selectedFile, {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: 'application/pdf',
+            });
+
+          if (uploadErr) throw uploadErr;
+
+          progressFill.style.width = '80%';
+          progressText.textContent = 'Database-এ সেভ হচ্ছে...';
+
+          const { data: urlData } = supabase.storage
+            .from('monthly-workdays')
+            .getPublicUrl(storagePath);
+
+          const publicUrl = urlData?.publicUrl;
+          if (!publicUrl) throw new Error('Public URL পাওয়া যায়নি');
+
+          const payload = {
+            upload_date: new Date().toISOString().slice(0, 10),
+            month_name: month,
+            year: year,
+            class_name: cls,
+            file_url: publicUrl,
+            file_name: selectedFile.name,
+            file_size: selectedFile.size,
+            uploaded_by: profile.full_name || 'Admin',
+          };
+
+          const { error: insertErr } = await supabase
+            .from('monthly_workdays')
+            .insert(payload);
+
+          if (insertErr) throw insertErr;
+
+          progressFill.style.width = '100%';
+          progressText.textContent = '✅ সফলভাবে আপলোড হয়েছে';
+
+          toast('✅ PDF আপলোড সফল হয়েছে', 'success');
+
+          setTimeout(() => {
+            closeModal();
+            loadWorkdays();
+          }, 800);
+
+        } catch (err) {
+          console.error(err);
+          toast('❌ ' + (err.message || 'আপলোড ব্যর্থ'), 'error');
+          btn.disabled = false;
+          btn.textContent = '⬆️ আপলোড করুন';
+          progressBox.classList.remove('show');
+          progressFill.style.width = '0%';
+        }
+      };
+    }
+
+    function openPdfView(item) {
+      const classBn = CLASS_LIST_BN[item.class_name] || item.class_name;
+      const monthBn = MONTHS_BN[MONTHS_EN.indexOf(item.month_name)] || item.month_name;
+
+      const modalDiv = document.createElement('div');
+      modalDiv.className = 'modal-bg';
+      modalDiv.innerHTML = `
+        <div class="pdf-modal-inner">
+          <div class="pdf-modal-head">
+            <h3>📄 ${esc(classBn)} · ${esc(monthBn)} ${item.year}</h3>
+            <div class="actions">
+              <a href="${esc(item.file_url)}" target="_blank" download>
+                ⬇️ ডাউনলোড
+              </a>
+              <button id="pdfClose">✕ বন্ধ</button>
+            </div>
+          </div>
+          <div class="pdf-modal-body">
+            <iframe src="${esc(item.file_url)}#toolbar=1&navpanes=0" title="PDF"></iframe>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+      document.getElementById('pdfClose').onclick = () => modalDiv.remove();
+      modalDiv.onclick = (e) => {
+        if (e.target === modalDiv) modalDiv.remove();
+      };
+    }
+
+    async function deleteWorkday(item) {
+      const classBn = CLASS_LIST_BN[item.class_name] || item.class_name;
+      const monthBn = MONTHS_BN[MONTHS_EN.indexOf(item.month_name)] || item.month_name;
+
+      if (!confirm(`"${classBn} · ${monthBn} ${item.year}" PDF মুছবেন?\n\n⚠️ এটা ফেরানো যাবে না!`)) return;
+
+      const { error } = await supabase
+        .from('monthly_workdays')
+        .update({ is_deleted: true })
+        .eq('id', item.id);
+
+      if (error) {
+        toast('❌ ' + error.message, 'error');
+        return;
+      }
+
+      toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+      await loadWorkdays();
+    }
+
+    await loadWorkdays();
+  </script>
+</body>
+</html>

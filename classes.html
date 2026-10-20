@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ক্লাস · School</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'classes.html', 'ক্লাস ব্যবস্থাপনা');
+
+    const content = document.getElementById('content');
+    content.innerHTML = `
+      <h2>🏫 ক্লাস ব্যবস্থাপনা</h2>
+
+      <div class="panel">
+        <h3>➕ নতুন ক্লাস যোগ করুন</h3>
+        <div class="form-grid">
+          <input id="cName" placeholder="ক্লাসের নাম (যেমন: Class 6) *">
+          <input id="cSections" placeholder="সেকশন (কমা দিয়ে: A,B)">
+        </div>
+        <br>
+        <button class="btn btn-primary" id="addBtn">✅ যোগ করুন</button>
+      </div>
+
+      <div class="panel">
+        <h3>📋 ক্লাস তালিকা</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>আইডি</th>
+                <th>ক্লাস</th>
+                <th>সেকশন</th>
+                <th>অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="4" class="empty">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    async function loadClasses() {
+      const { data, error } = await supabase.from('classes').select('*').order('id');
+      const tbody = document.getElementById('tbody');
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="4" class="empty">❌ ${error.message}</td></tr>`;
+        return;
+      }
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty">এখনো কোনো ক্লাস নেই</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td>${c.id}</td>
+          <td><b>${esc(c.class_name)}</b></td>
+          <td>${esc((c.sections || []).join(', ') || 'A')}</td>
+          <td><button class="btn btn-danger btn-sm" data-del="${c.id}">🗑️</button></td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = async () => {
+          if (!confirm('সত্যিই মুছতে চান? এই ক্লাসের সব ছাত্র-তথ্যও মুছে যাবে!')) return;
+          const { error } = await supabase.from('classes').delete().eq('id', b.dataset.del);
+          if (error) { toast('❌ ' + error.message, 'error'); return; }
+          toast('🗑️ মুছে ফেলা হয়েছে', 'success');
+          loadClasses();
+        };
+      });
+    }
+
+    document.getElementById('addBtn').onclick = async () => {
+      const name = document.getElementById('cName').value.trim();
+      if (!name) { toast('ক্লাসের নাম দিন', 'error'); return; }
+
+      const sections = document.getElementById('cSections').value
+        .split(',').map(s => s.trim()).filter(Boolean);
+
+      const { error } = await supabase.from('classes').insert({
+        class_name: name,
+        sections: sections.length ? sections : ['A']
+      });
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+      toast('✅ ক্লাস যোগ হয়েছে', 'success');
+      document.getElementById('cName').value = '';
+      document.getElementById('cSections').value = '';
+      loadClasses();
+    };
+
+    await loadClasses();
+  </script>
+</body>
+</html>

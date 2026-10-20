@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Bill Details · School</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ============================================================
+   স্ক্রিন স্টাইল
+   ============================================================ */
+:root{
+  --bd-primary:#7c3aed;
+  --bd-primary-dark:#6d28d9;
+  --bd-success:#10b981;
+  --bd-danger:#dc2626;
+  --bd-warning:#f59e0b;
+  --bd-blue:#2563eb;
+  --bd-bg:#f1f5f9;
+  --bd-border:#e2e8f0;
+  --bd-text:#0f172a;
+  --bd-gray:#64748b;
+}
+*{box-sizing:border-box}
+
+/* হেডার */
+.bd-header{
+  background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 50%,#5b21b6 100%);
+  padding:22px 28px;border-radius:14px 14px 0 0;color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;
+}
+.bd-header::before{
+  content:'';position:absolute;top:-50%;right:-10%;
+  width:450px;height:450px;
+  background:radial-gradient(circle,rgba(255,255,255,.15),transparent 65%);
+  border-radius:50%;
+}
+.bd-header>*{position:relative;z-index:1}
+.bd-header .tl{display:flex;align-items:center;gap:16px}
+.bd-header .ticon{
+  width:56px;height:56px;background:rgba(255,255,255,.2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:28px;border:1px solid rgba(255,255,255,.3);
+}
+.bd-header h1{margin:0;font-size:22px;font-weight:900;letter-spacing:-.3px}
+.bd-header p{margin:4px 0 0;font-size:13px;opacity:.9;font-weight:500}
+.bd-back{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;
+  font-size:13px;text-decoration:none;display:inline-flex;
+  align-items:center;gap:6px;transition:all .2s;
+}
+.bd-back:hover{background:rgba(255,255,255,.25)}
+
+/* ফিল্টার */
+.bd-body{background:#fff;border-radius:0 0 14px 14px;padding:0;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+.bd-filters{padding:20px 28px;border-bottom:1px solid var(--bd-border)}
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld label{font-size:11px;color:var(--bd-gray);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.fld select,.fld input{
+  padding:11px 13px;border:2px solid var(--bd-border);border-radius:10px;
+  font-size:13.5px;font-family:inherit;font-weight:600;
+  background:#fafbfc;color:var(--bd-text);transition:all .2s;width:100%;
+}
+.fld select:focus,.fld input:focus{
+  outline:none;border-color:var(--bd-primary);background:#fff;
+  box-shadow:0 0 0 4px rgba(124,58,237,.1);
+}
+.bd-btn{
+  padding:12px 26px;border:none;border-radius:10px;
+  font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;gap:7px;transition:all .2s;
+  box-shadow:0 6px 16px rgba(124,58,237,.35);
+}
+.bd-btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff}
+.bd-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(124,58,237,.45)}
+.bd-btn:disabled{opacity:.6;cursor:not-allowed}
+.action-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:14px;flex-wrap:wrap;padding-top:14px;border-top:1px dashed var(--bd-border);
+  margin-top:14px;
+}
+.action-bar .left{display:flex;gap:10px;flex-wrap:wrap}
+.bd-btn-sec{background:#f1f5f9;color:var(--bd-gray);box-shadow:none;border:2px solid var(--bd-border)}
+.bd-btn-sec:hover{background:#e2e8f0}
+.bd-btn-print{background:linear-gradient(135deg,#16a34a,#059669);color:#fff;box-shadow:0 6px 16px rgba(22,163,74,.35)}
+.bd-btn-print:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,163,74,.45)}
+.bd-btn-excel{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;box-shadow:0 6px 16px rgba(8,145,178,.35)}
+.bd-btn-excel:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(8,145,178,.45)}
+.info-text{font-size:12.5px;color:var(--bd-gray);font-weight:600}
+
+/* ============================================================
+   বিল টেবিল (স্ক্রিন)
+   ============================================================ */
+.bill-table-wrap{overflow-x:auto;background:#fff;padding:0 0 20px}
+.bill-table{
+  width:100%;border-collapse:collapse;font-size:11px;
+  min-width:1400px;
+  font-family:'Segoe UI','Noto Sans Bengali',Arial,sans-serif;
+}
+.bill-table thead th{
+  background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff;
+  padding:8px 4px;font-weight:800;font-size:10px;
+  text-align:center;border-right:1px solid rgba(255,255,255,.2);
+  line-height:1.15;
+}
+.bill-table thead th:last-child{border-right:none}
+.bill-table thead th.left{text-align:left;padding-left:8px}
+.bill-table thead th.month-head{min-width:32px}
+.bill-table thead th.fee-head{min-width:80px}
+
+.bill-table tbody td{
+  padding:5px 4px;border-bottom:1px solid var(--bd-border);
+  border-right:1px solid #f1f5f9;
+  text-align:center;vertical-align:middle;
+  font-size:10.5px;line-height:1.2;
+}
+.bill-table tbody td:last-child{border-right:none}
+.bill-table tbody tr:nth-child(even) td{background:#fafbfc}
+.bill-table tbody tr:hover td{background:#f5f3ff}
+
+.bill-table td.serial{font-weight:800;color:#7c3aed;font-size:12px}
+.bill-table td.index-cell{
+  font-family:'Courier New',monospace;font-weight:800;
+  color:#1e40af;font-size:11px;
+}
+.bill-table td.roll-cell{font-weight:700;color:#374151}
+.bill-table td.name-cell{
+  text-align:left;font-weight:800;padding-left:8px;
+  color:#0f172a;font-size:11px;
+}
+.bill-table td.fee-type-cell{
+  text-align:left;font-weight:700;padding-left:6px;
+  color:#6d28d9;font-size:10.5px;
+}
+
+/* মাসিক সেল */
+.month-cell{font-weight:700;font-size:10.5px}
+.month-cell.unpaid{color:#dc2626}
+.month-cell.partial{color:#f59e0b;background:#fef3c7 !important}
+.month-cell.paid{color:#16a34a;background:#f0fdf4 !important}
+.month-cell.empty{color:#cbd5e1}
+.month-cell.one-time{
+  color:#94a3b8;font-style:italic;font-weight:600;
+  background:#f9fafb !important;
+}
+
+.bill-table td.total-cell{
+  font-weight:800;color:#0f172a;background:#eff6ff !important;font-size:11.5px;
+}
+.bill-table td.paid-cell{
+  font-weight:800;color:#16a34a;background:#f0fdf4 !important;font-size:11.5px;
+}
+.bill-table td.due-cell{
+  font-weight:800;color:#dc2626;background:#fef2f2 !important;font-size:11.5px;
+}
+.bill-table td.due-cell.zero{color:#94a3b8}
+
+/* Grand total row */
+.bill-table tfoot td{
+  padding:8px 6px;background:#ede9fe !important;
+  font-weight:900;font-size:11.5px;color:#5b21b6;
+  border-top:3px double #7c3aed;border-bottom:2px solid #7c3aed;
+}
+.bill-table tfoot td.label{
+  text-align:right;padding-right:12px;letter-spacing:.5px;
+}
+
+/* Empty / Loading */
+.bd-empty{padding:60px 20px;text-align:center;color:#94a3b8;font-weight:600}
+.bd-empty .icon{font-size:72px;display:block;margin-bottom:14px;opacity:.4}
+.bd-empty h3{color:#374151;font-size:18px;font-weight:800;margin-bottom:8px}
+.bd-empty p{font-size:14px;line-height:1.6}
+
+.bd-loading{
+  padding:60px 20px;text-align:center;color:#7c3aed;font-weight:700;
+}
+.bd-loading::before{
+  content:'';display:inline-block;width:20px;height:20px;
+  border:3px solid #ede9fe;border-top-color:#7c3aed;
+  border-radius:50%;animation:spin .8s linear infinite;
+  margin-right:10px;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   প্রিন্ট স্টাইল — A4 Landscape
+   ============================================================ */
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+
+  html,body{
+    margin:0 !important;padding:0 !important;background:#fff !important;
+  }
+
+  /* Hide chrome */
+  header.top,aside.sidebar,#toast,.no-print,
+  .sidebar-overlay,.hamburger-btn,
+  .bd-header,.bd-filters,.action-bar{
+    display:none !important;
+  }
+
+  main.content,main{margin:0 !important;padding:0 !important}
+  .bd-body{padding:0 !important;box-shadow:none !important;border-radius:0 !important}
+  .bill-table-wrap{padding:0 !important;overflow:visible !important}
+
+  /* Print header */
+  .print-header{display:block !important}
+
+  .bill-table{
+    min-width:0 !important;width:100% !important;
+    font-size:8pt !important;
+  }
+  .bill-table thead th{
+    background:#7c3aed !important;color:#fff !important;
+    padding:4px 2px !important;font-size:7pt !important;
+    border:1px solid #fff !important;
+  }
+  .bill-table tbody td{
+    padding:3px 2px !important;font-size:7pt !important;
+    border:1px solid #000 !important;
+  }
+  .bill-table tbody td.name-cell,
+  .bill-table tbody td.fee-type-cell{font-size:7.5pt !important}
+
+  .bill-table td.total-cell,
+  .bill-table td.paid-cell,
+  .bill-table td.due-cell{font-size:8pt !important}
+
+  .bill-table tfoot td{
+    padding:5px 3px !important;font-size:8pt !important;
+    border:1px solid #000 !important;
+  }
+
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  .bill-table tbody tr{page-break-inside:avoid}
+}
+
+/* Header for print (hidden on screen) */
+.print-header{
+  display:none;text-align:center;margin-bottom:8px;
+  padding-bottom:6px;border-bottom:2px solid #1e1b4b;
+}
+.print-header h1{
+  font-size:16pt;font-weight:900;color:#1e1b4b;
+  margin:0 0 3px;text-transform:uppercase;letter-spacing:.5px;
+}
+.print-header p{font-size:9pt;color:#374151;margin:1px 0;font-weight:600}
+.print-header .meta{
+  display:flex;justify-content:space-between;
+  font-size:8.5pt;margin-top:6px;color:#000;
+}
+
+/* Mobile */
+@media (max-width:900px){
+  .bd-header{padding:16px 18px}
+  .bd-header h1{font-size:17px}
+  .bd-header .ticon{width:46px;height:46px;font-size:22px}
+  .bd-filters{padding:16px}
+  .filter-grid{grid-template-columns:1fr 1fr}
+  .bd-btn{flex:1;justify-content:center}
+}
+@media (max-width:600px){
+  .filter-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+import { requireLogin, renderLayout, esc, toast, getSchoolProfile } from './js/helpers.js';
+
+const profile = await requireLogin(['admin','teacher']);
+if (!profile) throw new Error('no auth');
+renderLayout(profile, 'bill-details.html', 'Student Bill Details');
+
+const content = document.getElementById('content');
+const CURRENT_YEAR = new Date().getFullYear();
+const school = await getSchoolProfile();
+
+/* ============================================================
+   MONTHS
+   ============================================================ */
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+let allClasses = [];
+let allFeeTypes = [];
+let lastReportData = null;
+
+/* ============================================================
+   UI তৈরি
+   ============================================================ */
+content.innerHTML = `
+<div class="bd-header">
+  <div class="tl">
+    <div class="ticon">📋</div>
+    <div>
+      <h1>Student Bill Details</h1>
+      <p>ছাত্রদের সম্পূর্ণ ফি হিসাব · মাসিক ও অন্যান্য বিল</p>
+    </div>
+  </div>
+  <a class="bd-back" href="dashboard.html">← Back</a>
+</div>
+
+<div class="bd-body">
+  <div class="bd-filters no-print">
+    <div class="filter-grid">
+      <div class="fld">
+        <label>Session Year</label>
+        <select id="f_session">
+          ${[CURRENT_YEAR-2, CURRENT_YEAR-1, CURRENT_YEAR, CURRENT_YEAR+1].map(y =>
+            `<option value="${y}" ${y===CURRENT_YEAR?'selected':''}>${y}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div class="fld">
+        <label>Class</label>
+        <select id="f_class"><option value="">-- সিলেক্ট করুন --</option></select>
+      </div>
+      <div class="fld">
+        <label>Section</label>
+        <select id="f_section"><option value="">All Sections</option></select>
+      </div>
+      <div class="fld">
+        <label>Group</label>
+        <select id="f_group">
+          <option value="">All Groups</option>
+          <option>N/A</option>
+          <option>Science</option>
+          <option>Business Studies</option>
+          <option>Humanities</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="left">
+        <button class="bd-btn bd-btn-primary" id="genBtn">
+          <span>🔍</span><span>Generate Bill</span>
+        </button>
+        <button class="bd-btn bd-btn-sec" id="resetBtn">
+          <span>🔄</span><span>Reset</span>
+        </button>
+      </div>
+      <div class="left">
+        <button class="bd-btn bd-btn-print" id="printBtn" disabled>
+          <span>🖨️</span><span>Print (A4)</span>
+        </button>
+        <button class="bd-btn bd-btn-excel" id="excelBtn" disabled>
+          <span>📥</span><span>Excel</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportArea" class="bill-table-wrap">
+    <div class="bd-empty">
+      <span class="icon">📋</span>
+      <h3>Bill Details তৈরি করুন</h3>
+      <p>উপরে Session, Class সিলেক্ট করে <b>Generate Bill</b> ক্লিক করুন</p>
+    </div>
+  </div>
+</div>
+`;
+
+/* ============================================================
+   লোড বেস ডেটা
+   ============================================================ */
+async function loadBase() {
+  try {
+    const [c, t] = await Promise.all([
+      supabase.from('classes').select('*').order('sort_order').order('id'),
+      supabase.from('fee_types').select('*')
+        .eq('account_type', 'income')
+        .eq('is_active', true)
+        .order('account_no'),
+    ]);
+    allClasses = c.data || [];
+    allFeeTypes = t.data || [];
+
+    document.getElementById('f_class').innerHTML =
+      '<option value="">-- সিলেক্ট করুন --</option>' +
+      allClasses.map(x => `<option value="${x.id}">${esc(x.class_name)}</option>`).join('');
+  } catch (err) {
+    console.error('Load base error:', err);
+    toast('⚠️ Class/Fee Type লোড হয়নি', 'error');
+  }
+}
+await loadBase();
+
+/* Class → Section */
+document.getElementById('f_class').onchange = () => {
+  const cls = allClasses.find(c => String(c.id) === document.getElementById('f_class').value);
+  const sections = cls?.sections || [];
+  document.getElementById('f_section').innerHTML =
+    '<option value="">All Sections</option>' +
+    sections.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+};
+
+/* ============================================================
+   Generate Bill
+   ============================================================ */
+document.getElementById('genBtn').onclick = async () => {
+  const session = +document.getElementById('f_session').value;
+  const classId = document.getElementById('f_class').value;
+  const section = document.getElementById('f_section').value;
+  const group = document.getElementById('f_group').value;
+
+  if (!classId) { toast('❌ Class সিলেক্ট করুন', 'error'); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>লোড হচ্ছে...</span>';
+
+  const area = document.getElementById('reportArea');
+  area.innerHTML = '<div class="bd-loading">ডেটা লোড হচ্ছে...</div>';
+
+  try {
+    /* 1. ছাত্র লোড */
+    let q = supabase.from('students').select('*')
+      .or('is_deleted.is.null,is_deleted.eq.false')
+      .eq('class_id', classId);
+    if (section) q = q.eq('section', section);
+    if (group) q = q.eq('group_name', group);
+    q = q.order('roll');
+
+    const { data: students, error: e1 } = await q;
+    if (e1) throw e1;
+    if (!students || !students.length) {
+      throw new Error('এই ফিল্টারে কোনো ছাত্র পাওয়া যায়নি');
+    }
+
+    /* 2. Fee Structure লোড */
+    const { data: structures, error: e2 } = await supabase
+      .from('fee_structure').select('*')
+      .eq('session_year', session)
+      .eq('class_id', classId);
+    if (e2) throw e2;
+
+    /* 3. Fee Payments লোড */
+    const idxs = students.map(s => s.student_index).filter(Boolean);
+    let payments = [];
+    if (idxs.length) {
+      const { data: pData, error: e3 } = await supabase
+        .from('fee_payments').select('*')
+        .eq('session_year', session)
+        .eq('class_id', classId)
+        .in('student_index', idxs);
+      if (e3) throw e3;
+      payments = pData || [];
+    }
+
+    /* 4. Class Name */
+    const cls = allClasses.find(c => c.id == classId);
+    const className = cls?.class_name || '';
+
+    /* 5. প্রতি ছাত্রের জন্য rows তৈরি */
+    const allRows = [];
+    const structureList = structures || [];
+    const paymentList = payments || [];
+
+    students.forEach(student => {
+      const sIdx = student.student_index;
+      const myPayments = paymentList.filter(p => p.student_index === sIdx);
+      const myStructures = structureList.filter(s => s.class_id == student.class_id);
+
+      /* ==== Tracked fee types (structure থেকে) ==== */
+      const handledKeys = new Set();
+      myStructures.forEach(structure => {
+        const ft = allFeeTypes.find(f => f.id === structure.fee_type_id);
+        if (!ft) return;
+
+        const isMonthly = !!ft.is_monthly;
+        const expected = +structure.amount || 0;
+
+        if (isMonthly) {
+          handledKeys.add(ft.id + '|monthly');
+          const monthly = {};
+          MONTHS.forEach(m => monthly[m] = { expected, paid: 0 });
+
+          /* এই fee_type এর সব payments */
+          myPayments.filter(p => p.fee_type_id === ft.id).forEach(p => {
+            const monthName = (p.fee_month || '').split(' ')[0];
+            if (monthly[monthName]) {
+              monthly[monthName].paid += +p.paid_amount || 0;
+            }
+          });
+
+          const totalExpected = MONTHS.reduce((s, m) => s + monthly[m].expected, 0);
+          const totalPaid = MONTHS.reduce((s, m) => s + monthly[m].paid, 0);
+
+          allRows.push({
+            student,
+            feeType: ft,
+            isMonthly: true,
+            monthly,
+            totalExpected,
+            totalPaid,
+            totalDue: Math.max(0, totalExpected - totalPaid),
+          });
+        } else {
+          handledKeys.add(ft.id + '|onetime');
+          const myPays = myPayments.filter(p => p.fee_type_id === ft.id);
+          const paid = myPays.reduce((s, p) => s + (+p.paid_amount || 0), 0);
+
+          allRows.push({
+            student,
+            feeType: ft,
+            isMonthly: false,
+            expected,
+            paid,
+            due: Math.max(0, expected - paid),
+            totalExpected: expected,
+            totalPaid: paid,
+            totalDue: Math.max(0, expected - paid),
+          });
+        }
+      });
+
+      /* ==== Orphan payments (structure নেই কিন্তু payment আছে) ==== */
+      const orphanGroups = {};
+      myPayments.forEach(p => {
+        const key = p.fee_type_id + '|monthly';
+        const keyOne = p.fee_type_id + '|onetime';
+        if (handledKeys.has(key) || handledKeys.has(keyOne)) return;
+        const ft = allFeeTypes.find(f => f.id === p.fee_type_id);
+        if (!ft) return;
+
+        if (!orphanGroups[p.fee_type_id]) {
+          orphanGroups[p.fee_type_id] = { ft, pays: [], isMonthly: !!ft.is_monthly };
+        }
+        orphanGroups[p.fee_type_id].pays.push(p);
+      });
+
+      Object.values(orphanGroups).forEach(({ ft, pays, isMonthly }) => {
+        if (isMonthly) {
+          const monthly = {};
+          MONTHS.forEach(m => monthly[m] = { expected: 0, paid: 0 });
+          pays.forEach(p => {
+            const monthName = (p.fee_month || '').split(' ')[0];
+            if (monthly[monthName]) {
+              monthly[monthName].paid += +p.paid_amount || 0;
+              monthly[monthName].expected = Math.max(monthly[monthName].expected, +p.amount || 0);
+            }
+          });
+          const totalExpected = MONTHS.reduce((s, m) => s + monthly[m].expected, 0);
+          const totalPaid = MONTHS.reduce((s, m) => s + monthly[m].paid, 0);
+          allRows.push({
+            student, feeType: ft, isMonthly: true, monthly,
+            totalExpected, totalPaid, totalDue: Math.max(0, totalExpected - totalPaid),
+          });
+        } else {
+          const expected = pays.reduce((s, p) => s + (+p.amount || 0), 0);
+          const paid = pays.reduce((s, p) => s + (+p.paid_amount || 0), 0);
+          allRows.push({
+            student, feeType: ft, isMonthly: false,
+            expected, paid, due: Math.max(0, expected - paid),
+            totalExpected: expected, totalPaid: paid, totalDue: Math.max(0, expected - paid),
+          });
+        }
+      });
+    });
+
+    if (!allRows.length) throw new Error('কোনো ফি ডেটা পাওয়া যায়নি — Fee Structure সেট করুন');
+
+    /* 6. Store + Render */
+    lastReportData = {
+      session, className, section, group,
+      students, allRows, payments,
+    };
+
+    renderBill(lastReportData);
+
+    btn.disabled = false;
+    btn.innerHTML = '<span>🔍</span><span>Generate Bill</span>';
+    document.getElementById('printBtn').disabled = false;
+    document.getElementById('excelBtn').disabled = false;
+
+    toast(`✅ ${students.length} জন ছাত্র · ${allRows.length}টি বিল রো`, 'success');
+
+  } catch (err) {
+    console.error('Generate error:', err);
+    area.innerHTML = `
+      <div class="bd-empty">
+        <span class="icon">❌</span>
+        <h3>সমস্যা হয়েছে</h3>
+        <p>${esc(err.message)}</p>
+      </div>
+    `;
+    toast('❌ ' + err.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<span>🔍</span><span>Generate Bill</span>';
+  }
+};
+
+/* ============================================================
+   RENDER BILL TABLE
+   ============================================================ */
+function renderBill(data) {
+  const { session, className, section, group, students, allRows } = data;
+
+  /* Group rows by student */
+  const byStudent = {};
+  allRows.forEach(row => {
+    const key = row.student.id;
+    if (!byStudent[key]) {
+      byStudent[key] = { student: row.student, rows: [] };
+    }
+    byStudent[key].rows.push(row);
+  });
+
+  /* Sort students by roll */
+  const sorted = Object.values(byStudent).sort((a, b) =>
+    (a.student.roll || 0) - (b.student.roll || 0)
+  );
+
+  /* Sort fee types inside each student (monthly first, then by fee_type id) */
+  sorted.forEach(g => {
+    g.rows.sort((a, b) => {
+      if (a.isMonthly !== b.isMonthly) return a.isMonthly ? -1 : 1;
+      return (a.feeType.id || 0) - (b.feeType.id || 0);
+    });
+  });
+
+  /* Grand totals */
+  const grand = {
+    expected: sorted.reduce((s, g) => s + g.rows.reduce((s2, r) => s2 + (r.totalExpected || 0), 0), 0),
+    paid: sorted.reduce((s, g) => s + g.rows.reduce((s2, r) => s2 + (r.totalPaid || 0), 0), 0),
+    due: sorted.reduce((s, g) => s + g.rows.reduce((s2, r) => s2 + (r.totalDue || 0), 0), 0),
+  };
+
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  /* Render */
+  let html = `
+    <div class="print-header">
+      <h1>${esc(school.name).toUpperCase()}</h1>
+      <p>${esc(school.address)}</p>
+      ${school.emis ? `<p>EMIS: ${esc(school.emis)}</p>` : ''}
+      <p style="margin-top:6px;font-weight:800;color:#4c1d95">STUDENT BILL DETAILS</p>
+      <div class="meta">
+        <span>Session: <b>${session}</b></span>
+        <span>Class: <b>${esc(className)}</b>${section ? ' · Sec: ' + esc(section) : ''}${group ? ' · Group: ' + esc(group) : ''}</span>
+        <span>Printed: <b>${today}</b></span>
+      </div>
+    </div>
+
+    <table class="bill-table">
+      <thead>
+        <tr>
+          <th style="width:28px">SL</th>
+          <th style="width:65px">Index</th>
+          <th style="width:32px">Roll</th>
+          <th class="left" style="min-width:130px">Student Name</th>
+          <th class="fee-head">Fee Type</th>
+          ${MONTHS_SHORT.map(m => `<th class="month-head">${m}</th>`).join('')}
+          <th style="width:55px">Total</th>
+          <th style="width:55px">Paid</th>
+          <th style="width:55px">Due</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  let serial = 0;
+  sorted.forEach(group => {
+    serial++;
+    const rowCount = group.rows.length;
+
+    group.rows.forEach((row, i) => {
+      html += '<tr>';
+
+      if (i === 0) {
+        html += `<td rowspan="${rowCount}" class="serial">${String(serial).padStart(2,'0')}</td>`;
+        html += `<td rowspan="${rowCount}" class="index-cell">${esc(group.student.student_index || '-')}</td>`;
+        html += `<td rowspan="${rowCount}" class="roll-cell">${esc(group.student.roll ?? '-')}</td>`;
+        html += `<td rowspan="${rowCount}" class="name-cell">${esc(group.student.name)}</td>`;
+      }
+
+      html += `<td class="fee-type-cell">${esc(row.feeType.type_name)}</td>`;
+
+      /* Monthly cells */
+      if (row.isMonthly) {
+        MONTHS.forEach(m => {
+          const d = row.monthly[m];
+          let cls = 'empty';
+          let txt = '-';
+
+          if (d.expected > 0 && d.paid >= d.expected) {
+            cls = 'paid';
+            txt = `(${d.paid})`;
+          } else if (d.paid > 0 && d.expected > 0) {
+            cls = 'partial';
+            txt = `${d.paid} (${d.expected})`;
+          } else if (d.expected > 0 && d.paid === 0) {
+            cls = 'unpaid';
+            txt = d.expected;
+          } else if (d.expected === 0 && d.paid > 0) {
+            cls = 'paid';
+            txt = `(${d.paid})`;
+          }
+
+          html += `<td class="month-cell ${cls}">${txt}</td>`;
+        });
+      } else {
+        html += `<td colspan="12" class="month-cell one-time">— one-time fee —</td>`;
+      }
+
+      /* Totals */
+      const totalDueCls = (row.totalDue || 0) === 0 ? 'zero' : '';
+      html += `<td class="total-cell">${(row.totalExpected || 0).toLocaleString()}</td>`;
+      html += `<td class="paid-cell">${(row.totalPaid || 0).toLocaleString()}</td>`;
+      html += `<td class="due-cell ${totalDueCls}">${(row.totalDue || 0).toLocaleString()}</td>`;
+
+      html += '</tr>';
+    });
+  });
+
+  html += `
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="17" class="label">সর্বমোট (Grand Total) :</td>
+          <td>${grand.expected.toLocaleString()}</td>
+          <td>${grand.paid.toLocaleString()}</td>
+          <td>${grand.due.toLocaleString()}</td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+
+  document.getElementById('reportArea').innerHTML = html;
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+document.getElementById('resetBtn').onclick = () => {
+  document.getElementById('f_session').value = CURRENT_YEAR;
+  document.getElementById('f_class').value = '';
+  document.getElementById('f_section').innerHTML = '<option value="">All Sections</option>';
+  document.getElementById('f_group').value = '';
+  document.getElementById('reportArea').innerHTML = `
+    <div class="bd-empty">
+      <span class="icon">📋</span>
+      <h3>Bill Details তৈরি করুন</h3>
+      <p>উপরে Session, Class সিলেক্ট করে <b>Generate Bill</b> ক্লিক করুন</p>
+    </div>
+  `;
+  document.getElementById('printBtn').disabled = true;
+  document.getElementById('excelBtn').disabled = true;
+  lastReportData = null;
+  toast('🔄 রিসেট হয়েছে', 'success');
+};
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+document.getElementById('printBtn').onclick = () => {
+  if (!lastReportData) { toast('❌ আগে Generate করুন', 'error'); return; }
+  window.print();
+};
+
+/* ============================================================
+   EXCEL EXPORT
+   ============================================================ */
+document.getElementById('excelBtn').onclick = () => {
+  if (!lastReportData) { toast('❌ আগে Generate করুন', 'error'); return; }
+
+  const { session, className, section, group, students, allRows } = lastReportData;
+
+  /* Row-wise export */
+  const rows = [
+    [school.name.toUpperCase()],
+    [school.address],
+    ['Student Bill Details'],
+    ['Session:', session, 'Class:', className, 'Section:', section || 'All', 'Group:', group || 'All'],
+    ['Printed:', new Date().toLocaleString('en-GB')],
+    [],
+    ['SL', 'Index', 'Roll', 'Student Name', 'Fee Type',
+      ...MONTHS, 'Total Expected', 'Total Paid', 'Total Due'],
+  ];
+
+  let serial = 0;
+  const byStudent = {};
+  allRows.forEach(r => {
+    if (!byStudent[r.student.id]) byStudent[r.student.id] = { student: r.student, rows: [] };
+    byStudent[r.student.id].rows.push(r);
+  });
+
+  const sorted = Object.values(byStudent).sort((a, b) =>
+    (a.student.roll || 0) - (b.student.roll || 0)
+  );
+
+  sorted.forEach(g => {
+    serial++;
+    g.rows.forEach(row => {
+      const monthlyVals = row.isMonthly
+        ? MONTHS.map(m => {
+            const d = row.monthly[m];
+            if (d.expected > 0 && d.paid >= d.expected) return `(${d.paid})`;
+            if (d.paid > 0) return `${d.paid} (${d.expected})`;
+            if (d.expected > 0) return d.expected;
+            return '';
+          })
+        : Array(12).fill('—');
+
+      rows.push([
+        serial,
+        g.student.student_index || '',
+        g.student.roll || '',
+        g.student.name || '',
+        row.feeType.type_name || '',
+        ...monthlyVals,
+        row.totalExpected || 0,
+        row.totalPaid || 0,
+        row.totalDue || 0,
+      ]);
+    });
+  });
+
+  /* Grand total */
+  const grand = {
+    expected: allRows.reduce((s, r) => s + (r.totalExpected || 0), 0),
+    paid: allRows.reduce((s, r) => s + (r.totalPaid || 0), 0),
+    due: allRows.reduce((s, r) => s + (r.totalDue || 0), 0),
+  };
+  rows.push([]);
+  rows.push(['', '', '', '', 'GRAND TOTAL', ...Array(12).fill(''), grand.expected, grand.paid, grand.due]);
+
+  /* Excel বানাও */
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [
+    { wch: 5 }, { wch: 12 }, { wch: 6 }, { wch: 22 }, { wch: 18 },
+    ...MONTHS.map(() => ({ wch: 8 })),
+    { wch: 12 }, { wch: 12 }, { wch: 12 },
+  ];
+  XLSX.utils.book_append_sheet(wb, ws, 'Bill Details');
+
+  const now = new Date();
+  const fileName = `Bill_Details_${className}_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+
+  toast('✅ Excel ডাউনলোড হয়েছে', 'success');
+};
+</script>
+</body>
+</html>

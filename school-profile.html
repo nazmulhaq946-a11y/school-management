@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>School Profile · School</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .sp-header {
+      background: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #c0392b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .sp-header .left { display: flex; align-items: center; gap: 14px; }
+    .sp-header .icon {
+      font-size: 34px; width: 52px; height: 52px;
+      background: #c0392b; color: white; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sp-header h1 { color: #c0392b; font-size: 22px; margin: 0; font-weight: 700; }
+    .sp-header p { color: #7f1d1d; margin: 2px 0 0 0; font-size: 13px; font-weight: 600; }
+    .sp-back {
+      background: #1f2937; color: white; border: none;
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px;
+    }
+    .sp-back .arrow {
+      background: #22c55e; border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .sp-body {
+      background: white; padding: 24px 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .sp-form { max-width: 750px; margin: 0 auto; }
+    .sp-row {
+      display: grid; grid-template-columns: 200px 1fr;
+      gap: 12px; align-items: center; margin-bottom: 10px;
+    }
+    .sp-row.textarea { align-items: start; }
+    .sp-row label {
+      color: #4b5563; font-weight: 600;
+      font-size: 13.5px; text-align: left; padding-top: 8px;
+    }
+    .sp-row input, .sp-row select, .sp-row textarea {
+      padding: 8px 12px; border: 1px solid #d1d5db;
+      border-radius: 3px; font-size: 13.5px;
+      width: 100%; background: white; font-family: inherit;
+    }
+    .sp-row textarea { min-height: 60px; resize: vertical; }
+    .sp-row input:focus, .sp-row select:focus, .sp-row textarea:focus {
+      outline: none; border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    .img-row {
+      display: grid; grid-template-columns: 200px 1fr;
+      gap: 12px; align-items: start; margin-bottom: 14px;
+    }
+    .img-row label {
+      color: #4b5563; font-weight: 600;
+      font-size: 13.5px; padding-top: 8px;
+    }
+    .img-row .hint {
+      color: #c0392b; font-size: 11.5px;
+      font-weight: 600; margin-top: 6px; font-style: italic;
+    }
+    .img-row .file-wrap {
+      display: flex; align-items: center;
+      gap: 14px; flex-wrap: wrap;
+    }
+    .img-row .file-wrap input[type="file"] {
+      font-size: 12px; padding: 6px;
+      border: 1px solid #d1d5db; border-radius: 3px;
+      background: #f9fafb; max-width: 100%;
+    }
+    .img-row .prev-box {
+      border: 1px solid #e5e7eb; border-radius: 4px;
+      padding: 4px; background: #fafafa;
+      min-width: 80px; min-height: 40px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-row .prev-box img {
+      max-width: 220px; max-height: 120px;
+      object-fit: contain; display: block;
+    }
+
+    .sp-save-bar {
+      display: flex; justify-content: flex-start;
+      padding: 14px 0 6px 0;
+      border-top: 1px dashed #d1d5db; margin-top: 10px;
+    }
+    .sp-save-btn {
+      background: #a8231e; color: white; border: none;
+      padding: 12px 42px; border-radius: 3px;
+      font-weight: 700; font-size: 15px; cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .sp-save-btn:hover { background: #8b1e1a; }
+    .sp-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .sp-preview {
+      background: white; border-radius: 0 0 10px 10px;
+      padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+    .sp-preview h3 {
+      color: #c0392b; font-size: 15px;
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 2px solid #c0392b;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .header-preview {
+      background: white; border: 1px solid #e5e7eb;
+      border-radius: 6px; padding: 16px 24px;
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 16px; align-items: center;
+    }
+    .header-preview .logo {
+      width: 80px; height: 80px;
+      border: 2px solid #1e3a8a; border-radius: 50%;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; overflow: hidden; flex-shrink: 0;
+    }
+    .header-preview .logo img { width: 100%; height: 100%; object-fit: cover; }
+    .header-preview .title h2 {
+      color: #000; font-size: 24px; font-weight: 800;
+      letter-spacing: 0.5px; margin-bottom: 2px;
+      font-family: 'Times New Roman', serif;
+    }
+    .header-preview .title p { color: #1f2937; font-size: 14px; }
+    .header-preview .right { text-align: right; font-size: 13px; color: #1f2937; }
+    .header-preview .right .emis { font-weight: 700; font-size: 15px; }
+
+    .info-banner {
+      background: #d1fae5; border-left: 4px solid #16a34a;
+      padding: 12px 16px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 13px; color: #065f46;
+    }
+    .info-banner.warn { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
+
+    @media (max-width: 900px) {
+      .sp-row, .img-row { grid-template-columns: 1fr; }
+      .sp-row label, .img-row label { padding-top: 0; }
+      .header-preview { grid-template-columns: 60px 1fr; }
+      .header-preview .right { grid-column: 1 / -1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { requireLogin, renderLayout, esc, toast, clearSchoolCache, getSchoolProfile } from './js/helpers.js';
+
+    const profile = await requireLogin(['admin']);
+    if (!profile) throw new Error('no auth');
+    renderLayout(profile, 'school-profile.html', 'School Profile');
+
+    const content = document.getElementById('content');
+
+    /* ============ Cache Clear Button ============ */
+    content.innerHTML = `
+      <div class="sp-header">
+        <div class="left">
+          <div class="icon">🏫</div>
+          <div>
+            <h1>School Profile</h1>
+            <p>Following is your Platform's details</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="sp-back" id="clearCacheBtn" style="background:#f59e0b">
+            🔄 Cache Clear
+          </button>
+          <button class="sp-back" onclick="window.location.href='dashboard.html'">
+            Back <span class="arrow">←</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sp-body">
+        <div class="info-banner" id="infoBanner">
+          ✅ স্কুলের তথ্য পরিবর্তন করে <b>Save</b> চাপলে সব পেজে <b>সাথে সাথে</b> আপডেট হবে
+        </div>
+        <div class="sp-form" id="formArea">
+          <div style="text-align:center;padding:40px;color:#9ca3af">লোড হচ্ছে...</div>
+        </div>
+      </div>
+
+      <div class="sp-preview" id="previewArea" style="display:none">
+        <h3>🔍 লাইভ প্রিভিউ (রিপোর্ট হেডারে যা দেখাবে)</h3>
+        <div id="previewBox"></div>
+      </div>
+    `;
+
+    /* ============ Cache Clear Handler ============ */
+    document.getElementById('clearCacheBtn').onclick = () => {
+      clearSchoolCache();
+      toast('✅ Cache clear হয়েছে — সব পেজে refresh হবে', 'success');
+      setTimeout(() => location.reload(), 800);
+    };
+
+    /* ============ Image Compress ============ */
+    function compressImage(file, maxSize = 800, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height;
+            if (w > maxSize || h > maxSize) {
+              if (w > h) { h = h * maxSize / w; w = maxSize; }
+              else { w = w * maxSize / h; h = maxSize; }
+            }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ============ State ============ */
+    let currentData = {};
+    let logoB64 = '';
+    let watermarkB64 = '';
+    let headerB64 = '';
+    let bannerB64 = '';
+
+    /* ============ Load Settings ============ */
+    async function loadSettings() {
+      const { data, error } = await supabase
+        .from('school_settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        document.getElementById('formArea').innerHTML =
+          `<div class="empty">❌ ${esc(error.message)}</div>`;
+        return;
+      }
+
+      currentData = data || {};
+      logoB64 = data?.school_logo || '';
+      watermarkB64 = data?.watermark_logo || '';
+      headerB64 = data?.header_image || '';
+      bannerB64 = data?.banner_image || '';
+
+      renderForm();
+      renderPreview();
+    }
+
+    /* ============ Render Form ============ */
+    function renderForm() {
+      const d = currentData;
+      document.getElementById('formArea').innerHTML = `
+        <div class="sp-row">
+          <label>Institute Name :</label>
+          <input id="f_iname" value="${esc(d.institute_name || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Institute Name (In Bangla) :</label>
+          <input id="f_iname_bn" value="${esc(d.institute_name_bangla || '')}">
+        </div>
+        <div class="sp-row">
+          <label>EIN No :</label>
+          <input id="f_ein" value="${esc(d.ein_no || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Institute Name for MME :</label>
+          <input id="f_mme" value="${esc(d.mme_name || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Institute Type :</label>
+          <input id="f_type" value="${esc(d.institute_type || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Institute BMS Designation :</label>
+          <input id="f_bms" value="${esc(d.bms_designation || '')}">
+        </div>
+
+        <div class="sp-row textarea">
+          <label>Address :</label>
+          <textarea id="f_addr">${esc(d.address || '')}</textarea>
+        </div>
+        <div class="sp-row textarea">
+          <label>Address (In Bangla) :</label>
+          <textarea id="f_addr_bn">${esc(d.address_bangla || '')}</textarea>
+        </div>
+
+        <div class="sp-row">
+          <label>Contact :</label>
+          <input id="f_contact" value="${esc(d.contact || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Contact (In Bangla) :</label>
+          <input id="f_contact_bn" value="${esc(d.contact_bangla || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Website (If Any) :</label>
+          <input id="f_web" value="${esc(d.website || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Facebook URL :</label>
+          <input id="f_fb" value="${esc(d.facebook_url || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Sub Domain (If Any) :</label>
+          <input id="f_sub" value="${esc(d.sub_domain || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Principal Name :</label>
+          <input id="f_principal" value="${esc(d.principal_name || '')}">
+        </div>
+        <div class="sp-row">
+          <label>Web Template :</label>
+          <select id="f_tpl">
+            <option value="--Select--" ${d.web_template === '--Select--' ? 'selected' : ''}>--Select--</option>
+            <option value="Default" ${d.web_template === 'Default' ? 'selected' : ''}>Default</option>
+            <option value="Modern" ${d.web_template === 'Modern' ? 'selected' : ''}>Modern</option>
+            <option value="Classic" ${d.web_template === 'Classic' ? 'selected' : ''}>Classic</option>
+          </select>
+        </div>
+        <div class="sp-row">
+          <label>SEO Meta Tag :</label>
+          <input id="f_seo" value="${esc(d.seo_meta || '')}" placeholder="SCHOOL">
+        </div>
+
+        <div class="img-row">
+          <label>School Logo :</label>
+          <div>
+            <div class="file-wrap">
+              <input type="file" id="f_logo" accept="image/*">
+              <div class="prev-box" id="prev_logo"></div>
+            </div>
+            <div class="hint">(Only allowed jpg or gif)</div>
+          </div>
+        </div>
+
+        <div class="img-row">
+          <label>Watermark School Logo :</label>
+          <div>
+            <div class="file-wrap">
+              <input type="file" id="f_watermark" accept="image/*">
+              <div class="prev-box" id="prev_watermark"></div>
+            </div>
+            <div class="hint">(Only allowed jpg or gif)</div>
+          </div>
+        </div>
+
+        <div class="img-row">
+          <label>Report Header Image (1000x100) :</label>
+          <div>
+            <div class="file-wrap">
+              <input type="file" id="f_header" accept="image/*">
+              <div class="prev-box" id="prev_header"></div>
+            </div>
+            <div class="hint">(Only allowed jpg or gif)</div>
+          </div>
+        </div>
+
+        <div class="img-row">
+          <label>Website Banner Image (1400x800) :</label>
+          <div>
+            <div class="file-wrap">
+              <input type="file" id="f_banner" accept="image/*">
+              <div class="prev-box" id="prev_banner"></div>
+            </div>
+            <div class="hint">(Only allowed jpg or gif)</div>
+          </div>
+        </div>
+
+        <div class="sp-save-bar">
+          <button class="sp-save-btn" id="saveBtn">💾 Save</button>
+        </div>
+      `;
+
+      updatePreviews();
+
+      document.getElementById('f_logo').onchange = async () => {
+        const file = document.getElementById('f_logo').files[0];
+        if (!file) return;
+        logoB64 = await compressImage(file, 400, 0.9);
+        updatePreviews();
+      };
+      document.getElementById('f_watermark').onchange = async () => {
+        const file = document.getElementById('f_watermark').files[0];
+        if (!file) return;
+        watermarkB64 = await compressImage(file, 400, 0.85);
+        updatePreviews();
+      };
+      document.getElementById('f_header').onchange = async () => {
+        const file = document.getElementById('f_header').files[0];
+        if (!file) return;
+        headerB64 = await compressImage(file, 1200, 0.85);
+        updatePreviews();
+      };
+      document.getElementById('f_banner').onchange = async () => {
+        const file = document.getElementById('f_banner').files[0];
+        if (!file) return;
+        bannerB64 = await compressImage(file, 1400, 0.8);
+        updatePreviews();
+      };
+
+      document.getElementById('saveBtn').onclick = saveSettings;
+    }
+
+    function updatePreviews() {
+      const box = (id, b64) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = b64
+          ? `<img src="${b64}" alt="preview">`
+          : `<span style="color:#9ca3af;font-size:11px">no image</span>`;
+      };
+      box('prev_logo', logoB64);
+      box('prev_watermark', watermarkB64);
+      box('prev_header', headerB64);
+      box('prev_banner', bannerB64);
+      renderPreview();
+    }
+
+    /* ============ Save Settings ============ */
+    async function saveSettings() {
+      const payload = {
+        institute_name: document.getElementById('f_iname').value.trim(),
+        institute_name_bangla: document.getElementById('f_iname_bn').value.trim(),
+        ein_no: document.getElementById('f_ein').value.trim(),
+        mme_name: document.getElementById('f_mme').value.trim(),
+        institute_type: document.getElementById('f_type').value.trim(),
+        bms_designation: document.getElementById('f_bms').value.trim(),
+        address: document.getElementById('f_addr').value.trim(),
+        address_bangla: document.getElementById('f_addr_bn').value.trim(),
+        contact: document.getElementById('f_contact').value.trim(),
+        contact_bangla: document.getElementById('f_contact_bn').value.trim(),
+        website: document.getElementById('f_web').value.trim(),
+        facebook_url: document.getElementById('f_fb').value.trim(),
+        sub_domain: document.getElementById('f_sub').value.trim(),
+        principal_name: document.getElementById('f_principal').value.trim(),
+        web_template: document.getElementById('f_tpl').value,
+        seo_meta: document.getElementById('f_seo').value.trim(),
+        school_logo: logoB64 || null,
+        watermark_logo: watermarkB64 || null,
+        header_image: headerB64 || null,
+        banner_image: bannerB64 || null,
+        updated_at: new Date().toISOString()
+      };
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true; btn.textContent = '⏳ সেভ হচ্ছে...';
+
+      const { error } = await supabase
+        .from('school_settings')
+        .upsert({ id: 1, ...payload }, { onConflict: 'id' });
+
+      btn.disabled = false; btn.textContent = '💾 Save';
+
+      if (error) { toast('❌ ' + error.message, 'error'); return; }
+
+      // ✅ Cache clear — সব পেজ নতুন info পাবে
+      clearSchoolCache();
+
+      // ✅ Info banner সফল দেখান
+      const banner = document.getElementById('infoBanner');
+      banner.className = 'info-banner';
+      banner.innerHTML = `✅ <b>সফলভাবে সেভ হয়েছে!</b> সব পেজে update হয়েছে — Cache clear হয়ে গেছে।`;
+
+      toast('✅ সেভ হয়েছে — সব পেজে update হবে', 'success');
+
+      currentData = { id: 1, ...payload };
+      renderPreview();
+    }
+
+    /* ============ Live Preview ============ */
+    function renderPreview() {
+      const d = currentData;
+      document.getElementById('previewArea').style.display = 'block';
+
+      const name = d.institute_name || 'SCHOOL NAME';
+      const address = d.address || '';
+      const emis = d.ein_no || '';
+      const logo = d.school_logo || logoB64;
+
+      document.getElementById('previewBox').innerHTML = `
+        <div class="header-preview">
+          <div class="logo">
+            ${logo ? `<img src="${logo}" alt="logo">` : '🏫'}
+          </div>
+          <div class="title">
+            <h2>${esc(name).toUpperCase()}</h2>
+            <p>${esc(address)}</p>
+          </div>
+          <div class="right">
+            <div>EMIS:</div>
+            <div class="emis">${esc(emis || '-')}</div>
+          </div>
+        </div>
+        ${d.watermark_logo || watermarkB64 ? `
+          <div style="margin-top:12px;padding:12px;background:#fafafa;border-radius:6px;text-align:center">
+            <div style="font-size:12px;color:#6b7280;margin-bottom:6px">Watermark (ব্যাকগ্রাউন্ডে দেখা যাবে)</div>
+            <div style="position:relative;display:inline-block;padding:20px">
+              <img src="${d.watermark_logo || watermarkB64}" style="max-height:80px;opacity:0.35">
+            </div>
+          </div>` : ''}
+        ${d.banner_image || bannerB64 ? `
+          <div style="margin-top:12px">
+            <div style="font-size:12px;color:#6b7280;margin-bottom:6px">Website Banner:</div>
+            <img src="${d.banner_image || bannerB64}" style="width:100%;max-height:200px;object-fit:cover;border-radius:6px">
+          </div>` : ''}
+      `;
+    }
+
+    /* ============ Start ============ */
+    await loadSettings();
+  </script>
+</body>
+</html>
